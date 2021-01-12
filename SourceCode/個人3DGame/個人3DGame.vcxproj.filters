@@ -37,6 +37,18 @@
     <Filter Include="ヘッダー ファイル\Mode">
       <UniqueIdentifier>{1a76c3d9-1a11-4e91-b07a-c3e0cf664f48}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\3D\Particle">
+      <UniqueIdentifier>{0778fc4e-c280-4447-8939-bf6a079a1ab1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\3D\Particle_Emitter">
+      <UniqueIdentifier>{99fbcb5d-3524-4d43-be8d-c978ef0aa30e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\3D\Particle">
+      <UniqueIdentifier>{6bd8cd19-031d-4d30-9ada-b69b3cf74e5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\3D\Particle_Emitter">
+      <UniqueIdentifier>{6a044555-3f92-4fda-adbd-c4a2a9ef3b33}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -81,8 +93,20 @@
     <ClCompile Include="model.cpp">
       <Filter>ソース ファイル\3D</Filter>
     </ClCompile>
-    <ClCompile Include="billbord.cpp">
+    <ClCompile Include="billboard.cpp">
       <Filter>ソース ファイル\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="particle.cpp">
+      <Filter>ソース ファイル\3D\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="sphere_particle.cpp">
+      <Filter>ソース ファイル\3D\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="particle_emitter.cpp">
+      <Filter>ソース ファイル\3D\Particle_Emitter</Filter>
+    </ClCompile>
+    <ClCompile Include="sphere_particle_emitter.cpp">
+      <Filter>ソース ファイル\3D\Particle_Emitter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -128,8 +152,20 @@
     <ClInclude Include="model.h">
       <Filter>ヘッダー ファイル\3D</Filter>
     </ClInclude>
-    <ClInclude Include="bilboard.h">
+    <ClInclude Include="billboard.h">
       <Filter>ヘッダー ファイル\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="particle.h">
+      <Filter>ヘッダー ファイル\3D\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="sphere_particle.h">
+      <Filter>ヘッダー ファイル\3D\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="particle_emitter.h">
+      <Filter>ヘッダー ファイル\3D\Particle_Emitter</Filter>
+    </ClInclude>
+    <ClInclude Include="sphere_particle_emitter.h">
+      <Filter>ヘッダー ファイル\3D\Particle_Emitter</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

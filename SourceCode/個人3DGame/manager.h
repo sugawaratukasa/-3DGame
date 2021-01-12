@@ -24,7 +24,7 @@ public:
 	typedef enum
 	{
 		MODE_NONE = 0,
-		MODE_TOOL,
+		MODE_GAME,
 		MODE_MAX
 	}MODE;
 	CManager();

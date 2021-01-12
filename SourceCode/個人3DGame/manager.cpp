@@ -19,7 +19,7 @@
 #include "debug_proc.h"
 #include "mode.h"
 #include "game.h"
-#include <tchar.h>
+#include "particle.h"
 
 //=============================================================================
 //スタティック変数初期化
@@ -30,7 +30,6 @@ CLight *CManager::m_pLight = NULL;
 CInputKeyboard *CManager::m_pKeyboard = NULL;
 CDebugProc *CManager::m_pDebugProc = NULL;
 CMode *CManager::m_pMode = NULL;
-
 
 //=============================================================================
 //コンストラクタ
@@ -90,7 +89,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindouw)
 	LoadAll();
 
 	// モード設定
-	SetMode(MODE_TOOL);
+	SetMode(MODE_GAME);
 	return S_OK;
 }
 
@@ -115,6 +114,13 @@ void CManager::Uninit(void)
 		delete m_pDebugProc;
 		m_pDebugProc = NULL;
 	}
+	//キーボードの破棄
+	if (m_pKeyboard != NULL)
+	{
+		m_pKeyboard->Uninit();
+		delete m_pKeyboard;
+		m_pKeyboard = NULL;
+	}
 	//ライトの終了
 	if (m_pLight != NULL)
 	{
@@ -129,7 +135,6 @@ void CManager::Uninit(void)
 		delete m_pCamera;
 		m_pCamera = NULL;
 	}
-
 	//レンダラーの終了
 	if (m_pRenderer != NULL)
 	{
@@ -154,7 +159,6 @@ void CManager::Update(void)
 		//レンダラーの更新処理
 		m_pRenderer->Update();
 	}
-
 	if (m_pCamera != NULL)
 	{
 		//カメラのの更新処理
@@ -165,7 +169,11 @@ void CManager::Update(void)
 		// その時のモードの描画処理
 		m_pMode->Update();
 	}
-
+	//キーボードの更新
+	if (m_pKeyboard != NULL)
+	{
+		m_pKeyboard->Update();
+	}
 }
 
 //=============================================================================
@@ -187,46 +195,52 @@ void CManager::Draw(void)
 }
 
 //=============================================================================
-//テクスチャの読み込みまとめ
+// テクスチャの読み込みまとめ
 //=============================================================================
 void CManager::LoadAll(void)
 {
-
+	// テクスチャ読み込み
+	CParticle::Load();
 }
 
 //=============================================================================
-//テクスチャの破棄まとめ
+// テクスチャの破棄まとめ
 //=============================================================================
 void CManager::UnloadAll(void)
 {
-
+	// テクスチャ破棄
+	CParticle::Unload();
 }
 
 //=============================================================================
-//カメラの生成
+// カメラの生成
 //=============================================================================
 void CManager::CreateCamera(void)
 {
 	if (m_pCamera == NULL)
 	{
+		// ポインタの動的確保
 		m_pCamera = new CCamera;
 		if (m_pCamera != NULL)
 		{
+			// 初期化
 			m_pCamera->Init();
 		}
 	}
 }
 
 //=============================================================================
-//ライトの生成
+// ライトの生成
 //=============================================================================
 void CManager::CreateLight(void)
 {
 	if (m_pLight == NULL)
 	{
+		// ポインタの動的確保
 		m_pLight = new CLight;
 		if (m_pLight != NULL)
 		{
+			// 初期化
 			m_pLight->Init();
 		}
 	}
@@ -251,7 +265,7 @@ void CManager::SetMode(MODE mode)
 
 		switch (m_Mode)
 		{
-		case MODE_TOOL:
+		case MODE_GAME:
 			// ツールの生成
 			m_pMode = new CGame;
 

@@ -144,7 +144,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="billbord.cpp" />
+    <ClCompile Include="billboard.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="debug_proc.cpp" />
     <ClCompile Include="game.cpp" />
@@ -155,13 +155,17 @@
     <ClCompile Include="manager.cpp" />
     <ClCompile Include="mode.cpp" />
     <ClCompile Include="model.cpp" />
+    <ClCompile Include="particle.cpp" />
+    <ClCompile Include="particle_emitter.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="scene2d.cpp" />
     <ClCompile Include="scene3d.cpp" />
+    <ClCompile Include="sphere_particle.cpp" />
+    <ClCompile Include="sphere_particle_emitter.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="bilboard.h" />
+    <ClInclude Include="billboard.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="debug_proc.h" />
     <ClInclude Include="game.h" />
@@ -172,10 +176,14 @@
     <ClInclude Include="manager.h" />
     <ClInclude Include="mode.h" />
     <ClInclude Include="model.h" />
+    <ClInclude Include="particle.h" />
+    <ClInclude Include="particle_emitter.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="scene2d.h" />
     <ClInclude Include="scene3d.h" />
+    <ClInclude Include="sphere_particle.h" />
+    <ClInclude Include="sphere_particle_emitter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

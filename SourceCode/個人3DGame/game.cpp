@@ -18,7 +18,7 @@
 #include "scene.h"
 #include "game.h"
 #include "debug_proc.h"
-#include <tchar.h>
+#include "sphere_particle_emitter.h"
 
 //*****************************************************************************
 //静的メンバ変数
@@ -44,15 +44,17 @@ CGame::~CGame()
 //*****************************************************************************
 HRESULT CGame::Init(void)
 {
-	//カメラ
+	// カメラ
 	CManager::CreateCamera();
 
-	//ライト
+	// ライト
 	CManager::CreateLight();
 
-	// ポリゴン生成
-	//CPolygon::Create();
-	//CDebugProc::Print("%s%d", "座標:", 500);
+	// デバッグプロシージャ
+	CDebugProc::Print("%s%d", "座標:", 500);
+
+	// 球のパーティクル生成
+	CSphere_Particle_Emitter::Create(D3DXVECTOR3(-90.0f, 0.0f, -150.0f));
 	return S_OK;
 }
 
