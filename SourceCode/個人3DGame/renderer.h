@@ -14,8 +14,8 @@
 //******************************************************************************
 #define WINDOW_POS_X	(0)		// サイズ
 #define WINDOW_POS_Y	(0)		// サイズ
-#define SCREEN_WIDTH	(1280)	// サイズ
-#define SCREEN_HEIGHT	(720)	// サイズ
+#define SCREEN_WIDTH	(1920)	// サイズ
+#define SCREEN_HEIGHT	(1080)	// サイズ
 //#undef _DEBUG
 //******************************************************************************
 // クラス

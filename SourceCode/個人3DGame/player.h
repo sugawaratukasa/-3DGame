@@ -20,6 +20,7 @@
 //******************************************************************************
 class CMotion;
 class CModel;
+class CTestModel;
 //******************************************************************************
 // プレイヤークラス
 //******************************************************************************
@@ -43,10 +44,14 @@ public:
 	void Update(void);
 	void Draw(void);
 	void SetPlayer(D3DXVECTOR3 pos, D3DXVECTOR3 rot);
+
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
 	D3DXVECTOR3 GetSize(void) { return m_size; }
 private:
+	void Block(void);
+	void Move(void);
+
 	static LPD3DXMESH m_pMesh[MAX_PLAYER_PARTS];							// メッシュ情報のポインタ
 	static LPD3DXBUFFER m_pBuffMat[MAX_PLAYER_PARTS];						// マテリアル情報のポインタ
 	static DWORD m_nNumMat[MAX_PLAYER_PARTS];								// マテリアル情報の数
@@ -61,6 +66,7 @@ private:
 	CMotion *m_pMotion;														// モーションクラスのポインタ
 	CModel *m_pModel[MAX_PLAYER_PARTS];										// モデルクラスのポインタ
 
+	CTestModel *m_pBlock;													// 箱のポインタ
 };
 
 #endif

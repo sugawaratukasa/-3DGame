@@ -34,7 +34,7 @@
 #define TEST_SIZE2	(D3DXVECTOR3(30.0f, 30.0f, 30.0f))
 #define TEST_COLOR2	(D3DXCOLOR(1.0f,1.0f,1.0f,1.0f))
 #define POS			(D3DXVECTOR3(-30.0f, 0.0f, -50.0f))
-#define ROT			(D3DXVECTOR3(0.0f,0.0f,0.0f))
+#define ROT			(D3DXVECTOR3(0.0f,90.0f,0.0f))
 #define SIZE		(D3DXVECTOR3(30.0f, 30.0f, 30.0f))
 #define COLOR		(D3DXCOLOR(1.0f,0.0f,0.0f,1.0f))
 //*****************************************************************************
@@ -72,16 +72,18 @@ HRESULT CGame::Init(void)
 	//CSphere_Particle_Emitter::Create(D3DXVECTOR3(-90.0f, 0.0f, -150.0f));
 
 	// プレイヤー生成
-	//CPlayer::Create(PLAYER_POS, D3DXVECTOR3(0.0f, D3DXToRadian(180.0f), 0.0f), D3DXVECTOR3(BOX_SIZE, BOX_SIZE, BOX_SIZE));
+	CPlayer::Create(PLAYER_POS, D3DXVECTOR3(0.0f, D3DXToRadian(90.0f), 0.0f), D3DXVECTOR3(BOX_SIZE, BOX_SIZE, BOX_SIZE));
 
 	// ポリゴン生成
-	//CPolygon_Test::Create(TEST_POS, TEST_ROT, TEST_SIZE, TEST_COLOR);
+	CPolygon_Test::Create(TEST_POS, TEST_ROT, TEST_SIZE, TEST_COLOR);
+
+	//モデル
+	//CTestModel::Create(POS, ROT, SIZE);
+	// ポリゴン生成
+	//CPolygon_Test::Create(TEST_POS2, TEST_ROT2, TEST_SIZE2, TEST_COLOR2);
 
 	// ポリゴン生成
-	CPolygon_Test::Create(TEST_POS2, TEST_ROT2, TEST_SIZE2, TEST_COLOR2);
-
-	// ポリゴン生成
-	CPolygon::Create(POS, ROT, SIZE, COLOR);
+	//CPolygon::Create(POS, ROT, SIZE, COLOR);
 
 	return S_OK;
 }

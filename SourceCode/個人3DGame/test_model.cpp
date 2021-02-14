@@ -11,8 +11,13 @@
 #include "renderer.h"
 #include "scene3d.h"
 #include "test_model.h"
+#include "input.h"
+#include "joystick.h"
 #include "model.h"
-
+//******************************************************************************
+// マクロ定義
+//******************************************************************************
+#define MOVE_VALUE	(D3DXVECTOR3(2.0f,2.0f,0.0f))	// 移動量
 //******************************************************************************
 //静的メンバ変数
 //******************************************************************************
@@ -31,7 +36,7 @@ CTestModel::CTestModel(int nPriority) :CScene(nPriority)
 	m_rot		= INIT_D3DXVECTOR3;
 	m_size		= INIT_D3DXVECTOR3;
 	m_pModel	= NULL;
-	m_mtxWorld	= {};
+	memset(m_mtxWorld, NULL, sizeof(m_mtxWorld));
 }
 
 //******************************************************************************
@@ -153,7 +158,9 @@ void CTestModel::Uninit(void)
 {
 	// モデルクラスの終了処理
 	m_pModel->Uninit();
-	m_pModel = NULL;
+
+	// 破棄
+	Release();
 }
 
 //******************************************************************************
@@ -163,8 +170,6 @@ void CTestModel::Update(void)
 {
 	// 設定
 	SetBox(m_pos, m_rot, m_size);
-	CScene *pScene = NULL;
-
 }
 
 //******************************************************************************
@@ -197,6 +202,59 @@ void CTestModel::Draw(void)
 
 	// ライトの効果を無効に
 	//pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
+}
+//******************************************************************************
+// 移動処理関数
+//******************************************************************************
+void CTestModel::Move(void)
+{
+	// コントローラー取得
+	DIJOYSTATE js;
+	CInputJoystick * pInputJoystick = CSceneManager::GetInputJoystick();
+	LPDIRECTINPUTDEVICE8 g_lpDIDevice = CInputJoystick::GetDevice();
+
+	D3DXVECTOR3 move = INIT_D3DXVECTOR3;
+
+	if (g_lpDIDevice != NULL)
+	{
+		g_lpDIDevice->Poll();
+		g_lpDIDevice->GetDeviceState(sizeof(DIJOYSTATE), &js);
+	}
+
+	// 右スティックを左に倒す
+	if (js.lZ <= -STICK_REACTION)
+	{
+		move.x = MOVE_VALUE.x;
+	}
+	// 右スティックを右に倒す
+	if (js.lZ >= STICK_REACTION)
+	{
+		move.x = -MOVE_VALUE.x;
+	}
+	// 右スティックを上に倒す
+	if (js.lRz <= -STICK_REACTION)
+	{
+		move.y = MOVE_VALUE.y;
+	}
+	// 右スティックを下に倒す
+	if (js.lRz >= STICK_REACTION)
+	{
+		move.y = -MOVE_VALUE.y;
+	}
+
+	// 移動
+	m_pos.x += move.x;
+	m_pos.y += move.y;
+}
+//******************************************************************************
+// 破棄関数
+//******************************************************************************
+void CTestModel::ReleaseBox(void)
+{
+	// 破棄
+	Uninit();
+
+	return;
 }
 //******************************************************************************
 // 情報設定

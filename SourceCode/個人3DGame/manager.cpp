@@ -14,6 +14,7 @@
 #include "light.h"
 #include "input.h"
 #include "keyboard.h"
+#include "joystick.h"
 #include "debug_proc.h"
 #include "mode.h"
 #include "game.h"
@@ -30,6 +31,7 @@ CRenderer *CSceneManager::m_pRenderer = NULL;
 CCamera *CSceneManager::m_pCamera = NULL;
 CLight *CSceneManager::m_pLight = NULL;
 CInputKeyboard *CSceneManager::m_pKeyboard = NULL;
+CInputJoystick *CSceneManager::m_pJoystick = NULL;
 CDebugProc *CSceneManager::m_pDebugProc = NULL;
 CMode *CSceneManager::m_pMode = NULL;
 
@@ -78,6 +80,17 @@ HRESULT CSceneManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindouw)
 			m_pKeyboard->Init(hInstance, hWnd);
 		}
 	}
+	// コントローラー
+	if (m_pJoystick == NULL)
+	{
+		// メモリ確保
+		m_pJoystick = new CInputJoystick;
+		if (m_pJoystick != NULL)
+		{
+			// 初期化
+			m_pJoystick->Init(hInstance, hWnd);
+		}
+	}
 	// デバッグ
 	if (m_pDebugProc == NULL)
 	{
@@ -122,6 +135,13 @@ void CSceneManager::Uninit(void)
 		m_pKeyboard->Uninit();
 		delete m_pKeyboard;
 		m_pKeyboard = NULL;
+	}
+	//コントローラーの破棄
+	if (m_pJoystick != NULL)
+	{
+		m_pJoystick->Uninit();
+		delete m_pJoystick;
+		m_pJoystick = NULL;
 	}
 	//ライトの終了
 	if (m_pLight != NULL)
@@ -170,6 +190,11 @@ void CSceneManager::Update(void)
 	if (m_pKeyboard != NULL)
 	{
 		m_pKeyboard->Update();
+	}
+	//キーボードの更新
+	if (m_pJoystick != NULL)
+	{
+		m_pJoystick->Update();
 	}
 }
 

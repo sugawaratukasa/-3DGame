@@ -19,8 +19,8 @@
 #define PHI_VALUE		(1.0f)							// phi値
 #define THETA_VALUE		(1.7f)							// theta値
 #define DISTANCE_VALUE	(40.0f)							// 距離
-#define FOV_VALUE		(D3DXToRadian(90))				// 視野角
-#define DRAW_DISTANCE	(10000)							// 描画距離
+#define FOV_VALUE		(D3DXToRadian(90.0f))				// 視野角
+#define DRAW_DISTANCE	(5000)							// 描画距離
 //******************************************************************************
 // コンストラクタ
 //******************************************************************************
@@ -110,13 +110,16 @@ void CCamera::Update(void)
 	posV.y = m_fDistance*cosf(m_fTheta);
 	posV.z = m_fDistance*(sinf(m_fTheta)*sinf(m_fPhi));
 
-	//======================================
-	//カメラ描画
-	//======================================
+	//ビューマトリックスの初期化
 	D3DXMatrixIdentity(&mtxView);
+	//ビューマトリックスの作成
 	D3DXMatrixLookAtLH(&mtxView, &posV, &posR, &vecU);
+	//ビューマトリックスの設定
 	pDevice->SetTransform(D3DTS_VIEW, &mtxView);
+	//プロジェクションマトリックスの初期化
 	D3DXMatrixIdentity(&mtxProjection);
-	D3DXMatrixPerspectiveFovLH(&mtxProjection, FOV_VALUE, SCREEN_WIDTH / SCREEN_HEIGHT, 10, DRAW_DISTANCE);
+	//プロジェクションマトリックスの作成
+	D3DXMatrixPerspectiveFovLH(&mtxProjection, FOV_VALUE, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 10.0f, 10000.0f);
+	//プロジェクションマトリックスの設定
 	pDevice->SetTransform(D3DTS_PROJECTION, &mtxProjection);
 }

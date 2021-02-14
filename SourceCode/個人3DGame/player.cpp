@@ -10,28 +10,34 @@
 #include "renderer.h"
 #include "motion.h"
 #include "model.h"
+#include "joystick.h"
+#include "test_model.h"
 #include "player.h"
 //******************************************************************************
 // マクロ定義
 //******************************************************************************
-#define UNDER_BODY			("data/MODEL/PLAYER/00_UnderBody.x")	// 下半身
-#define BODY				("data/MODEL/PLAYER/01_Body.x")			// 上半身
-#define HEAD				("data/MODEL/PLAYER/02_Head.x")			// 頭
-#define SHOULDER_R			("data/MODEL/PLAYER/03_shoulder_R.x")	// 右肩
-#define UP_ARM_R			("data/MODEL/PLAYER/04_up_arm_R.x")		// 右上腕
-#define DOWN_ARM_R			("data/MODEL/PLAYER/05_down_arm_R.x")	// 右前腕	
-#define SHOULDER_L			("data/MODEL/PLAYER/06_shoulder_L.x")	// 左肩
-#define UP_ARM_L			("data/MODEL/PLAYER/07_up_arm_L.x")		// 左上腕
-#define DOWN_ARM_L			("data/MODEL/PLAYER/08_down_arm_L.x")	// 左前腕
-#define THIGTS_R			("data/MODEL/PLAYER/09_Thigts_R.x")		// 右太もも
-#define KNEE_R				("data/MODEL/PLAYER/10_Knee_R.x")		// 右膝
-#define FOOT_R				("data/MODEL/PLAYER/11_foot_R.x")		// 右足
-#define THIGTS_L			("data/MODEL/PLAYER/12_Thigts_L.x")		// 左太もも
-#define KNEE_L				("data/MODEL/PLAYER/13_Knee_L.x")		// 左膝
-#define FOOT_L				("data/MODEL/PLAYER/14_foot_L.x")		// 左足
-#define MOTION_PLAYER_TEXT	("data/MODEL/PLAYER/Motion/motion.txt") // モーションのテキスト
-#define LOAD_PLAYER_TEXT	("data/MODEL/PLAYER/Motion/player.txt") // 各モデルパーツの初期値
-#define PARENT_NUMBER		(-1)									// 親の数値
+#define UNDER_BODY			("data/MODEL/PLAYER/00_UnderBody.x")		// 下半身
+#define BODY				("data/MODEL/PLAYER/01_Body.x")				// 上半身
+#define HEAD				("data/MODEL/PLAYER/02_Head.x")				// 頭
+#define SHOULDER_R			("data/MODEL/PLAYER/03_shoulder_R.x")		// 右肩
+#define UP_ARM_R			("data/MODEL/PLAYER/04_up_arm_R.x")			// 右上腕
+#define DOWN_ARM_R			("data/MODEL/PLAYER/05_down_arm_R.x")		// 右前腕	
+#define SHOULDER_L			("data/MODEL/PLAYER/06_shoulder_L.x")		// 左肩
+#define UP_ARM_L			("data/MODEL/PLAYER/07_up_arm_L.x")			// 左上腕
+#define DOWN_ARM_L			("data/MODEL/PLAYER/08_down_arm_L.x")		// 左前腕
+#define THIGTS_R			("data/MODEL/PLAYER/09_Thigts_R.x")			// 右太もも
+#define KNEE_R				("data/MODEL/PLAYER/10_Knee_R.x")			// 右膝
+#define FOOT_R				("data/MODEL/PLAYER/11_foot_R.x")			// 右足
+#define THIGTS_L			("data/MODEL/PLAYER/12_Thigts_L.x")			// 左太もも
+#define KNEE_L				("data/MODEL/PLAYER/13_Knee_L.x")			// 左膝
+#define FOOT_L				("data/MODEL/PLAYER/14_foot_L.x")			// 左足
+#define MOTION_PLAYER_TEXT	("data/MODEL/PLAYER/Motion/motion.txt")		// モーションのテキスト
+#define LOAD_PLAYER_TEXT	("data/MODEL/PLAYER/Motion/player.txt")		// 各モデルパーツの初期値
+#define BLOCK_POS			(D3DXVECTOR3(m_pos.x,m_pos.y + 80,m_pos.z))	// 箱生成位置
+#define BLOCK_ROT			(D3DXVECTOR3(0.0f,0.0f,0.0f))				// 箱の向き
+#define BLOCK_SIZE			(D3DXVECTOR3(50.0f,50.0f,50.0f))			// 箱のサイズ
+#define MOVE_VALUE			(D3DXVECTOR3(2.0f,2.0f,2.0f))				// 移動量
+#define PARENT_NUMBER		(-1)										// 親の数値
 //******************************************************************************
 // 静的メンバ変数
 //******************************************************************************
@@ -62,12 +68,13 @@ char* CPlayer::m_apFileName[MAX_PLAYER_PARTS] = {
 //******************************************************************************
 CPlayer::CPlayer(int nPriority)
 {
-	m_pos			= INIT_D3DXVECTOR3;							// 場所
-	m_rot			= INIT_D3DXVECTOR3;							// 角度
-	m_size			= INIT_D3DXVECTOR3;							// 大きさ
-	m_bAllMotion	= false;									// 全モーションの判定
-	m_pMotion		= NULL;										// モーションクラスのポインタ
-	memset(m_pModel, NULL, sizeof(m_pModel));					// モデルクラスのポインタ
+	m_pos			= INIT_D3DXVECTOR3;			// 場所
+	m_rot			= INIT_D3DXVECTOR3;			// 角度
+	m_size			= INIT_D3DXVECTOR3;			// 大きさ
+	m_bAllMotion	= false;					// 全モーションの判定
+	m_pMotion		= NULL;						// モーションクラスのポインタ
+	m_pBlock		= NULL;						// 箱のポインタ
+	memset(m_pModel, NULL, sizeof(m_pModel));	// モデルクラスのポインタ
 }
 
 //******************************************************************************
@@ -227,6 +234,11 @@ void CPlayer::Update(void)
 	// ニュートラルモーション
 	m_pMotion->SetMotion(CMotion::MOTION_IDLE);
 
+	// 移動処理
+	Move();
+
+	// 箱の処理
+	Block();
 
 	for (int nCount = INIT_INT; nCount < MAX_PLAYER_PARTS; nCount++)
 	{
@@ -276,4 +288,91 @@ void CPlayer::SetPlayer(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 {
 	m_pos = pos;
 	m_rot = rot;
+}
+//******************************************************************************
+// ブロック処理関数
+//******************************************************************************
+void CPlayer::Block(void)
+{
+	// コントローラー取得
+	DIJOYSTATE js;
+	CInputJoystick * pInputJoystick = CSceneManager::GetInputJoystick();
+	LPDIRECTINPUTDEVICE8 g_lpDIDevice = CInputJoystick::GetDevice();
+
+	if (g_lpDIDevice != NULL)
+	{
+		g_lpDIDevice->Poll();
+		g_lpDIDevice->GetDeviceState(sizeof(DIJOYSTATE), &js);
+	}
+	// NULLの場合
+	if (m_pBlock == NULL)
+	{
+		// Xボタンを押し場合
+		if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_X))
+		{
+			// 箱生成
+			m_pBlock = CTestModel::Create(BLOCK_POS, BLOCK_ROT, BLOCK_SIZE);
+		}
+	}
+	// NULLでない場合
+	if (m_pBlock != NULL)
+	{
+		// Bボタンを押した場合
+		if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_B))
+		{
+
+			// 箱破棄
+			m_pBlock->ReleaseBox();
+			// NULLに
+			m_pBlock = NULL;
+		}
+		if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
+		{
+			// 移動
+			m_pBlock->Move();
+		}
+	}
+}
+//******************************************************************************
+// 移動処理関数
+//******************************************************************************
+void CPlayer::Move(void)
+{
+	// コントローラー取得
+	DIJOYSTATE js;
+	CInputJoystick * pInputJoystick = CSceneManager::GetInputJoystick();
+	LPDIRECTINPUTDEVICE8 g_lpDIDevice = CInputJoystick::GetDevice();
+
+	if (g_lpDIDevice != NULL)
+	{
+		g_lpDIDevice->Poll();
+		g_lpDIDevice->GetDeviceState(sizeof(DIJOYSTATE), &js);
+	}
+
+	D3DXVECTOR3 move = INIT_D3DXVECTOR3;
+
+	// 上
+	if (js.lY <= -STICK_REACTION)
+	{
+		move.y = MOVE_VALUE.y;
+	}
+	// 下
+	if (js.lY >= STICK_REACTION)
+	{
+		move.y = -MOVE_VALUE.y;
+	}
+	// 左
+	if (js.lX <= -STICK_REACTION)
+	{
+		move.x = MOVE_VALUE.x;
+	}
+	//右
+	if (js.lX >= STICK_REACTION)
+	{
+		move.x = -MOVE_VALUE.x;
+	}
+
+	// 移動
+	m_pos.x += move.x;
+	m_pos.y += move.y;
 }
