@@ -1,31 +1,35 @@
-//--------------------------------
-//インクルードファイル
-//--------------------------------
+//******************************************************************************
+// 描画 [renderer.cpp]
+// Author : 管原　司
+//******************************************************************************
+
+//******************************************************************************
+// インクルードファイル
+//******************************************************************************
 #include "main.h"
-#include "manager.h"
 #include "renderer.h"
 #include "scene.h"
 #include "scene2d.h"
-#include "debug_proc.h"
-//--------------------------------
-//コンストラクタ
-//--------------------------------
+#include "manager.h"
+
+//******************************************************************************
+// コンストラクタ
+//******************************************************************************
 CRenderer::CRenderer()
 {
-
+	m_pD3D		= NULL;		// Direct3Dオブジェクト
+	m_pD3Decvice = NULL;	// Deviceオブジェクト(描画に必要)
+	m_pFont		= NULL;		// フォントへのポインタ
 }
-
-//--------------------------------
-//デストラクタ
-//--------------------------------
+//******************************************************************************
+// デストラクタ
+//******************************************************************************
 CRenderer::~CRenderer()
 {
-
 }
-
-//=============================================================================
-// 初期化処理
-//=============================================================================
+//******************************************************************************
+// 初期化関数
+//******************************************************************************
 HRESULT CRenderer::Init(HWND hWnd, bool bWindow)
 {
 	D3DPRESENT_PARAMETERS d3dpp;
@@ -64,7 +68,7 @@ HRESULT CRenderer::Init(HWND hWnd, bool bWindow)
 		D3DDEVTYPE_HAL,
 		hWnd,
 		D3DCREATE_HARDWARE_VERTEXPROCESSING,
-		&d3dpp, &m_pD3DDevice)))
+		&d3dpp, &m_pD3Decvice)))
 	{
 		// 上記の設定が失敗したら
 		// 描画をハードウェアで行い、頂点処理はCPUで行なう
@@ -72,14 +76,14 @@ HRESULT CRenderer::Init(HWND hWnd, bool bWindow)
 			D3DDEVTYPE_HAL,
 			hWnd,
 			D3DCREATE_SOFTWARE_VERTEXPROCESSING,
-			&d3dpp, &m_pD3DDevice)))
+			&d3dpp, &m_pD3Decvice)))
 		{
 			// 上記の設定が失敗したら
 			// 描画と頂点処理をCPUで行なう
 			if (FAILED(m_pD3D->CreateDevice(D3DADAPTER_DEFAULT,
 				D3DDEVTYPE_REF, hWnd,
 				D3DCREATE_SOFTWARE_VERTEXPROCESSING,
-				&d3dpp, &m_pD3DDevice)))
+				&d3dpp, &m_pD3Decvice)))
 			{
 				// 生成失敗
 				return E_FAIL;
@@ -88,38 +92,37 @@ HRESULT CRenderer::Init(HWND hWnd, bool bWindow)
 	}
 
 	// レンダーステートの設定
-	m_pD3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);				// カリングを行わない
-	m_pD3DDevice->SetRenderState(D3DRS_ZENABLE, TRUE);						// Zバッファを使用
-	m_pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);				// αブレンドを行う
-	m_pD3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);		// αソースカラーの指定
-	m_pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);	// αデスティネーションカラーの指定
+	m_pD3Decvice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	m_pD3Decvice->SetRenderState(D3DRS_ZENABLE, TRUE);
+	m_pD3Decvice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	m_pD3Decvice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	m_pD3Decvice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
-																			// サンプラーステートの設定
-	m_pD3DDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);	// テクスチャＵ値の繰り返し設定
-	m_pD3DDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);	// テクスチャＶ値の繰り返し設定
-	m_pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);	// テクスチャ拡大時の補間設定
-	m_pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);	// テクスチャ縮小時の補間設定
+	// サンプラーステートの設定
+	m_pD3Decvice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
+	m_pD3Decvice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
+	m_pD3Decvice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+	m_pD3Decvice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 
-																			// テクスチャステージステートの設定
-	m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);	// アルファブレンディング処理(初期値はD3DTOP_SELECTARG1)
-	m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);		// 最初のアルファ引数(初期値はD3DTA_TEXTURE、テクスチャがない場合はD3DTA_DIFFUSE)
-	m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);		// ２番目のアルファ引数(初期値はD3DTA_CURRENT)
+	// テクスチャステージステートの設定
+	m_pD3Decvice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+	m_pD3Decvice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+	m_pD3Decvice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
 
 #ifdef _DEBUG
-																				// デバッグ情報表示用フォントの生成
-	D3DXCreateFont(m_pD3DDevice, 18, 0, 0, 0, FALSE, SHIFTJIS_CHARSET,
+	// デバッグ情報表示用フォントの生成
+	D3DXCreateFont(m_pD3Decvice, 18, 0, 0, 0, FALSE, SHIFTJIS_CHARSET,
 		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "Terminal", &m_pFont);
 #endif
-
 	return S_OK;
 }
-
-//=============================================================================
-// 終了処理
-//=============================================================================
+//******************************************************************************
+// 終了関数
+//******************************************************************************
 void CRenderer::Uninit(void)
 {
 #ifdef _DEBUG
+
 	// デバッグ情報表示用フォントの破棄
 	if (m_pFont != NULL)
 	{
@@ -129,10 +132,10 @@ void CRenderer::Uninit(void)
 #endif
 
 	// デバイスの破棄
-	if (m_pD3DDevice != NULL)
+	if (m_pD3Decvice != NULL)
 	{
-		m_pD3DDevice->Release();
-		m_pD3DDevice = NULL;
+		m_pD3Decvice->Release();
+		m_pD3Decvice = NULL;
 	}
 
 	// Direct3Dオブジェクトの破棄
@@ -142,51 +145,44 @@ void CRenderer::Uninit(void)
 		m_pD3D = NULL;
 	}
 }
-
-//=============================================================================
-// 更新処理
-//=============================================================================
+//******************************************************************************
+// 更新関数
+//******************************************************************************
 void CRenderer::Update(void)
 {
 	CScene::UpdateAll();
 }
-
-//=============================================================================
-// 描画処理
-//=============================================================================
+//******************************************************************************
+// 描画関数
+//******************************************************************************
 void CRenderer::Draw(void)
 {
 	// バックバッファ＆Ｚバッファのクリア
-	m_pD3DDevice->Clear(0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), D3DCOLOR_RGBA(0, 0, 0, 255), 1.0f, 0);
+	m_pD3Decvice->Clear(0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), D3DCOLOR_RGBA(0, 0, 0, 255), 1.0f, 0);
 
 	// Direct3Dによる描画の開始
-	if (SUCCEEDED(m_pD3DDevice->BeginScene()))
+	if (SUCCEEDED(m_pD3Decvice->BeginScene()))
 	{
 		CScene::DrawAll();
 #ifdef _DEBUG
 		// FPS表示
 		DrawFPS();
-		CDebugProc::Draw();
 #endif
 		// Direct3Dによる描画の終了
-		m_pD3DDevice->EndScene();
+		m_pD3Decvice->EndScene();
 	}
-
 	// バックバッファとフロントバッファの入れ替え
-	m_pD3DDevice->Present(NULL, NULL, NULL, NULL);
+	m_pD3Decvice->Present(NULL, NULL, NULL, NULL);
 }
-
 #ifdef _DEBUG
-//=============================================================================
-// FPS表示
-//=============================================================================
+//******************************************************************************
+// FPSの表示
+//******************************************************************************
 void CRenderer::DrawFPS(void)
 {
 	RECT rect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 	char str[256];
-
-	wsprintf(str, "FPS:%d\n", m_nCountFPS);
-
+	wsprintf(str, "FPS:%d\n", GetFPS());
 	// テキスト描画
 	m_pFont->DrawText(NULL, str, -1, &rect, DT_LEFT, D3DCOLOR_ARGB(0xff, 0xff, 0xff, 0xff));
 }

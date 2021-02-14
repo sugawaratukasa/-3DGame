@@ -1,31 +1,37 @@
-//=============================================================================
-//
+//******************************************************************************
 // メイン処理 [main.cpp]
-// Author : 
-//
-//=============================================================================
+// Author : 管原　司
+//******************************************************************************
 
-//=============================================================================
-//インクルードファイル
-//=============================================================================
+//*****************************************************************************
+// インクルードファイル
+//*****************************************************************************
 #include "main.h"
+#include "renderer.h"
+#include "scene.h"
+#include "scene2d.h"
 #include "manager.h"
+//*****************************************************************************
+// マクロ定義
+//*****************************************************************************
+#define CLASS_NAME		"AppClass"			// ウインドウのクラス名
+#define WINDOW_NAME		"魂首領"			// ウインドウのキャプション名
+#define DIRECTINPUT_VERSION 0x800
+#define	_CRT_SECURE_NO_WARNINGS				//scanfエラー
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+//*****************************************************************************
+// グローバル変数:
+//*****************************************************************************
 #ifdef _DEBUG
-int	m_nCountFPS = 0;			// FPSカウンタ
+int	g_nCountFPS;			// FPSカウンタ
 #endif
-
 //*****************************************************************************
-// グローバル変数宣言
-//*****************************************************************************
-CManager *g_pManager;	//マネージャーのポインタ
-
-//=============================================================================
 // メイン関数
-//=============================================================================
+//*****************************************************************************
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	WNDCLASSEX wcex =
@@ -70,13 +76,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		hInstance,
 		NULL);
 
-	g_pManager = new CManager;
-	if (g_pManager != NULL)
+	CSceneManager *pManager = NULL;
+	if (pManager == NULL)
 	{
-		// 初期化処理
-		g_pManager->Init(hInstance, hWnd, TRUE);
+		pManager = new CSceneManager;
+		if (pManager != NULL)
+		{
+			pManager->Init(hInstance, hWnd, TRUE);
+		}
 	}
-
 	// 分解能を設定
 	timeBeginPeriod(1);
 
@@ -89,7 +97,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// ウインドウの表示
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
-
 	// メッセージループ
 	while (1)
 	{
@@ -113,39 +120,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			{// 0.5秒ごとに実行
 #ifdef _DEBUG
 			 // FPSを算出
-				m_nCountFPS = dwFrameCount * 1000 / (dwCurrentTime - dwFPSLastTime);
+				g_nCountFPS = dwFrameCount * 1000 / (dwCurrentTime - dwFPSLastTime);
 #endif
 				dwFPSLastTime = dwCurrentTime;	// 現在の時間を保存
 				dwFrameCount = 0;
 			}
 
-#ifdef _DEBUG
-			g_pManager->SetNumFPS(m_nCountFPS);
-#endif
-
 			if ((dwCurrentTime - dwExecLastTime) >= (1000 / 60))
 			{// 1/60秒経過
 				dwExecLastTime = dwCurrentTime;	// 現在の時間を保存
 
-				if (g_pManager != NULL)
-				{
-					// 更新処理
-					g_pManager->Update();
-					// 描画処理
-					g_pManager->Draw();
-				}
+												//更新
+				pManager->Update();
+				//描画
+				pManager->Draw();
 
 				dwFrameCount++;
 			}
 		}
 	}
-
-	if (g_pManager != NULL)
+	if (pManager != NULL)
 	{
-		// 終了処理
-		g_pManager->Uninit();
-		delete g_pManager;
-		g_pManager = NULL;
+		//終了処理
+		pManager->Uninit();
+		delete pManager;
+		pManager = NULL;
 	}
 
 	// ウィンドウクラスの登録を解除
@@ -156,10 +155,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	return (int)msg.wParam;
 }
-
-//=============================================================================
-// ウインドウプロシージャ
-//=============================================================================
+//*****************************************************************************
+// ウィンドウプロシージャ
+//*****************************************************************************
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
@@ -186,11 +184,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
-
+#ifdef _DEBUG
 //*****************************************************************************
-// マネージャーの取得
+// FPS数値受け渡し
 //*****************************************************************************
-CManager *GetManager(void)
+int GetFPS(void)
 {
-	return g_pManager;
+	return g_nCountFPS;
 }
+#endif

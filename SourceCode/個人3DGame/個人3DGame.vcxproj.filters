@@ -49,23 +49,20 @@
     <Filter Include="ヘッダー ファイル\3D\Particle_Emitter">
       <UniqueIdentifier>{6a044555-3f92-4fda-adbd-c4a2a9ef3b33}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\3D\Model">
+      <UniqueIdentifier>{894299cd-e7bd-4da7-87a7-bf7a15c9ae27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\3D\Model">
+      <UniqueIdentifier>{0c749e68-f553-4c2a-afa2-3c010c870f67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\System">
+      <UniqueIdentifier>{908792f3-cf18-4bb6-b720-9ae4df6472bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\System">
+      <UniqueIdentifier>{cd1abcea-4437-4d0d-beec-e61b722985af}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="scene.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="renderer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="manager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="debug_proc.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="camera.cpp">
       <Filter>ソース ファイル\3D</Filter>
     </ClCompile>
@@ -90,9 +87,6 @@
     <ClCompile Include="game.cpp">
       <Filter>ソース ファイル\Mode</Filter>
     </ClCompile>
-    <ClCompile Include="model.cpp">
-      <Filter>ソース ファイル\3D</Filter>
-    </ClCompile>
     <ClCompile Include="billboard.cpp">
       <Filter>ソース ファイル\3D</Filter>
     </ClCompile>
@@ -108,23 +102,47 @@
     <ClCompile Include="sphere_particle_emitter.cpp">
       <Filter>ソース ファイル\3D\Particle_Emitter</Filter>
     </ClCompile>
+    <ClCompile Include="model.cpp">
+      <Filter>ソース ファイル\3D\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="test_model.cpp">
+      <Filter>ソース ファイル\3D\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="model_hierarchy.cpp">
+      <Filter>ソース ファイル\3D\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="motion.cpp">
+      <Filter>ソース ファイル\3D\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="debug_proc.cpp">
+      <Filter>ソース ファイル\System</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>ソース ファイル\System</Filter>
+    </ClCompile>
+    <ClCompile Include="manager.cpp">
+      <Filter>ソース ファイル\System</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer.cpp">
+      <Filter>ソース ファイル\System</Filter>
+    </ClCompile>
+    <ClCompile Include="scene.cpp">
+      <Filter>ソース ファイル\System</Filter>
+    </ClCompile>
+    <ClCompile Include="player.cpp">
+      <Filter>ソース ファイル\3D\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="polygon.cpp">
+      <Filter>ソース ファイル\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="polygon_test.cpp">
+      <Filter>ソース ファイル\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="collision.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="main.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="scene.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="renderer.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="manager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="debug_proc.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="camera.h">
       <Filter>ヘッダー ファイル\3D</Filter>
     </ClInclude>
@@ -149,9 +167,6 @@
     <ClInclude Include="game.h">
       <Filter>ヘッダー ファイル\Mode</Filter>
     </ClInclude>
-    <ClInclude Include="model.h">
-      <Filter>ヘッダー ファイル\3D</Filter>
-    </ClInclude>
     <ClInclude Include="billboard.h">
       <Filter>ヘッダー ファイル\3D</Filter>
     </ClInclude>
@@ -166,6 +181,45 @@
     </ClInclude>
     <ClInclude Include="sphere_particle_emitter.h">
       <Filter>ヘッダー ファイル\3D\Particle_Emitter</Filter>
+    </ClInclude>
+    <ClInclude Include="model.h">
+      <Filter>ヘッダー ファイル\3D\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="test_model.h">
+      <Filter>ヘッダー ファイル\3D\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="model_hierarchy.h">
+      <Filter>ヘッダー ファイル\3D\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="motion.h">
+      <Filter>ヘッダー ファイル\3D\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="debug_proc.h">
+      <Filter>ヘッダー ファイル\System</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>ヘッダー ファイル\System</Filter>
+    </ClInclude>
+    <ClInclude Include="manager.h">
+      <Filter>ヘッダー ファイル\System</Filter>
+    </ClInclude>
+    <ClInclude Include="renderer.h">
+      <Filter>ヘッダー ファイル\System</Filter>
+    </ClInclude>
+    <ClInclude Include="scene.h">
+      <Filter>ヘッダー ファイル\System</Filter>
+    </ClInclude>
+    <ClInclude Include="player.h">
+      <Filter>ヘッダー ファイル\3D\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="polygon.h">
+      <Filter>ヘッダー ファイル\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="polygon_test.h">
+      <Filter>ヘッダー ファイル\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="collision.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,29 +1,32 @@
+//******************************************************************************
+// 2D [scene2d.h]
+// Author : 管原司
+//******************************************************************************
 #ifndef _SCENE2D_H_
 #define _SCENE2D_H_
-
+//******************************************************************************
+// インクルードファイル
+//******************************************************************************
 #include "scene.h"
-
+//******************************************************************************
+// クラス
+//******************************************************************************
 class CScene2D :public CScene
 {
 public:
-	CScene2D(int nPriority);
+	CScene2D(int nPriority = OBJTYPE_DEFAULT);
 	~CScene2D();
-
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
-
 	void BindTexture(LPDIRECT3DTEXTURE9 pTexture);
-
 	void SetPosition(D3DXVECTOR3 pos);
 	void SetSize(D3DXVECTOR3 size);
 	void SetColor(D3DXCOLOR color);
 	void SetRotation(D3DXVECTOR3 rot);
-
-	D3DXVECTOR3 GetPosition(void);
-	D3DXCOLOR GetColor(void);
-
+	D3DXVECTOR3 GetPosition(void) { return m_pos; }
+	D3DXCOLOR GetColor(void) { return m_color; }
 private:
 	LPDIRECT3DTEXTURE9		m_pTexture;				// テクスチャへのポインタ
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;				// 頂点バッファへのポインタ
