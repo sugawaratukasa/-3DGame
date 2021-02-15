@@ -23,7 +23,7 @@
 #include "player.h"
 #include "polygon.h"
 #include "polygon_test.h"
-
+#include "frame.h"
 //******************************************************************************
 // 静的メンバ変数
 //******************************************************************************
@@ -234,7 +234,10 @@ void CSceneManager::LoadAll(void)
 	CPolygon::Load();
 
 	// ポリゴン
-	CPolygon_Test::Load();
+	//CPolygon_Test::Load();
+
+	// フレーム
+	CFrame::Load();
 }
 
 //******************************************************************************
@@ -242,8 +245,11 @@ void CSceneManager::LoadAll(void)
 //******************************************************************************
 void CSceneManager::UnloadAll(void)
 {
+	// フレーム
+	CFrame::Unload();
+
 	// ポリゴン
-	CPolygon_Test::Unload();
+	//CPolygon_Test::Unload();
 
 	// ポリゴン
 	CPolygon::Unload();

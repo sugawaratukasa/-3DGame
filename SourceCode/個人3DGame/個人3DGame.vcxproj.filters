@@ -147,6 +147,15 @@
     <ClCompile Include="block.cpp">
       <Filter>ソース ファイル\3D\Model</Filter>
     </ClCompile>
+    <ClCompile Include="line.cpp">
+      <Filter>ソース ファイル\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="block_polygon.cpp">
+      <Filter>ソース ファイル\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="frame.cpp">
+      <Filter>ソース ファイル\3D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h">
@@ -232,6 +241,15 @@
     </ClInclude>
     <ClInclude Include="block.h">
       <Filter>ヘッダー ファイル\3D\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="line.h">
+      <Filter>ヘッダー ファイル\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="block_polygon.h">
+      <Filter>ヘッダー ファイル\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="frame.h">
+      <Filter>ヘッダー ファイル\3D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

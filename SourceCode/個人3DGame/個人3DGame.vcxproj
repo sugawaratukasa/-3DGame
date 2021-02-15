@@ -146,14 +146,17 @@
   <ItemGroup>
     <ClCompile Include="billboard.cpp" />
     <ClCompile Include="block.cpp" />
+    <ClCompile Include="block_polygon.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="collision.cpp" />
     <ClCompile Include="debug_proc.cpp" />
+    <ClCompile Include="frame.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="joystick.cpp" />
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="light.cpp" />
+    <ClCompile Include="line.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="manager.cpp" />
     <ClCompile Include="mode.cpp" />
@@ -176,14 +179,17 @@
   <ItemGroup>
     <ClInclude Include="billboard.h" />
     <ClInclude Include="block.h" />
+    <ClInclude Include="block_polygon.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="collision.h" />
     <ClInclude Include="debug_proc.h" />
+    <ClInclude Include="frame.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="joystick.h" />
     <ClInclude Include="keyboard.h" />
     <ClInclude Include="light.h" />
+    <ClInclude Include="line.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="manager.h" />
     <ClInclude Include="mode.h" />

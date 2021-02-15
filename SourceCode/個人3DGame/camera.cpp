@@ -16,10 +16,10 @@
 //******************************************************************************
 #define VECU_VALUE		(D3DXVECTOR3(0.0f,1.0f,0.0f))	// vecu値
 #define ROT_VALUE		(D3DXToRadian(1.0f))			// カメラの球面座標の移動
-#define PHI_VALUE		(1.0f)							// phi値
-#define THETA_VALUE		(1.7f)							// theta値
+#define PHI_VALUE		(D3DXToRadian(90.0f))			// phi値
+#define THETA_VALUE		(D3DXToRadian(90.0f))			// theta値
 #define DISTANCE_VALUE	(40.0f)							// 距離
-#define FOV_VALUE		(D3DXToRadian(90.0f))				// 視野角
+#define FOV_VALUE		(90.0f)							// 視野角
 #define DRAW_DISTANCE	(5000)							// 描画距離
 //******************************************************************************
 // コンストラクタ

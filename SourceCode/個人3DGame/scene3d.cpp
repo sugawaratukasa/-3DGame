@@ -60,7 +60,7 @@ HRESULT CScene3d::Init(void)
 	// 頂点バッファの生成
 	if (FAILED(pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * NUM_VERTEX * MAX_POLYGON,	// 頂点データ用に確保するバッファサイズ(バイト単位)
 		D3DUSAGE_WRITEONLY,																	// 頂点バッファの使用法　
-		FVF_VERTEX_2D,																		// 使用する頂点フォーマット
+		FVF_VERTEX_3D,																		// 使用する頂点フォーマット
 		D3DPOOL_MANAGED,																	// リソースのバッファを保持するメモリクラスを指定
 		&m_pVtxBuff,																		// 頂点バッファへのポインタ
 		NULL)))																				// NULLに設定
@@ -168,24 +168,30 @@ void CScene3d::Draw(void)
 
 	D3DXMATRIX mtxRot, mtxTrans;
 
+	// マトリックス初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
 
+	// 向き
 	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
-
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
 
+	// 位置
 	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
-
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 
+	// ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 
+	// テクスチャ設定
 	pDevice->SetTexture(0, m_pTexture);
 
+	// 頂点バッファをデバイスのデータストリームに設定
 	pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_3D));
 
+	// 頂点フォーマットの設定
 	pDevice->SetFVF(FVF_VERTEX_3D);
 
+	// ポリゴン描画 
 	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
 }
 //******************************************************************************

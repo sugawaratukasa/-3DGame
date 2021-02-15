@@ -21,6 +21,7 @@
 #include "player.h"
 #include "polygon.h"
 #include "polygon_test.h"
+#include "frame.h"
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
@@ -79,6 +80,7 @@ HRESULT CGame::Init(void)
 
 	//モデル
 	//CTestModel::Create(POS, ROT, SIZE);
+
 	// ポリゴン生成
 	//CPolygon_Test::Create(TEST_POS2, TEST_ROT2, TEST_SIZE2, TEST_COLOR2);
 

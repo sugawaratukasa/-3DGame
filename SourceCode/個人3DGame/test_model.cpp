@@ -159,6 +159,8 @@ void CTestModel::Uninit(void)
 	// モデルクラスの終了処理
 	m_pModel->Uninit();
 
+	m_pModel = NULL;
+
 	// 破棄
 	Release();
 }
@@ -221,27 +223,29 @@ void CTestModel::Move(void)
 		g_lpDIDevice->GetDeviceState(sizeof(DIJOYSTATE), &js);
 	}
 
-	// 右スティックを左に倒す
-	if (js.lZ <= -STICK_REACTION)
+	if (g_lpDIDevice != NULL)
 	{
-		move.x = MOVE_VALUE.x;
+		// 右スティックを左に倒す
+		if (js.lZ <= -STICK_REACTION)
+		{
+			move.x = MOVE_VALUE.x;
+		}
+		// 右スティックを右に倒す
+		if (js.lZ >= STICK_REACTION)
+		{
+			move.x = -MOVE_VALUE.x;
+		}
+		// 右スティックを上に倒す
+		if (js.lRz <= -STICK_REACTION)
+		{
+			move.y = MOVE_VALUE.y;
+		}
+		// 右スティックを下に倒す
+		if (js.lRz >= STICK_REACTION)
+		{
+			move.y = -MOVE_VALUE.y;
+		}
 	}
-	// 右スティックを右に倒す
-	if (js.lZ >= STICK_REACTION)
-	{
-		move.x = -MOVE_VALUE.x;
-	}
-	// 右スティックを上に倒す
-	if (js.lRz <= -STICK_REACTION)
-	{
-		move.y = MOVE_VALUE.y;
-	}
-	// 右スティックを下に倒す
-	if (js.lRz >= STICK_REACTION)
-	{
-		move.y = -MOVE_VALUE.y;
-	}
-
 	// 移動
 	m_pos.x += move.x;
 	m_pos.y += move.y;

@@ -12,6 +12,9 @@
 #include "model.h"
 #include "joystick.h"
 #include "test_model.h"
+#include "line.h"
+#include "frame.h"
+#include "block_polygon.h"
 #include "player.h"
 //******************************************************************************
 // マクロ定義
@@ -37,6 +40,13 @@
 #define BLOCK_ROT			(D3DXVECTOR3(0.0f,0.0f,0.0f))				// 箱の向き
 #define BLOCK_SIZE			(D3DXVECTOR3(50.0f,50.0f,50.0f))			// 箱のサイズ
 #define MOVE_VALUE			(D3DXVECTOR3(2.0f,2.0f,2.0f))				// 移動量
+#define LINE_ROT			(D3DXVECTOR3(0.0f,0.0f,0.0f))				// 線の向き
+#define LINE_ROT1			(D3DXVECTOR3(D3DXToRadian(90.0f),0.0f,0.0f))// 線の向き
+#define LINE_ROT2			(D3DXVECTOR3(0.0f,D3DXToRadian(90.0f),0.0f))// 線の向き
+#define LINE_ROT3			(D3DXVECTOR3(0.0f,D3DXToRadian(270.0f),0.0f))// 線の向き
+#define LINE_COLOR			(D3DXCOLOR(0.0f,0.8f,1.0f,1.0f))			// 色
+#define POLYGON_SIZE		(D3DXVECTOR3(30.0f,30.0f,30.0f))			// サイズ
+#define POLYGON_SIZE2		(D3DXVECTOR3(30.0f,30.0f,-30.0f))			// サイズ
 #define PARENT_NUMBER		(-1)										// 親の数値
 //******************************************************************************
 // 静的メンバ変数
@@ -247,7 +257,6 @@ void CPlayer::Update(void)
 	}
 	// 座標、回転、サイズのセット
 	m_pModel[0]->SetModel(m_pMotion->GetPos(0) + m_pos, m_pMotion->GetRot(0) + m_rot, m_size);
-
 }
 
 //******************************************************************************
@@ -320,16 +329,38 @@ void CPlayer::Block(void)
 		// Bボタンを押した場合
 		if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_B))
 		{
-
 			// 箱破棄
 			m_pBlock->ReleaseBox();
+
 			// NULLに
 			m_pBlock = NULL;
 		}
+		// RTを押した場合
 		if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
 		{
 			// 移動
 			m_pBlock->Move();
+		}
+		// LTを押して場合
+		if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_LT))
+		{
+			bool bP = true;
+			// 終点
+			D3DXVECTOR3 Pos = m_pBlock->GetPos();
+			if (bP == true)
+			{
+				// 四角生成
+				//CFrame::Create(Pos, LINE_ROT, POLYGON_SIZE, LINE_COLOR);
+				// 四角生成
+				//CFrame::Create(Pos, LINE_ROT1, POLYGON_SIZE2, LINE_COLOR);
+				// 四角生成
+				//CFrame::Create(Pos, LINE_ROT2, POLYGON_SIZE, LINE_COLOR);
+				// 四角生成
+				//CFrame::Create(Pos, LINE_ROT3, POLYGON_SIZE, LINE_COLOR);
+
+				CFrame::FrameCreate(Pos, POLYGON_SIZE, LINE_COLOR, m_pBlock);
+				bP = false;
+			}
 		}
 	}
 }
@@ -349,29 +380,32 @@ void CPlayer::Move(void)
 		g_lpDIDevice->GetDeviceState(sizeof(DIJOYSTATE), &js);
 	}
 
+	// 移動
 	D3DXVECTOR3 move = INIT_D3DXVECTOR3;
 
-	// 上
-	if (js.lY <= -STICK_REACTION)
+	if (g_lpDIDevice != NULL)
 	{
-		move.y = MOVE_VALUE.y;
+		// 上
+		if (js.lY <= -STICK_REACTION)
+		{
+			move.y = MOVE_VALUE.y;
+		}
+		// 下
+		if (js.lY >= STICK_REACTION)
+		{
+			move.y = -MOVE_VALUE.y;
+		}
+		// 左
+		if (js.lX <= -STICK_REACTION)
+		{
+			move.x = MOVE_VALUE.x;
+		}
+		// 右
+		if (js.lX >= STICK_REACTION)
+		{
+			move.x = -MOVE_VALUE.x;
+		}
 	}
-	// 下
-	if (js.lY >= STICK_REACTION)
-	{
-		move.y = -MOVE_VALUE.y;
-	}
-	// 左
-	if (js.lX <= -STICK_REACTION)
-	{
-		move.x = MOVE_VALUE.x;
-	}
-	//右
-	if (js.lX >= STICK_REACTION)
-	{
-		move.x = -MOVE_VALUE.x;
-	}
-
 	// 移動
 	m_pos.x += move.x;
 	m_pos.y += move.y;
