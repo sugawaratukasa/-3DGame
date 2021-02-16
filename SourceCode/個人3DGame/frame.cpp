@@ -12,7 +12,7 @@
 #include "keyboard.h"
 #include "scene.h"
 #include "scene3d.h"
-#include "test_model.h"
+#include "block.h"
 #include "frame.h"
 //******************************************************************************
 // マクロ定義
@@ -71,7 +71,7 @@ void CFrame::Unload(void)
 //******************************************************************************
 // 生成関数
 //******************************************************************************
-CFrame * CFrame::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size, D3DXCOLOR col, CTestModel *pBlock)
+CFrame * CFrame::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size, D3DXCOLOR col, CBlock *pBlock)
 {
 	// CPolygonのポインタ
 	CFrame *pFrame;
@@ -147,7 +147,7 @@ void CFrame::Draw(void)
 //******************************************************************************
 // フレーム生成
 //******************************************************************************
-void CFrame::FrameCreate(D3DXVECTOR3 pos, D3DXVECTOR3 size, D3DXCOLOR col, CTestModel *pBlock)
+void CFrame::FrameCreate(D3DXVECTOR3 pos, D3DXVECTOR3 size, D3DXCOLOR col, CBlock *pBlock)
 {
 	for (int nCnt = INIT_INT; nCnt < 2; nCnt++)
 	{

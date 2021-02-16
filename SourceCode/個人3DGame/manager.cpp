@@ -23,6 +23,7 @@
 #include "player.h"
 #include "polygon.h"
 #include "polygon_test.h"
+#include "block.h"
 #include "frame.h"
 //******************************************************************************
 // 静的メンバ変数
@@ -238,6 +239,9 @@ void CSceneManager::LoadAll(void)
 
 	// フレーム
 	CFrame::Load();
+
+	// ブロック
+	CBlock::Load();
 }
 
 //******************************************************************************
@@ -245,6 +249,9 @@ void CSceneManager::LoadAll(void)
 //******************************************************************************
 void CSceneManager::UnloadAll(void)
 {
+	// ブロック
+	CBlock::Unload();
+
 	// フレーム
 	CFrame::Unload();
 

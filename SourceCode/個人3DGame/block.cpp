@@ -10,55 +10,43 @@
 #include "manager.h"
 #include "renderer.h"
 #include "scene3d.h"
-#include "block.h"
+#include "input.h"
+#include "joystick.h"
 #include "model.h"
-
+#include "block.h"
+//******************************************************************************
+// マクロ定義
+//******************************************************************************
+#define MOVE_VALUE	(D3DXVECTOR3(2.0f,2.0f,0.0f))	// 移動量
+#define BLOCK_WOOD	("data/Model/Object/box.x")		// 木箱
+#define BLOCK_STOON	("data/Model/Object/box_2.x")	// 石の箱
 //******************************************************************************
 //静的メンバ変数
 //******************************************************************************
-LPD3DXMESH CBlock::m_pMesh = NULL;
-LPD3DXBUFFER CBlock::m_pBuffMat = NULL;
-DWORD CBlock::m_nNumMat = NULL;
-char* CBlock::m_apFileName = { "data/Model/Object/box.x" };// 箱
-LPDIRECT3DTEXTURE9 CBlock::m_pTexture[MAX_MATERIAL] = {};
+LPD3DXMESH CBlock::m_pMesh[TYPE_MAX] = {};
+LPD3DXBUFFER CBlock::m_pBuffMat[TYPE_MAX] = {};
+DWORD CBlock::m_nNumMat[TYPE_MAX] = {};
+char* CBlock::m_apFileName[TYPE_MAX] = { BLOCK_WOOD, BLOCK_STOON };// 箱
 
 //******************************************************************************
 //インクリメント
 //******************************************************************************
 CBlock::CBlock(int nPriority) :CScene(nPriority)
 {
-	m_pos = INIT_D3DXVECTOR3;
-	m_rot = INIT_D3DXVECTOR3;
-	m_size = INIT_D3DXVECTOR3;
-	m_pModel = NULL;
-	m_mtxWorld = {};
+	m_pos		= INIT_D3DXVECTOR3;
+	m_rot		= INIT_D3DXVECTOR3;
+	m_size		= INIT_D3DXVECTOR3;
+	m_pModel	= NULL;
+	m_Type		= TYPE_NONE;
+	memset(m_mtxWorld, NULL, sizeof(m_mtxWorld));
 }
+
 //******************************************************************************
 //デクリメント
 //******************************************************************************
 CBlock::~CBlock()
 {
 
-}
-//******************************************************************************
-//生成処理
-//******************************************************************************
-CBlock * CBlock::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size)
-{
-	// CBlockのポインタ
-	CBlock *pBlock;
-
-	// メモリ確保
-	pBlock = new CBlock;
-
-	// 初期化
-	pBlock->Init();
-
-	// 情報設定
-	pBlock->SetBlock(pos, rot, size);
-
-	// ポインタを返す
-	return pBlock;
 }
 
 //******************************************************************************
@@ -67,16 +55,20 @@ CBlock * CBlock::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size)
 HRESULT CBlock::Load(void)
 {
 	LPDIRECT3DDEVICE9 pDevice = CSceneManager::GetRenderer()->GetDevice();
-	// Xファイルの読み込み
-	D3DXLoadMeshFromX(m_apFileName,
-		D3DXMESH_SYSTEMMEM,
-		pDevice,
-		NULL,
-		&m_pBuffMat,
-		NULL,
-		&m_nNumMat,
-		&m_pMesh
-	);
+
+	for (int nCnt = INIT_INT; nCnt < TYPE_MAX; nCnt++)
+	{
+		// Xファイルの読み込み
+		D3DXLoadMeshFromX(m_apFileName[nCnt],
+			D3DXMESH_SYSTEMMEM,
+			pDevice,
+			NULL,
+			&m_pBuffMat[nCnt],
+			NULL,
+			&m_nNumMat[nCnt],
+			&m_pMesh[nCnt]
+		);
+	}
 	return S_OK;
 }
 //******************************************************************************
@@ -84,23 +76,24 @@ HRESULT CBlock::Load(void)
 //******************************************************************************
 void CBlock::Unload(void)
 {
-	// メッシュの破棄
-	if (m_pMesh != NULL)
+	for (int nCnt = INIT_INT; nCnt < TYPE_MAX; nCnt++)
 	{
-		m_pMesh->Release();
-		m_pMesh = NULL;
-	}
-
-	// マテリアルの破棄
-	if (m_pBuffMat != NULL)
-	{
-		m_pBuffMat->Release();
-		m_pBuffMat = NULL;
-	}
-
-	if (m_nNumMat != NULL)
-	{
-		m_nNumMat = NULL;
+		// メッシュの破棄
+		if (m_pMesh[nCnt] != NULL)
+		{
+			m_pMesh[nCnt]->Release();
+			m_pMesh[nCnt] = NULL;
+		}
+		// マテリアルの破棄
+		if (m_pBuffMat[nCnt] != NULL)
+		{
+			m_pBuffMat[nCnt]->Release();
+			m_pBuffMat[nCnt] = NULL;
+		}
+		if (m_nNumMat[nCnt] != NULL)
+		{
+			m_nNumMat[nCnt] = NULL;
+		}
 	}
 }
 
@@ -113,13 +106,7 @@ HRESULT CBlock::Init(void)
 	m_pModel = CModel::Create();
 
 	// モデルのバインド
-	m_pModel->BindModel(m_pMesh, m_pBuffMat, m_nNumMat, -1);
-
-	for (int nCntMat = INIT_INT; nCntMat < (signed)m_nNumMat; nCntMat++)
-	{
-		// テクスチャのバインド
-		m_pModel->BindTexture(m_pTexture[nCntMat], nCntMat);
-	}
+	m_pModel->BindModel(m_pMesh[m_Type], m_pBuffMat[m_Type], m_nNumMat[m_Type], -1);
 
 	return S_OK;
 }
@@ -129,9 +116,15 @@ HRESULT CBlock::Init(void)
 //******************************************************************************
 void CBlock::Uninit(void)
 {
-	// モデルクラスの終了処理
-	m_pModel->Uninit();
-	m_pModel = NULL;
+	if (m_pModel != NULL)
+	{
+		// モデルクラスの終了処理
+		m_pModel->Uninit();
+
+		m_pModel = NULL;
+	}
+	// 破棄
+	Release();
 }
 
 //******************************************************************************
@@ -139,9 +132,7 @@ void CBlock::Uninit(void)
 //******************************************************************************
 void CBlock::Update(void)
 {
-	// 設定
-	SetBlock(m_pos, m_rot, m_size);
-	CScene *pScene = NULL;
+	m_pModel->SetModel(m_pos, m_rot, m_size);
 }
 
 //******************************************************************************
@@ -153,8 +144,6 @@ void CBlock::Draw(void)
 	LPDIRECT3DDEVICE9 pDevice = CSceneManager::GetRenderer()->GetDevice();
 	D3DXMATRIX mtxRot, mtxTrans;
 
-	// ライトの効果を無効に
-	//pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 	//ワールドマトリクスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
 
@@ -171,15 +160,69 @@ void CBlock::Draw(void)
 
 	// モデルクラスの描画処理
 	m_pModel->Draw();
+}
+//******************************************************************************
+// 移動処理関数
+//******************************************************************************
+void CBlock::Move(void)
+{
+	// コントローラー取得
+	DIJOYSTATE js;
+	CInputJoystick * pInputJoystick = CSceneManager::GetInputJoystick();
+	LPDIRECTINPUTDEVICE8 g_lpDIDevice = CInputJoystick::GetDevice();
 
-	// ライトの効果を無効に
-	//pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
+	D3DXVECTOR3 move = INIT_D3DXVECTOR3;
+
+	if (g_lpDIDevice != NULL)
+	{
+		g_lpDIDevice->Poll();
+		g_lpDIDevice->GetDeviceState(sizeof(DIJOYSTATE), &js);
+	}
+
+	if (g_lpDIDevice != NULL)
+	{
+		// 右スティックを左に倒す
+		if (js.lZ <= -STICK_REACTION)
+		{
+			move.x = MOVE_VALUE.x;
+		}
+		// 右スティックを右に倒す
+		if (js.lZ >= STICK_REACTION)
+		{
+			move.x = -MOVE_VALUE.x;
+		}
+		// 右スティックを上に倒す
+		if (js.lRz <= -STICK_REACTION)
+		{
+			move.y = MOVE_VALUE.y;
+		}
+		// 右スティックを下に倒す
+		if (js.lRz >= STICK_REACTION)
+		{
+			move.y = -MOVE_VALUE.y;
+		}
+	}
+	// 移動
+	m_pos.x += move.x;
+	m_pos.y += move.y;
+}
+//******************************************************************************
+// 破棄関数
+//******************************************************************************
+void CBlock::ReleaseBlock(void)
+{
+	// 破棄
+	Uninit();
+
+	return;
 }
 //******************************************************************************
 // 情報設定
 //******************************************************************************
-void CBlock::SetBlock(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size)
+void CBlock::SetBlock(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size, TYPE type)
 {
-	m_pos = pos; m_rot = rot; m_size = size;
-	m_pModel->SetModel(m_pos, m_rot, m_size);
+	m_pos = pos;
+	m_rot = rot;
+	m_size = size;
+	m_Type = type;
 }

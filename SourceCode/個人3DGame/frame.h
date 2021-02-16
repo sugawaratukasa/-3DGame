@@ -11,7 +11,7 @@
 //******************************************************************************
 // 前方宣言
 //******************************************************************************
-class CTestModel;
+class CBlock;
 //******************************************************************************
 // クラス
 //******************************************************************************
@@ -22,14 +22,14 @@ public:
 	~CFrame();
 	static HRESULT Load(void);
 	static void Unload(void);
-	static CFrame *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size, D3DXCOLOR col, CTestModel *pBlock);
+	static CFrame *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size, D3DXCOLOR col, CBlock *pBlock);
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
-	static void FrameCreate(D3DXVECTOR3 pos, D3DXVECTOR3 size, D3DXCOLOR col, CTestModel *pBlock);
+	static void FrameCreate(D3DXVECTOR3 pos, D3DXVECTOR3 size, D3DXCOLOR col, CBlock *pBlock);
 private:
 	static LPDIRECT3DTEXTURE9 m_pTexture;		// テクスチャへのポインタ
-	CTestModel *m_pBlock;						// 箱
+	CBlock *m_pBlock;						// 箱
 };
 #endif

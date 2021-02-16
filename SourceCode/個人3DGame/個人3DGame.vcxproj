@@ -174,7 +174,9 @@
     <ClCompile Include="scene3d.cpp" />
     <ClCompile Include="sphere_particle.cpp" />
     <ClCompile Include="sphere_particle_emitter.cpp" />
+    <ClCompile Include="stone_block.cpp" />
     <ClCompile Include="test_model.cpp" />
+    <ClCompile Include="wood_block.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="billboard.h" />
@@ -207,7 +209,9 @@
     <ClInclude Include="scene3d.h" />
     <ClInclude Include="sphere_particle.h" />
     <ClInclude Include="sphere_particle_emitter.h" />
+    <ClInclude Include="stone_block.h" />
     <ClInclude Include="test_model.h" />
+    <ClInclude Include="wood_block.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

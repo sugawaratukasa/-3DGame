@@ -24,7 +24,7 @@
 LPD3DXMESH CTestModel::m_pMesh = NULL;
 LPD3DXBUFFER CTestModel::m_pBuffMat = NULL;
 DWORD CTestModel::m_nNumMat = NULL;
-char* CTestModel::m_apFileName = { "data/Model/Object/box.x" };// 箱
+char* CTestModel::m_apFileName = { "data/Model/Object/box_2.x" };// 箱
 LPDIRECT3DTEXTURE9 CTestModel::m_pTexture[MAX_MATERIAL] = {};
 
 //******************************************************************************
@@ -183,8 +183,6 @@ void CTestModel::Draw(void)
 	LPDIRECT3DDEVICE9 pDevice = CSceneManager::GetRenderer()->GetDevice();
 	D3DXMATRIX mtxRot, mtxTrans;
 
-	// ライトの効果を無効に
-	//pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 	//ワールドマトリクスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
 
@@ -201,9 +199,6 @@ void CTestModel::Draw(void)
 
 	// モデルクラスの描画処理
 	m_pModel->Draw();
-
-	// ライトの効果を無効に
-	//pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
 }
 //******************************************************************************
 // 移動処理関数

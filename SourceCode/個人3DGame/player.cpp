@@ -11,10 +11,9 @@
 #include "motion.h"
 #include "model.h"
 #include "joystick.h"
-#include "test_model.h"
-#include "line.h"
+#include "block.h"
+#include "stone_block.h"
 #include "frame.h"
-#include "block_polygon.h"
 #include "player.h"
 //******************************************************************************
 // É}ÉNÉçíËã`
@@ -139,7 +138,7 @@ HRESULT CPlayer::Load(void)
 		);
 	}
 
-	return E_NOTIMPL;
+	return S_OK;
 }
 
 //******************************************************************************
@@ -320,7 +319,7 @@ void CPlayer::Block(void)
 		if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_X))
 		{
 			// î†ê∂ê¨
-			m_pBlock = CTestModel::Create(BLOCK_POS, BLOCK_ROT, BLOCK_SIZE);
+			m_pBlock = CStone_Block::Create(BLOCK_POS, BLOCK_ROT, BLOCK_SIZE, CBlock::TYPE_STONE);
 		}
 	}
 	// NULLÇ≈Ç»Ç¢èÍçá
@@ -330,7 +329,7 @@ void CPlayer::Block(void)
 		if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_B))
 		{
 			// î†îjä¸
-			m_pBlock->ReleaseBox();
+			m_pBlock->ReleaseBlock();
 
 			// NULLÇ…
 			m_pBlock = NULL;
@@ -349,15 +348,6 @@ void CPlayer::Block(void)
 			D3DXVECTOR3 Pos = m_pBlock->GetPos();
 			if (bP == true)
 			{
-				// éläpê∂ê¨
-				//CFrame::Create(Pos, LINE_ROT, POLYGON_SIZE, LINE_COLOR);
-				// éläpê∂ê¨
-				//CFrame::Create(Pos, LINE_ROT1, POLYGON_SIZE2, LINE_COLOR);
-				// éläpê∂ê¨
-				//CFrame::Create(Pos, LINE_ROT2, POLYGON_SIZE, LINE_COLOR);
-				// éläpê∂ê¨
-				//CFrame::Create(Pos, LINE_ROT3, POLYGON_SIZE, LINE_COLOR);
-
 				CFrame::FrameCreate(Pos, POLYGON_SIZE, LINE_COLOR, m_pBlock);
 				bP = false;
 			}
