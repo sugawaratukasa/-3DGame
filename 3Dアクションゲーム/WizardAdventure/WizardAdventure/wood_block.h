@@ -19,7 +19,7 @@ class CModel;
 class CWood_Block :public CBlock
 {
 public:
-	CWood_Block(int nPriority = 5);
+	CWood_Block(int nPriority = OBJTYPE_BLOCK);
 	~CWood_Block();
 	static CWood_Block *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size, CBlock::TYPE type);
 	HRESULT Init(void);

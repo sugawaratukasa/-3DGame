@@ -9,7 +9,7 @@
 //******************************************************************************
 // コンストラクタ
 //******************************************************************************
-CWood_Block::CWood_Block(int nPriority)
+CWood_Block::CWood_Block(int nPriority) :CBlock(nPriority)
 {
 }
 //******************************************************************************
@@ -30,7 +30,7 @@ CWood_Block * CWood_Block::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 
 	pWoodBlock = new CWood_Block;
 
 	// 情報設定
-	pWoodBlock->SetBlock(pos, rot, size, type);
+	pWoodBlock->SetBlock(pos, rot, size, pWoodBlock, type);
 
 	// 初期化
 	pWoodBlock->Init();

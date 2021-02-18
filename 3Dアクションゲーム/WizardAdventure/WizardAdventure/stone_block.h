@@ -19,7 +19,7 @@
 class CStone_Block :public CBlock
 {
 public:
-	CStone_Block(int nPriority = 5);
+	CStone_Block(int nPriority = OBJTYPE_BLOCK);
 	~CStone_Block();
 	static CStone_Block *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size, CBlock::TYPE type);
 	HRESULT Init(void);

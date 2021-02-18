@@ -51,8 +51,6 @@ public:
 		OBJTYPE_BLOCK,
 		OBJTYPE_UI,
 		OBJTYPE_FADE,
-		OBJTYPE_POLYGON,
-		OBJTYPE_TEST,
 		OBJTYPE_MAX
 	}OBJTYPE;
 
@@ -86,11 +84,10 @@ private:
 	static CScene *m_pCur[OBJTYPE_MAX];	// 現在のオブジェクトへのポインタ
 	CScene *m_pPrev;					// 前のオブジェクトへのポインタ
 	CScene *m_pNext;					// 次のオブジェクトへのポインタ
-	int m_nPriority;
-	int m_nID;
-	static int m_nNext;
-	static bool m_bRelease;
-	bool m_bDeath;
-	static bool m_bUpdateStop;
+	int m_nPriority;					// 描画順
+	static int m_nNext;					// 次
+	static bool m_bRelease;				// 破棄h判定
+	bool m_bDeath;						// 死亡フラグ
+	static bool m_bUpdateStop;			// 更新停止判定
 };
 #endif // !_RENDERER_H_

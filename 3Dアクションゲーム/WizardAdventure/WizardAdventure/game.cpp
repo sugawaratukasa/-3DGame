@@ -18,6 +18,8 @@
 #include "debug_proc.h"
 #include "sphere_particle_emitter.h"
 #include "player.h"
+#include "block.h"
+#include "wood_block.h"
 #include "frame.h"
 //*****************************************************************************
 // マクロ定義
@@ -25,7 +27,7 @@
 #define PLAYER_POS	(D3DXVECTOR3(-30.0f, -50.0f, -50.0f))
 #define PLAYER_ROT	(D3DXVECTOR3(0.0f,D3DXToRadian(90.0f),0.0f))
 #define PLAYER_SIZE	(D3DXVECTOR3(50.0f,50.0f,50.0f))
-#define TEST_POS	(D3DXVECTOR3(-30.0f, 200.0f, -50.0f))
+#define TEST_POS	(D3DXVECTOR3(-30.0f, 0.0f, -50.0f))
 #define TEST_ROT	(D3DXVECTOR3(D3DXToRadian(90.0f),0.0f,0.0))
 #define TEST_SIZE	(D3DXVECTOR3(500.0f,500.0f, 500.0f))
 #define TEST_COLOR	(D3DXCOLOR(1.0f,1.0f,1.0f,1.0f))
@@ -74,6 +76,11 @@ HRESULT CGame::Init(void)
 	// プレイヤー生成
 	CPlayer::Create(PLAYER_POS, PLAYER_ROT, PLAYER_SIZE);
 
+	// ブロック
+	CWood_Block::Create(TEST_POS2, TEST_ROT, TEST_SIZE, CBlock::TYPE_WOOD);
+
+	// ブロック
+	CWood_Block::Create(TEST_POS, TEST_ROT, TEST_SIZE, CBlock::TYPE_WOOD);
 	return S_OK;
 }
 

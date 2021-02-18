@@ -152,6 +152,13 @@ void CFrame::FrameCreate(D3DXVECTOR3 pos, D3DXVECTOR3 size, D3DXCOLOR col, CBloc
 	for (int nCnt = INIT_INT; nCnt < 2; nCnt++)
 	{
 		// ¶¬
-		Create(pos, FRAME_ROT1, size, col, pBlock);.
+		Create(pos, FRAME_ROT1, size, col, pBlock);
 	}
+}
+//******************************************************************************
+// ‘I‘ð’†‚ÌF‚ÉÝ’è
+//******************************************************************************
+void CFrame::SetSelectingColor(D3DXCOLOR col)
+{
+	SetColor(col);
 }

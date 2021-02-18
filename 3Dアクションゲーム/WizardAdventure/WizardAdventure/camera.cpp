@@ -120,7 +120,7 @@ void CCamera::Update(void)
 	D3DXMatrixIdentity(&mtxProjection);
 	//プロジェクションマトリックスの作成
 	//D3DXMatrixPerspectiveFovLH(&mtxProjection, FOV_VALUE, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 10.0f, 10000.0f);
-	D3DXMatrixOrthoLH(&mtxProjection, (float)SCREEN_WIDTH / 4, (float)SCREEN_HEIGHT / 4, 10.0f, 10000.0f);
+	D3DXMatrixOrthoLH(&mtxProjection, (float)SCREEN_WIDTH / 3, (float)SCREEN_HEIGHT / 3, 10.0f, 10000.0f);
 	//プロジェクションマトリックスの設定
 	pDevice->SetTransform(D3DTS_PROJECTION, &mtxProjection);
 }

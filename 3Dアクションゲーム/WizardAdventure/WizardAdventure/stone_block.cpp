@@ -9,7 +9,7 @@
 //******************************************************************************
 // コンストラクタ
 //******************************************************************************
-CStone_Block::CStone_Block(int nPriority)
+CStone_Block::CStone_Block(int nPriority) :CBlock(nPriority)
 {
 }
 //******************************************************************************
@@ -30,7 +30,7 @@ CStone_Block * CStone_Block::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR
 	pStone_Block = new CStone_Block;
 
 	// 情報設定
-	pStone_Block->SetBlock(pos, rot, size, type);
+	pStone_Block->SetBlock(pos, rot, size, pStone_Block, type);
 
 	// 初期化
 	pStone_Block->Init();

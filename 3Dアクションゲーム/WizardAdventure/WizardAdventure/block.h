@@ -18,6 +18,7 @@
 // 前方宣言
 //******************************************************************************
 class CModel;
+class CFrame;
 //******************************************************************************
 // プレイヤークラス
 //******************************************************************************
@@ -31,7 +32,7 @@ public:
 		TYPE_STONE,
 		TYPE_MAX
 	}TYPE;
-	CBlock(int nPriority = 5);//コンストラクタ
+	CBlock(int nPriority = OBJTYPE_BLOCK);//コンストラクタ
 	~CBlock();//デストラクタ
 
 	static HRESULT Load(void);
@@ -43,7 +44,10 @@ public:
 	void Move(void);
 
 	void ReleaseBlock(void);
-	void SetBlock(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size, TYPE type);
+	void SetFrame(void);
+	void Selecting(void);
+	void UnSelected(void);
+	void SetBlock(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size, CBlock *pBlock, TYPE type);
 
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
@@ -58,6 +62,8 @@ private:
 	D3DXVECTOR3 m_rot;												// 角度
 	D3DXVECTOR3 m_size;												// 大きさ
 	CModel *m_pModel;												// モデルクラスのポインタ
+	CBlock *m_pBlock;												// ポインタ
+	CFrame *m_pFrame;												// 枠のポインタ
 	TYPE m_Type;													// 種類
 };
 

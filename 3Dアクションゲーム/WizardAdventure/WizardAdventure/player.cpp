@@ -15,6 +15,7 @@
 #include "stone_block.h"
 #include "frame.h"
 #include "player.h"
+#include "block_manager.h"
 //******************************************************************************
 // マクロ定義
 //******************************************************************************
@@ -37,15 +38,10 @@
 #define LOAD_PLAYER_TEXT	("data/MODEL/PLAYER/Motion/player.txt")		// 各モデルパーツの初期値
 #define BLOCK_POS			(D3DXVECTOR3(m_pos.x,m_pos.y + 80,m_pos.z))	// 箱生成位置
 #define BLOCK_ROT			(D3DXVECTOR3(0.0f,0.0f,0.0f))				// 箱の向き
-#define BLOCK_SIZE			(D3DXVECTOR3(50.0f,50.0f,50.0f))			// 箱のサイズ
+#define BLOCK_SIZE			(D3DXVECTOR3(30.0f,30.0f,30.0f))			// 箱のサイズ
 #define MOVE_VALUE			(D3DXVECTOR3(2.0f,2.0f,2.0f))				// 移動量
-#define LINE_ROT			(D3DXVECTOR3(0.0f,0.0f,0.0f))				// 線の向き
-#define LINE_ROT1			(D3DXVECTOR3(D3DXToRadian(90.0f),0.0f,0.0f))// 線の向き
-#define LINE_ROT2			(D3DXVECTOR3(0.0f,D3DXToRadian(90.0f),0.0f))// 線の向き
-#define LINE_ROT3			(D3DXVECTOR3(0.0f,D3DXToRadian(270.0f),0.0f))// 線の向き
-#define LINE_COLOR			(D3DXCOLOR(0.0f,0.8f,1.0f,1.0f))			// 色
-#define POLYGON_SIZE		(D3DXVECTOR3(30.0f,30.0f,30.0f))			// サイズ
-#define POLYGON_SIZE2		(D3DXVECTOR3(30.0f,30.0f,-30.0f))			// サイズ
+#define ROT					(D3DXVECTOR3(0.0f,D3DXToRadian(90.0f),0.0f))// 向き
+#define MIN_BLOCK_NUM		(0)											// ブロックの最小数
 #define PARENT_NUMBER		(-1)										// 親の数値
 //******************************************************************************
 // 静的メンバ変数
@@ -77,13 +73,15 @@ char* CPlayer::m_apFileName[MAX_PLAYER_PARTS] = {
 //******************************************************************************
 CPlayer::CPlayer(int nPriority)
 {
-	m_pos = INIT_D3DXVECTOR3;			// 場所
-	m_rot = INIT_D3DXVECTOR3;			// 角度
-	m_size = INIT_D3DXVECTOR3;			// 大きさ
-	m_bAllMotion = false;					// 全モーションの判定
-	m_pMotion = NULL;						// モーションクラスのポインタ
-	m_pBlock = NULL;						// 箱のポインタ
-	memset(m_pModel, NULL, sizeof(m_pModel));	// モデルクラスのポインタ
+	m_pos			= INIT_D3DXVECTOR3;					// 場所
+	m_rot			= INIT_D3DXVECTOR3;					// 角度
+	m_size			= INIT_D3DXVECTOR3;					// 大きさ
+	m_bAllMotion	= false;							// 全モーションの判定
+	m_pMotion		= NULL;								// モーションクラスのポインタ
+	m_pBlock		= NULL;								// 箱のポインタ
+	m_nBlockNum		= INIT_INT;							// 箱の数
+	memset(m_pAllBlock, NULL, sizeof(m_pAllBlock));		// 箱のポインタを格納する用のポインタ
+	memset(m_pModel, NULL, sizeof(m_pModel));			// モデルクラスのポインタ
 }
 
 //******************************************************************************
@@ -246,9 +244,6 @@ void CPlayer::Update(void)
 	// 移動処理
 	Move();
 
-	// 箱の処理
-	Block();
-
 	for (int nCount = INIT_INT; nCount < MAX_PLAYER_PARTS; nCount++)
 	{
 		// モデルのパーツごとの座標と回転を受け取る
@@ -256,6 +251,9 @@ void CPlayer::Update(void)
 	}
 	// 座標、回転、サイズのセット
 	m_pModel[0]->SetModel(m_pMotion->GetPos(0) + m_pos, m_pMotion->GetRot(0) + m_rot, m_size);
+
+	// 箱の処理
+	Block();
 }
 
 //******************************************************************************
@@ -298,6 +296,94 @@ void CPlayer::SetPlayer(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	m_rot = rot;
 }
 //******************************************************************************
+// 箱の選択
+//******************************************************************************
+void CPlayer::SelectBlock(void)
+{
+	// CSceneのポインタ
+	CScene *pScene = NULL;
+
+	// 箱
+	do
+	{
+		// オブジェタイプが敵の場合
+		pScene = GetScene(OBJTYPE_BLOCK);
+		if (pScene != NULL)
+		{
+			OBJTYPE objType = pScene->GetObjType();
+			if (objType == OBJTYPE_BLOCK)
+			{
+				// 座標とサイズ取得
+				D3DXVECTOR3 BlockPos = ((CBlock*)pScene)->GetPos();
+
+				// プレイヤーが正面を向いていて箱の位置が前にある場合
+				if (m_rot.y >= D3DXToRadian(ROT.y) && m_pos.x < BlockPos.x)
+				{
+					// インクリメント
+					m_nBlockNum++;
+				}
+			}
+		}
+	} while (pScene != NULL);
+
+	// 最小数に
+	m_nBlockNum = MIN_BLOCK_NUM;
+
+	// NULLに
+	CBlock **pBlock = NULL;
+
+	// NULLの場合
+	if (pBlock == NULL)
+	{
+		// メモリ確保
+		pBlock = new CBlock*[m_nBlockNum];
+		do
+		{
+			// オブジェタイプが敵の場合
+			pScene = GetScene(OBJTYPE_BLOCK);
+			if (pScene != NULL)
+			{
+				OBJTYPE objType = pScene->GetObjType();
+				if (objType == OBJTYPE_BLOCK)
+				{
+					// 座標とサイズ取得
+					D3DXVECTOR3 BlockPos = ((CBlock*)pScene)->GetPos();
+
+					// プレイヤーが正面を向いていて箱の位置が前にある場合
+					if (m_rot.y >= D3DXToRadian(ROT.y) && m_pos.x < BlockPos.x)
+					{
+						// ポインタ代入
+						pBlock[m_nBlockNum] = (CBlock*)pScene;
+
+						m_nBlockNum++;
+					}
+				}
+			}
+		} while (pScene != NULL);
+
+		// floatのポインタ
+		float *fLength = NULL;
+		// NULLの場合
+		if (fLength == NULL)
+		{
+			// メモリ確保
+			fLength = new float[m_nBlockNum];
+		}
+		// NULLでない場合
+		if (fLength != NULL)
+		{
+			// 数分回す
+			for (int nCnt = INIT_INT; nCnt < m_nBlockNum; nCnt++)
+			{
+				// 位置
+				fLength[nCnt] = powf(m_pos.x - pBlock[nCnt]->GetPos().x, 2.0f) + powf(m_pos.y - pBlock[nCnt]->GetPos().y, 2.0f);
+			}
+		}
+	}
+	// 最小数に
+	m_nBlockNum = MIN_BLOCK_NUM;
+}
+//******************************************************************************
 // ブロック処理関数
 //******************************************************************************
 void CPlayer::Block(void)
@@ -312,6 +398,7 @@ void CPlayer::Block(void)
 		g_lpDIDevice->Poll();
 		g_lpDIDevice->GetDeviceState(sizeof(DIJOYSTATE), &js);
 	}
+
 	// NULLの場合
 	if (m_pBlock == NULL)
 	{
@@ -320,11 +407,21 @@ void CPlayer::Block(void)
 		{
 			// 箱生成
 			m_pBlock = CStone_Block::Create(BLOCK_POS, BLOCK_ROT, BLOCK_SIZE, CBlock::TYPE_STONE);
+
+			// 選択中の場合
+			m_pBlock->Selecting();
 		}
 	}
 	// NULLでない場合
 	if (m_pBlock != NULL)
 	{
+
+		// RTを押した場合
+		if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
+		{
+			// 移動
+			m_pBlock->Move();
+		}
 		// Bボタンを押した場合
 		if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_B))
 		{
@@ -333,24 +430,6 @@ void CPlayer::Block(void)
 
 			// NULLに
 			m_pBlock = NULL;
-		}
-		// RTを押した場合
-		if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
-		{
-			// 移動
-			m_pBlock->Move();
-		}
-		// LTを押して場合
-		if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_LT))
-		{
-			bool bP = true;
-			// 終点
-			D3DXVECTOR3 Pos = m_pBlock->GetPos();
-			if (bP == true)
-			{
-				CFrame::FrameCreate(Pos, POLYGON_SIZE, LINE_COLOR, m_pBlock);
-				bP = false;
-			}
 		}
 	}
 }

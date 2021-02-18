@@ -15,13 +15,13 @@
 //******************************************************************************
 CModel::CModel()
 {
-	m_pMesh = NULL;
-	m_pBuffMat = NULL;
-	m_nNumMat = NULL;
-	m_pParent = NULL;
-	m_pos = INIT_D3DXVECTOR3;
-	m_rot = INIT_D3DXVECTOR3;
-	m_size = INIT_D3DXVECTOR3;
+	m_pMesh		= NULL;
+	m_pBuffMat	= NULL;
+	m_nNumMat	= NULL;
+	m_pParent	= NULL;
+	m_pos		= INIT_D3DXVECTOR3;
+	m_rot		= INIT_D3DXVECTOR3;
+	m_size		= INIT_D3DXVECTOR3;
 	m_nldxModelParent = INIT_INT;
 	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
 	memset(m_pTexture, 0, sizeof(m_pTexture));
@@ -41,10 +41,14 @@ CModel * CModel::Create()
 {
 	// CModelポインタ生成
 	CModel *pModel;
+
 	// CModel型のメモリ確保
 	pModel = new CModel;
+
 	// 初期化
 	pModel->Init();
+
+	// ポインタを返す
 	return pModel;
 }
 

@@ -153,6 +153,9 @@
     <ClCompile Include="wood_block.cpp">
       <Filter>ソース ファイル\3D\Model\Block</Filter>
     </ClCompile>
+    <ClCompile Include="block_manager.cpp">
+      <Filter>ソース ファイル\System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scene2d.h">
@@ -238,6 +241,9 @@
     </ClInclude>
     <ClInclude Include="stone_block.h">
       <Filter>ヘッダー ファイル\3D\Model\Block</Filter>
+    </ClInclude>
+    <ClInclude Include="block_manager.h">
+      <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
