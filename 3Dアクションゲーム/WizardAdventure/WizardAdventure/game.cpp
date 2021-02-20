@@ -24,16 +24,19 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define PLAYER_POS	(D3DXVECTOR3(-30.0f, -50.0f, -50.0f))
+#define PLAYER_POS	(D3DXVECTOR3(150.0f, -50.0f, -50.0f))
 #define PLAYER_ROT	(D3DXVECTOR3(0.0f,D3DXToRadian(90.0f),0.0f))
 #define PLAYER_SIZE	(D3DXVECTOR3(50.0f,50.0f,50.0f))
-#define TEST_POS	(D3DXVECTOR3(-30.0f, 0.0f, -50.0f))
-#define TEST_ROT	(D3DXVECTOR3(D3DXToRadian(90.0f),0.0f,0.0))
-#define TEST_SIZE	(D3DXVECTOR3(500.0f,500.0f, 500.0f))
+#define TEST_POS	(D3DXVECTOR3(-150.0f, 50.0f, -50.0f))
+#define TEST_ROT	(D3DXVECTOR3(0.0f,0.0f,0.0))
+#define TEST_SIZE	(D3DXVECTOR3(30.0f,30.0f, 30.0f))
 #define TEST_COLOR	(D3DXCOLOR(1.0f,1.0f,1.0f,1.0f))
-#define TEST_POS2	(D3DXVECTOR3(50.0f, 0.0f, -50.0f))
+#define TEST_POS2	(D3DXVECTOR3(-50.0f, 50.0f, -50.0f))
 #define TEST_ROT2	(D3DXVECTOR3(0.0f,0.0f,0.0f))
 #define TEST_SIZE2	(D3DXVECTOR3(30.0f, 30.0f, 30.0f))
+#define TEST_POS3	(D3DXVECTOR3(-100.0f, 50.0f, -50.0f))
+#define TEST_ROT3	(D3DXVECTOR3(0.0f,0.0f,0.0f))
+#define TEST_SIZE3	(D3DXVECTOR3(30.0f, 30.0f, 30.0f))
 #define TEST_COLOR2	(D3DXCOLOR(1.0f,1.0f,1.0f,1.0f))
 #define POS			(D3DXVECTOR3(-30.0f, 0.0f, -50.0f))
 #define ROT			(D3DXVECTOR3(0.0f,90.0f,0.0f))
@@ -80,7 +83,12 @@ HRESULT CGame::Init(void)
 	CWood_Block::Create(TEST_POS2, TEST_ROT, TEST_SIZE, CBlock::TYPE_WOOD);
 
 	// ブロック
+	CWood_Block::Create(TEST_POS3, TEST_ROT, TEST_SIZE, CBlock::TYPE_WOOD);
+
+	// ブロック
 	CWood_Block::Create(TEST_POS, TEST_ROT, TEST_SIZE, CBlock::TYPE_WOOD);
+
+	
 	return S_OK;
 }
 

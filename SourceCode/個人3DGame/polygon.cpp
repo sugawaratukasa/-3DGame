@@ -160,7 +160,7 @@ void CPolygon::Update(void)
 	SetPosition(pos);
 
 	// 当たり判定処理
-	DotCollision();
+	Collision();
 }
 //******************************************************************************
 // 描画関数
@@ -230,37 +230,37 @@ void CPolygon::DotCollision(void)
 //******************************************************************************
 void CPolygon::Collision(void)
 {
-	//// 位置座標取得
-	//D3DXVECTOR3 pos = GetPosition();
+	// 位置座標取得
+	D3DXVECTOR3 pos = GetPosition();
 
-	//// サイズ取得
-	//D3DXVECTOR3 size = GetSize();
+	// サイズ取得
+	D3DXVECTOR3 size = GetSize();
 
-	//// CScene型のポインタ
-	//CScene *pScene = NULL;
+	// CScene型のポインタ
+	CScene *pScene = NULL;
 
-	//// 敵の当たり判定
-	//do
-	//{
-	//	// オブジェタイプが敵の場合
-	//	pScene = GetScene(OBJTYPE_TEST);
-	//	if (pScene != NULL)
-	//	{
-	//		OBJTYPE objType = pScene->GetObjType();
-	//		if (objType == OBJTYPE_TEST)
-	//		{
-	//			// 座標とサイズ取得
-	//			D3DXVECTOR3 Test_Pos = ((CPolygon_Test*)pScene)->GetPosition();
-	//			D3DXVECTOR3 Test_Size = ((CPolygon_Test*)pScene)->GetSize();
+	// 敵の当たり判定
+	do
+	{
+		// オブジェタイプが敵の場合
+		pScene = GetScene(OBJTYPE_TEST);
+		if (pScene != NULL)
+		{
+			OBJTYPE objType = pScene->GetObjType();
+			if (objType == OBJTYPE_TEST)
+			{
+				// 座標とサイズ取得
+				D3DXVECTOR3 Test_Pos = ((CPolygon_Test*)pScene)->GetPosition();
+				D3DXVECTOR3 Test_Size = ((CPolygon_Test*)pScene)->GetSize();
 
-	//			if(CCollision::SphereCollision(pos, RADIUS, Test_Pos, RADIUS) == true)
-	//			{
-	//				// 位置座標設定
-	//				SetPosition(m_posOld);
+				if(CCollision::SphereCollision(pos, RADIUS, Test_Pos, RADIUS) == true)
+				{
+					// 位置座標設定
+					SetPosition(m_posOld);
 
-	//			}
+				}
 
-	//		}
-	//	}
-	//} while (pScene != NULL);
+			}
+		}
+	} while (pScene != NULL);
 }

@@ -255,6 +255,13 @@ void CBlock::UnSelected(void)
 	m_pFrame->SetSelectingColor(FRAME_COLOR1);
 }
 //******************************************************************************
+// プレイヤーが選択中の場合
+//******************************************************************************
+void CBlock::PlayerSelection(void)
+{
+	m_pFrame->SetSelectingColor(FRAME_COLOR2);
+}
+//******************************************************************************
 // 情報設定
 //******************************************************************************
 void CBlock::SetBlock(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size, CBlock *pBlock,TYPE type)

@@ -29,10 +29,27 @@ class CPlayer :public CScene
 public:
 	// モーション
 	typedef enum {
-		MOTION_IDLE = 0,	 // 待機モーション
-		MOTION_RUN,			 // 歩きモーション
-		MOTION_MAX
+		MOTION_IDLE = 0,// 待機モーション
+		MOTION_RUN,		// 歩きモーション
+		MOTION_MAX		// 最大数
 	}MOTIONSTATE;
+
+	// ブロックを用いての行動の種類
+	typedef enum
+	{
+		BLOCK_ACTIVE_NONE = 0,// ブロックを用いて行動をしていない
+		BLOCK_ACTIVE_MOVE,	  // ブロックを移動させている
+		BLOCK_ACTIVE_SELECT,  // ブロックを選択している
+		BLOCK_ACTIVE_MAX	  // 最大数
+	}BLOCK_ACTIVE;
+
+	// プレイヤーの向き
+	typedef enum
+	{
+		ROT_STATE_RIGHT = 0,// 右を向いている状態
+		ROT_STATE_LEFT,		// 左を向いている状態
+		ROT_STATE_MAX		// 最大数
+	}ROT_STATE;
 
 	CPlayer(int nPriority = CScene::OBJTYPE_PLAYER);
 	~CPlayer();
@@ -49,8 +66,10 @@ public:
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
 	D3DXVECTOR3 GetSize(void) { return m_size; }
 private:
-	void SelectBlock(void);
-	void Block(void);
+	void RightSelectBlock(void);
+	void RightBlock(void);
+	void RightSelectionBlock(void);
+	void SelectionBlockNum(void);
 	void Move(void);
 
 	static LPD3DXMESH m_pMesh[MAX_PLAYER_PARTS];		// メッシュ情報のポインタ
@@ -66,9 +85,15 @@ private:
 	bool m_bAllMotion;									// 全モーションの判定
 	CMotion *m_pMotion;									// モーションクラスのポインタ
 	CModel *m_pModel[MAX_PLAYER_PARTS];					// モデルクラスのポインタ
-	int m_nBlockNum;									// 箱の数
 	CBlock *m_pAllBlock[MAX_BLOCK];						// 箱の総数
 	CBlock *m_pBlock;									// 箱のポインタ
+	BLOCK_ACTIVE m_Blcok_Active;						// 箱を用いての移動
+	ROT_STATE m_Rot_State;								// 向きの状態
+	int m_nBlockNum;									// 箱の数
+	int m_nBlock_Select_Num;							// 箱の選択する
+	int m_nSelect_Save_Num;								// 箱の数を保存する
+	bool m_bStick;										// スティック判定
+	bool m_bRot;										// 向き
 };
 
 #endif

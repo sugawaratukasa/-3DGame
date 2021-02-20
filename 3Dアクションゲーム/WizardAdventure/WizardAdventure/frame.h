@@ -18,7 +18,7 @@ class CBlock;
 class CFrame : public CScene3d
 {
 public:
-	CFrame(int nPriority = 5);
+	CFrame(int nPriority = OBJTYPE_FRAME);
 	~CFrame();
 	static HRESULT Load(void);
 	static void Unload(void);

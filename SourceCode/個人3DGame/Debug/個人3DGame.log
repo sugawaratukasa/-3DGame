@@ -1,3 +1,4 @@
-﻿  manager.cpp
+﻿  polygon.cpp
+cl : コマンド ライン warning D9028: 簡易リビルド時のエラーです、通常のビルドに戻します
   個人3DGame.vcxproj -> C:\Users\gsp015\Desktop\個人製作3DGame\-3DGame\SourceCode\個人3DGame\Debug\個人3DGame.exe
   個人3DGame.vcxproj -> C:\Users\gsp015\Desktop\個人製作3DGame\-3DGame\SourceCode\個人3DGame\Debug\個人3DGame.pdb (Full PDB)

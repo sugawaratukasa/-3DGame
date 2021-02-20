@@ -47,6 +47,7 @@ public:
 	void SetFrame(void);
 	void Selecting(void);
 	void UnSelected(void);
+	void PlayerSelection(void);
 	void SetBlock(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size, CBlock *pBlock, TYPE type);
 
 	D3DXVECTOR3 GetPos(void) { return m_pos; }

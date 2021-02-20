@@ -42,7 +42,11 @@
 #define MOVE_VALUE			(D3DXVECTOR3(2.0f,2.0f,2.0f))				// 移動量
 #define ROT					(D3DXVECTOR3(0.0f,D3DXToRadian(90.0f),0.0f))// 向き
 #define MIN_BLOCK_NUM		(0)											// ブロックの最小数
+#define ARRAY_FIRST_NUM		(0)											// 配列の先頭
+#define ARRAY_MOVE_NUMBER	(1)											// 配列の移動
+#define ARRAY_SUB_VALUE		(1)											// 配列に合わせるための値
 #define PARENT_NUMBER		(-1)										// 親の数値
+#define POW_VALUE			(2.0f)										// 二乗
 //******************************************************************************
 // 静的メンバ変数
 //******************************************************************************
@@ -73,15 +77,19 @@ char* CPlayer::m_apFileName[MAX_PLAYER_PARTS] = {
 //******************************************************************************
 CPlayer::CPlayer(int nPriority)
 {
-	m_pos			= INIT_D3DXVECTOR3;					// 場所
-	m_rot			= INIT_D3DXVECTOR3;					// 角度
-	m_size			= INIT_D3DXVECTOR3;					// 大きさ
-	m_bAllMotion	= false;							// 全モーションの判定
-	m_pMotion		= NULL;								// モーションクラスのポインタ
-	m_pBlock		= NULL;								// 箱のポインタ
-	m_nBlockNum		= INIT_INT;							// 箱の数
-	memset(m_pAllBlock, NULL, sizeof(m_pAllBlock));		// 箱のポインタを格納する用のポインタ
-	memset(m_pModel, NULL, sizeof(m_pModel));			// モデルクラスのポインタ
+	m_pos					= INIT_D3DXVECTOR3;		// 場所
+	m_rot					= INIT_D3DXVECTOR3;		// 角度
+	m_size					= INIT_D3DXVECTOR3;		// 大きさ
+	m_bAllMotion			= false;				// 全モーションの判定
+	m_pMotion				= NULL;					// モーションクラスのポインタ
+	m_pBlock				= NULL;					// 箱のポインタ
+	m_Blcok_Active			= BLOCK_ACTIVE_NONE;	// ブロックの行動種類
+	m_nBlockNum				= INIT_INT;				// 箱の数
+	m_nBlock_Select_Num		= INIT_INT;				// 箱の選択する数
+	m_bStick				= false;				// スティック判定
+	m_Rot_State				= ROT_STATE_RIGHT;		// 左右どちらを向いているか
+	memset(m_pAllBlock, NULL, sizeof(m_pAllBlock));	// 箱のポインタを格納する用のポインタ
+	memset(m_pModel, NULL, sizeof(m_pModel));		// モデルクラスのポインタ
 }
 
 //******************************************************************************
@@ -135,7 +143,7 @@ HRESULT CPlayer::Load(void)
 			&m_pMesh[nCount]
 		);
 	}
-
+	
 	return S_OK;
 }
 
@@ -235,15 +243,45 @@ void CPlayer::Uninit(void)
 //******************************************************************************
 void CPlayer::Update(void)
 {
+	// コントローラー取得
+	CInputJoystick * pInputJoystick = CSceneManager::GetInputJoystick();
+	LPDIRECTINPUTDEVICE8 g_lpDIDevice = CInputJoystick::GetDevice();
+
+	if (g_lpDIDevice != NULL)
+	{
+		g_lpDIDevice->Poll();
+	}
+
 	// モーションの更新処理
 	m_pMotion->UpdateMotion();
 
 	// ニュートラルモーション
 	m_pMotion->SetMotion(CMotion::MOTION_IDLE);
 
+	// 右向きの場合
+	if (m_Rot_State == ROT_STATE_RIGHT)
+	{
+		if (m_Blcok_Active == BLOCK_ACTIVE_NONE)
+		{
+			// 右向きの時ブロックを最も近いブロックを選択中にする処理
+			RightSelectBlock();
+
+		}
+			// 箱の処理
+			RightBlock();
+
+		// LTを離した場合
+		if (g_lpDIDevice != NULL && pInputJoystick->GetJoystickPress(CInputJoystick::JS_LT))
+		{
+			// 箱の選択処理
+			RightSelectionBlock();
+		}
+	}
+
 	// 移動処理
 	Move();
 
+	// パーツ数分回す
 	for (int nCount = INIT_INT; nCount < MAX_PLAYER_PARTS; nCount++)
 	{
 		// モデルのパーツごとの座標と回転を受け取る
@@ -252,8 +290,6 @@ void CPlayer::Update(void)
 	// 座標、回転、サイズのセット
 	m_pModel[0]->SetModel(m_pMotion->GetPos(0) + m_pos, m_pMotion->GetRot(0) + m_rot, m_size);
 
-	// 箱の処理
-	Block();
 }
 
 //******************************************************************************
@@ -298,7 +334,7 @@ void CPlayer::SetPlayer(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 //******************************************************************************
 // 箱の選択
 //******************************************************************************
-void CPlayer::SelectBlock(void)
+void CPlayer::RightSelectBlock(void)
 {
 	// CSceneのポインタ
 	CScene *pScene = NULL;
@@ -308,76 +344,181 @@ void CPlayer::SelectBlock(void)
 	{
 		// オブジェタイプが敵の場合
 		pScene = GetScene(OBJTYPE_BLOCK);
+
+		// NULLの場合
 		if (pScene != NULL)
 		{
+			// オブジェクトタイプ取得
 			OBJTYPE objType = pScene->GetObjType();
+			// オブジェクトタイプがBLOCKの場合
 			if (objType == OBJTYPE_BLOCK)
 			{
 				// 座標とサイズ取得
 				D3DXVECTOR3 BlockPos = ((CBlock*)pScene)->GetPos();
 
 				// プレイヤーが正面を向いていて箱の位置が前にある場合
-				if (m_rot.y >= D3DXToRadian(ROT.y) && m_pos.x < BlockPos.x)
+				if (m_rot.y >= D3DXToRadian(ROT.y) && m_pos.x > BlockPos.x)
 				{
 					// インクリメント
 					m_nBlockNum++;
+				}
+				// プレイヤーが正面を向いていて箱の位置が前後ろにある場合
+				if (m_rot.y >= D3DXToRadian(ROT.y) && m_pos.x < BlockPos.x)
+				{
+					((CBlock*)pScene)->UnSelected();
 				}
 			}
 		}
 	} while (pScene != NULL);
 
-	// 最小数に
-	m_nBlockNum = MIN_BLOCK_NUM;
-
-	// NULLに
-	CBlock **pBlock = NULL;
-
-	// NULLの場合
-	if (pBlock == NULL)
+	if (m_nBlockNum > MIN_BLOCK_NUM)
 	{
-		// メモリ確保
-		pBlock = new CBlock*[m_nBlockNum];
-		do
-		{
-			// オブジェタイプが敵の場合
-			pScene = GetScene(OBJTYPE_BLOCK);
-			if (pScene != NULL)
-			{
-				OBJTYPE objType = pScene->GetObjType();
-				if (objType == OBJTYPE_BLOCK)
-				{
-					// 座標とサイズ取得
-					D3DXVECTOR3 BlockPos = ((CBlock*)pScene)->GetPos();
+		// NULLに
+		CBlock **apBlock = NULL;
 
-					// プレイヤーが正面を向いていて箱の位置が前にある場合
-					if (m_rot.y >= D3DXToRadian(ROT.y) && m_pos.x < BlockPos.x)
-					{
-						// ポインタ代入
-						pBlock[m_nBlockNum] = (CBlock*)pScene;
-
-						m_nBlockNum++;
-					}
-				}
-			}
-		} while (pScene != NULL);
-
-		// floatのポインタ
-		float *fLength = NULL;
 		// NULLの場合
-		if (fLength == NULL)
+		if (apBlock == NULL)
 		{
 			// メモリ確保
-			fLength = new float[m_nBlockNum];
-		}
-		// NULLでない場合
-		if (fLength != NULL)
-		{
-			// 数分回す
-			for (int nCnt = INIT_INT; nCnt < m_nBlockNum; nCnt++)
+			apBlock = new CBlock*[m_nBlockNum];
+
+			// 最小数に
+			m_nBlockNum = MIN_BLOCK_NUM;
+
+			// NULLでない場合
+			if (apBlock != NULL)
 			{
-				// 位置
-				fLength[nCnt] = powf(m_pos.x - pBlock[nCnt]->GetPos().x, 2.0f) + powf(m_pos.y - pBlock[nCnt]->GetPos().y, 2.0f);
+				do
+				{
+					// オブジェタイプが敵の場合
+					pScene = GetScene(OBJTYPE_BLOCK);
+					// NULLでない場合
+					if (pScene != NULL)
+					{
+						// オブジェクトタイプ取得
+						OBJTYPE objType = pScene->GetObjType();
+
+						// オブジェクトタイプがBLOCKの場合
+						if (objType == OBJTYPE_BLOCK)
+						{
+							// 座標とサイズ取得
+							D3DXVECTOR3 BlockPos = ((CBlock*)pScene)->GetPos();
+
+							// プレイヤーが右を向いていて箱の位置が前にある場合
+							if (m_rot.y >= D3DXToRadian(ROT.y) && m_pos.x > BlockPos.x)
+							{
+								// ポインタ代入
+								apBlock[m_nBlockNum] = (CBlock*)pScene;
+
+								// インクリメント
+								m_nBlockNum++;
+							}
+						}
+					}
+				} while (pScene != NULL);
+
+				// floatのポインタ
+				float *anLength = NULL;
+
+				// NULLの場合
+				if (anLength == NULL)
+				{
+					// メモリ確保
+					anLength = new float[m_nBlockNum];
+					// NULLでない場合
+					if (anLength != NULL)
+					{
+						// ブロック数分回す
+						for (int nCnt = INIT_INT; nCnt < m_nBlockNum; nCnt++)
+						{
+							// 位置座標
+							D3DXVECTOR3 BlockPos = apBlock[nCnt]->GetPos();
+							// プレイヤーとの距離
+							anLength[nCnt] = sqrtf(powf(m_pos.x - BlockPos.x, POW_VALUE) + powf(m_pos.y - BlockPos.y, POW_VALUE));
+						}
+
+						// 配列の先頭
+						int nFirst_Array;
+
+						// 最小値
+						int nMin_Length;
+
+						// 一時保存
+						float fArray_Move;
+
+						// 一時保存
+						CBlock *pBlock_Save;
+
+						// ブロック数分回す
+						for (nFirst_Array = INIT_INT; nFirst_Array < m_nBlockNum - ARRAY_MOVE_NUMBER; nFirst_Array++)
+						{
+							// 配列の先頭を最小値に
+							nMin_Length = nFirst_Array;
+
+							// 比較
+							for (int nCnt = nFirst_Array + ARRAY_MOVE_NUMBER; nCnt < m_nBlockNum; nCnt++)
+							{
+								// 距離が最小値より近い場合
+								if (anLength[nCnt] < anLength[nMin_Length])
+								{
+									// 代入
+									nMin_Length = nCnt;
+								}
+							}
+							// 先頭の配列の値をを保存
+							fArray_Move = anLength[nFirst_Array];
+							pBlock_Save = apBlock[nFirst_Array];
+
+							// 先頭の配列に最小値代入
+							anLength[nFirst_Array] = anLength[nMin_Length];
+							apBlock[nFirst_Array] = apBlock[nMin_Length];
+
+							// 最小値に元の先頭の値を代入
+							anLength[nMin_Length] = fArray_Move;
+							apBlock[nMin_Length] = pBlock_Save;
+						}
+
+						// ブロックを用いた行動をプレイヤーが行った場合
+						if (m_Blcok_Active != BLOCK_ACTIVE_NONE)
+						{
+							// 最小数に
+							m_nBlockNum = MIN_BLOCK_NUM;
+
+							// メモリ破棄
+							delete[]anLength;
+
+							// NULLに
+							anLength = NULL;
+
+							// メモリ破棄
+							delete[]apBlock;
+
+							// NULLに
+							apBlock = NULL;
+							return;
+						}
+					}
+					// メモリ破棄
+					delete[]anLength;
+
+					// NULLに
+					anLength = NULL;
+				}
+				// 配列の先頭を代入
+				m_pBlock = apBlock[ARRAY_FIRST_NUM];
+
+				// 0番目以外未選択状態に
+				for (int nCnt = INIT_INT; nCnt < m_nBlockNum; nCnt++)
+				{
+					// 未選択状態に
+					apBlock[nCnt]->UnSelected();
+				}
 			}
+			// メモリ破棄
+			delete[]apBlock;
+
+			// NULLに
+			apBlock = NULL;
 		}
 	}
 	// 最小数に
@@ -386,7 +527,7 @@ void CPlayer::SelectBlock(void)
 //******************************************************************************
 // ブロック処理関数
 //******************************************************************************
-void CPlayer::Block(void)
+void CPlayer::RightBlock(void)
 {
 	// コントローラー取得
 	DIJOYSTATE js;
@@ -399,39 +540,325 @@ void CPlayer::Block(void)
 		g_lpDIDevice->GetDeviceState(sizeof(DIJOYSTATE), &js);
 	}
 
-	// NULLの場合
-	if (m_pBlock == NULL)
-	{
-		// Xボタンを押し場合
-		if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_X))
-		{
-			// 箱生成
-			m_pBlock = CStone_Block::Create(BLOCK_POS, BLOCK_ROT, BLOCK_SIZE, CBlock::TYPE_STONE);
-
-			// 選択中の場合
-			m_pBlock->Selecting();
-		}
-	}
 	// NULLでない場合
 	if (m_pBlock != NULL)
 	{
+		// 箱の位置取得
+		D3DXVECTOR3 BlockPos = m_pBlock->GetPos();
 
-		// RTを押した場合
-		if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
+		// プレイヤーが右を向いていて箱の位置が後ろにある場合
+		if (m_rot.y >= D3DXToRadian(ROT.y) && m_pos.x < BlockPos.x)
 		{
-			// 移動
-			m_pBlock->Move();
+			// 選択外に
+			m_pBlock->UnSelected();
+
+			// ブロックを移動状態に
+			m_Blcok_Active = BLOCK_ACTIVE_NONE;
 		}
-		// Bボタンを押した場合
-		if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_B))
+		// プレイヤーが右を向いていて箱の位置が前にある場合
+		if (m_rot.y >= D3DXToRadian(ROT.y) && m_pos.x > BlockPos.x)
 		{
-			// 箱破棄
-			m_pBlock->ReleaseBlock();
+			// 選択中の場合
+			m_pBlock->Selecting();
 
-			// NULLに
-			m_pBlock = NULL;
+			// RTを押した場合
+			if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
+			{
+				// ブロックを移動状態に
+				m_Blcok_Active = BLOCK_ACTIVE_MOVE;
+
+				// ブロックの移動
+				m_pBlock->Move();
+			}
+			// RTを離した場合
+			if (pInputJoystick->GetJoystickRelease(CInputJoystick::JS_RT))
+			{
+				// ブロックを移動状態に
+				m_Blcok_Active = BLOCK_ACTIVE_NONE;
+			}
 		}
 	}
+}
+//******************************************************************************
+// 動かすブロックを選択中
+//******************************************************************************
+void CPlayer::RightSelectionBlock(void)
+{
+	// コントローラー取得
+	DIJOYSTATE js;
+	js.lY = INIT_INT;
+	js.lX = INIT_INT;
+	CInputJoystick * pInputJoystick = CSceneManager::GetInputJoystick();
+	LPDIRECTINPUTDEVICE8 g_lpDIDevice = CInputJoystick::GetDevice();
+
+	if (g_lpDIDevice != NULL)
+	{
+		g_lpDIDevice->Poll();
+		g_lpDIDevice->GetDeviceState(sizeof(DIJOYSTATE), &js);
+	}
+
+	// CSceneのポインタ
+	CScene *pScene = NULL;
+
+	// 箱
+	do
+	{
+		// オブジェタイプが敵の場合
+		pScene = GetScene(OBJTYPE_BLOCK);
+
+		// NULLの場合
+		if (pScene != NULL)
+		{
+			// オブジェクトタイプ取得
+			OBJTYPE objType = pScene->GetObjType();
+			// オブジェクトタイプがBLOCKの場合
+			if (objType == OBJTYPE_BLOCK)
+			{
+				// 座標とサイズ取得
+				D3DXVECTOR3 BlockPos = ((CBlock*)pScene)->GetPos();
+
+				// プレイヤーが正面を向いていて箱の位置が前にある場合
+				if (m_rot.y >= D3DXToRadian(ROT.y) && m_pos.x > BlockPos.x)
+				{
+					// インクリメント
+					m_nBlockNum++;
+				}
+				// プレイヤーが正面を向いていて箱の位置が前後ろにある場合
+				if (m_rot.y >= D3DXToRadian(ROT.y) && m_pos.x < BlockPos.x)
+				{
+					((CBlock*)pScene)->UnSelected();
+				}
+			}
+		}
+	} while (pScene != NULL);
+
+	if (m_nBlockNum > MIN_BLOCK_NUM)
+	{
+		// NULLに
+		CBlock **apBlock = NULL;
+
+		// NULLの場合
+		if (apBlock == NULL)
+		{
+			// メモリ確保
+			apBlock = new CBlock*[m_nBlockNum];
+
+			// 最小数に
+			m_nBlockNum = MIN_BLOCK_NUM;
+
+			// NULLでない場合
+			if (apBlock != NULL)
+			{
+				do
+				{
+					// オブジェタイプが敵の場合
+					pScene = GetScene(OBJTYPE_BLOCK);
+					// NULLでない場合
+					if (pScene != NULL)
+					{
+						// オブジェクトタイプ取得
+						OBJTYPE objType = pScene->GetObjType();
+
+						// オブジェクトタイプがBLOCKの場合
+						if (objType == OBJTYPE_BLOCK)
+						{
+							// 座標とサイズ取得
+							D3DXVECTOR3 BlockPos = ((CBlock*)pScene)->GetPos();
+
+							// プレイヤーが右を向いていて箱の位置が前にある場合
+							if (m_rot.y >= D3DXToRadian(ROT.y) && m_pos.x > BlockPos.x)
+							{
+								// ポインタ代入
+								apBlock[m_nBlockNum] = (CBlock*)pScene;
+
+								// インクリメント
+								m_nBlockNum++;
+							}
+						}
+					}
+				} while (pScene != NULL);
+
+				// floatのポインタ
+				float *anLength = NULL;
+
+				// NULLの場合
+				if (anLength == NULL)
+				{
+					// メモリ確保
+					anLength = new float[m_nBlockNum];
+					// NULLでない場合
+					if (anLength != NULL)
+					{
+						// ブロック数分回す
+						for (int nCnt = INIT_INT; nCnt < m_nBlockNum; nCnt++)
+						{
+							// 位置座標
+							D3DXVECTOR3 BlockPos = apBlock[nCnt]->GetPos();
+							// プレイヤーとの距離
+							anLength[nCnt] = sqrtf(powf(m_pos.x - BlockPos.x, POW_VALUE));
+						}
+
+						// 配列の先頭
+						int nFirst_Array;
+
+						// 最小値
+						int nMin_Length;
+
+						// 一時保存
+						float fArray_Move;
+
+						// 一時保存
+						CBlock *pBlock_Save;
+
+						// ブロック数分回す
+						for (nFirst_Array = INIT_INT; nFirst_Array < m_nBlockNum - ARRAY_MOVE_NUMBER; nFirst_Array++)
+						{
+							// 配列の先頭を最小値に
+							nMin_Length = nFirst_Array;
+
+							// 比較
+							for (int nCnt = nFirst_Array + ARRAY_MOVE_NUMBER; nCnt < m_nBlockNum; nCnt++)
+							{
+								// 距離が最小値より近い場合
+								if (anLength[nCnt] < anLength[nMin_Length])
+								{
+									// 代入
+									nMin_Length = nCnt;
+								}
+							}
+							// 先頭の配列の値をを保存
+							fArray_Move = anLength[nFirst_Array];
+							pBlock_Save = apBlock[nFirst_Array];
+
+							// 先頭の配列に最小値代入
+							anLength[nFirst_Array] = anLength[nMin_Length];
+							apBlock[nFirst_Array] = apBlock[nMin_Length];
+
+							// 最小値に元の先頭の値を代入
+							anLength[nMin_Length] = fArray_Move;
+							apBlock[nFirst_Array] = pBlock_Save;
+						}
+
+						// ブロックを用いた行動をプレイヤーが行った場合
+						if (m_Blcok_Active != BLOCK_ACTIVE_NONE)
+						{
+							// 最小数に
+							m_nBlockNum = MIN_BLOCK_NUM;
+
+							// メモリ破棄
+							delete[]anLength;
+
+							// NULLに
+							anLength = NULL;
+
+							// メモリ破棄
+							delete[]apBlock;
+
+							// NULLに
+							apBlock = NULL;
+							return;
+						}
+					}
+					// メモリ破棄
+					delete[]anLength;
+
+					// NULLに
+					anLength = NULL;
+				}
+				// 0番目以外未選択状態に
+				for (int nCnt = INIT_INT; nCnt < m_nBlockNum; nCnt++)
+				{
+					// 未選択状態に
+					apBlock[nCnt]->PlayerSelection();
+				}
+				// 色選択中の色に
+				apBlock[m_nBlock_Select_Num]->Selecting();
+
+				// 配列の先頭を代入
+				m_pBlock = apBlock[m_nBlock_Select_Num];
+			}
+			// メモリ破棄
+			delete[]apBlock;
+
+			// NULLに
+			apBlock = NULL;
+		}
+	}
+	// 数保存
+	m_nSelect_Save_Num = m_nBlockNum;
+	// 最小数に
+	m_nBlockNum = MIN_BLOCK_NUM;
+	if (g_lpDIDevice != NULL)
+	{
+		// falseの場合
+		if (m_bStick == false)
+		{
+			// 右スティックを左に倒す
+			if (js.lZ <= -STICK_REACTION)
+			{
+				// 0番目の場合
+				if (m_nBlock_Select_Num > MIN_BLOCK_NUM)
+				{
+					// デクリメント
+					m_nBlock_Select_Num--;
+				}
+				// 0番目の場合
+				if (m_nBlock_Select_Num == MIN_BLOCK_NUM)
+				{
+					// ブロックの最大値にする
+					//m_nBlock_Select_Num = m_nSelect_Save_Num - ARRAY_SUB_VALUE;
+
+					// ブロックの最大値にする
+					m_nBlock_Select_Num = MIN_BLOCK_NUM;
+				}
+
+				// trueに
+				m_bStick = true;
+			}
+			// 右スティックを右に倒す
+			if (js.lZ >= STICK_REACTION)
+			{
+				// 最大値の場合
+				if (m_nBlock_Select_Num < m_nSelect_Save_Num - ARRAY_SUB_VALUE)
+				{
+					// インクリメント
+					m_nBlock_Select_Num++;
+				}
+				// 最大値の場合
+				if (m_nBlock_Select_Num >= m_nSelect_Save_Num - ARRAY_SUB_VALUE)
+				{
+					// 0番目に設定
+					//m_nBlock_Select_Num = MIN_BLOCK_NUM;
+
+					// 0番目に設定
+					m_nBlock_Select_Num = m_nSelect_Save_Num - ARRAY_SUB_VALUE;
+				}
+
+				// trueに
+				m_bStick = true;
+			}
+		}
+		// trueの場合
+		if (m_bStick == true)
+		{
+			// -500より大きく0より小さい場合
+			if (js.lZ > -STICK_REACTION && js.lZ <= 0)
+			{
+				m_bStick = false;
+			}
+			// 500より小さく0より大きい場合
+			if (js.lZ < STICK_REACTION && js.lZ >= 0)
+			{
+				m_bStick = false;
+			}
+		}
+	}
+}
+//******************************************************************************
+// ブロックを選択する
+//******************************************************************************
+void CPlayer::SelectionBlockNum(void)
+{
 }
 //******************************************************************************
 // 移動処理関数
@@ -440,6 +867,8 @@ void CPlayer::Move(void)
 {
 	// コントローラー取得
 	DIJOYSTATE js;
+	js.lY = 0;
+	js.lX = 0;
 	CInputJoystick * pInputJoystick = CSceneManager::GetInputJoystick();
 	LPDIRECTINPUTDEVICE8 g_lpDIDevice = CInputJoystick::GetDevice();
 

@@ -84,10 +84,10 @@ HRESULT CGame::Init(void)
 	//CTestModel::Create(POS, ROT, SIZE);
 
 	// É|ÉäÉSÉìê∂ê¨
-	//CPolygon_Test::Create(TEST_POS2, TEST_ROT2, TEST_SIZE2, TEST_COLOR2);
+	CPolygon_Test::Create(TEST_POS2, TEST_ROT2, TEST_SIZE2, TEST_COLOR2);
 
 	// É|ÉäÉSÉìê∂ê¨
-	//CPolygon::Create(POS, ROT, SIZE, COLOR);
+	CPolygon::Create(POS, ROT, SIZE, COLOR);
 
 	return S_OK;
 }
