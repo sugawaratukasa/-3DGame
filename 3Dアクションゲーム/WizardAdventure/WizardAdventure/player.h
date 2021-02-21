@@ -37,10 +37,11 @@ public:
 	// ブロックを用いての行動の種類
 	typedef enum
 	{
-		BLOCK_ACTIVE_NONE = 0,// ブロックを用いて行動をしていない
-		BLOCK_ACTIVE_MOVE,	  // ブロックを移動させている
-		BLOCK_ACTIVE_SELECT,  // ブロックを選択している
-		BLOCK_ACTIVE_MAX	  // 最大数
+		BLOCK_ACTIVE_NONE = 0,	// ブロックを用いて行動をしていない状態
+		BLOCK_ACTIVE_MOVE,		// ブロックを移動させている状態
+		BLOCK_ACTIVE_SELECT,	// ブロックを選択している状態
+		BLOCK_ACTIVE_SELECTED,	// ブロックを選択した状態
+		BLOCK_ACTIVE_MAX		// 最大数
 	}BLOCK_ACTIVE;
 
 	// プレイヤーの向き
@@ -69,7 +70,6 @@ private:
 	void RightSelectBlock(void);
 	void RightBlock(void);
 	void RightSelectionBlock(void);
-	void SelectionBlockNum(void);
 	void Move(void);
 
 	static LPD3DXMESH m_pMesh[MAX_PLAYER_PARTS];		// メッシュ情報のポインタ

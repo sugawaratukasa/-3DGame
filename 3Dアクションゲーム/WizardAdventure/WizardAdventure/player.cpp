@@ -261,21 +261,26 @@ void CPlayer::Update(void)
 	// 右向きの場合
 	if (m_Rot_State == ROT_STATE_RIGHT)
 	{
-		if (m_Blcok_Active == BLOCK_ACTIVE_NONE)
+		// LTを押した場合
+		if (g_lpDIDevice != NULL && pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_LT))
 		{
-			// 右向きの時ブロックを最も近いブロックを選択中にする処理
-			RightSelectBlock();
-
+			// 選択中の状態に
+			m_Blcok_Active = BLOCK_ACTIVE_SELECT;
 		}
-			// 箱の処理
-			RightBlock();
-
-		// LTを離した場合
-		if (g_lpDIDevice != NULL && pInputJoystick->GetJoystickPress(CInputJoystick::JS_LT))
+		// 選択中の状態の場合
+		if (m_Blcok_Active == BLOCK_ACTIVE_SELECT)
 		{
 			// 箱の選択処理
 			RightSelectionBlock();
 		}
+		// ブロックで何もしていない状態
+		if (m_Blcok_Active == BLOCK_ACTIVE_NONE)
+		{
+			// 右向きの時ブロックを最も近いブロックを選択中にする処理
+			RightSelectBlock();
+		}
+		// 箱の処理
+		RightBlock();
 	}
 
 	// 移動処理
@@ -477,26 +482,6 @@ void CPlayer::RightSelectBlock(void)
 							anLength[nMin_Length] = fArray_Move;
 							apBlock[nMin_Length] = pBlock_Save;
 						}
-
-						// ブロックを用いた行動をプレイヤーが行った場合
-						if (m_Blcok_Active != BLOCK_ACTIVE_NONE)
-						{
-							// 最小数に
-							m_nBlockNum = MIN_BLOCK_NUM;
-
-							// メモリ破棄
-							delete[]anLength;
-
-							// NULLに
-							anLength = NULL;
-
-							// メモリ破棄
-							delete[]apBlock;
-
-							// NULLに
-							apBlock = NULL;
-							return;
-						}
 					}
 					// メモリ破棄
 					delete[]anLength;
@@ -504,15 +489,16 @@ void CPlayer::RightSelectBlock(void)
 					// NULLに
 					anLength = NULL;
 				}
-				// 配列の先頭を代入
-				m_pBlock = apBlock[ARRAY_FIRST_NUM];
-
 				// 0番目以外未選択状態に
 				for (int nCnt = INIT_INT; nCnt < m_nBlockNum; nCnt++)
 				{
 					// 未選択状態に
 					apBlock[nCnt]->UnSelected();
 				}
+
+				// 配列の先頭を代入
+				m_pBlock = apBlock[ARRAY_FIRST_NUM];
+
 			}
 			// メモリ破棄
 			delete[]apBlock;
@@ -564,17 +550,8 @@ void CPlayer::RightBlock(void)
 			// RTを押した場合
 			if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
 			{
-				// ブロックを移動状態に
-				m_Blcok_Active = BLOCK_ACTIVE_MOVE;
-
 				// ブロックの移動
 				m_pBlock->Move();
-			}
-			// RTを離した場合
-			if (pInputJoystick->GetJoystickRelease(CInputJoystick::JS_RT))
-			{
-				// ブロックを移動状態に
-				m_Blcok_Active = BLOCK_ACTIVE_NONE;
 			}
 		}
 	}
@@ -632,6 +609,7 @@ void CPlayer::RightSelectionBlock(void)
 		}
 	} while (pScene != NULL);
 
+	// 0より多い場合
 	if (m_nBlockNum > MIN_BLOCK_NUM)
 	{
 		// NULLに
@@ -738,26 +716,6 @@ void CPlayer::RightSelectionBlock(void)
 							anLength[nMin_Length] = fArray_Move;
 							apBlock[nFirst_Array] = pBlock_Save;
 						}
-
-						// ブロックを用いた行動をプレイヤーが行った場合
-						if (m_Blcok_Active != BLOCK_ACTIVE_NONE)
-						{
-							// 最小数に
-							m_nBlockNum = MIN_BLOCK_NUM;
-
-							// メモリ破棄
-							delete[]anLength;
-
-							// NULLに
-							anLength = NULL;
-
-							// メモリ破棄
-							delete[]apBlock;
-
-							// NULLに
-							apBlock = NULL;
-							return;
-						}
 					}
 					// メモリ破棄
 					delete[]anLength;
@@ -771,10 +729,23 @@ void CPlayer::RightSelectionBlock(void)
 					// 未選択状態に
 					apBlock[nCnt]->PlayerSelection();
 				}
+				// 選択終了状態でない場合
+				if (g_lpDIDevice != NULL && pInputJoystick->GetJoystickRelease(CInputJoystick::JS_LT))
+				{
+					// 0番目以外未選択状態に
+					for (int nCnt = INIT_INT; nCnt < m_nBlockNum; nCnt++)
+					{
+						// 選択終了の色に
+						apBlock[nCnt]->UnSelected();
+					}
+
+					// 選択した状態
+					m_Blcok_Active = BLOCK_ACTIVE_SELECTED;
+				}
 				// 色選択中の色に
 				apBlock[m_nBlock_Select_Num]->Selecting();
 
-				// 配列の先頭を代入
+				// 選択しているブロックの配列を代入
 				m_pBlock = apBlock[m_nBlock_Select_Num];
 			}
 			// メモリ破棄
@@ -784,10 +755,13 @@ void CPlayer::RightSelectionBlock(void)
 			apBlock = NULL;
 		}
 	}
+
 	// 数保存
 	m_nSelect_Save_Num = m_nBlockNum;
+
 	// 最小数に
 	m_nBlockNum = MIN_BLOCK_NUM;
+
 	if (g_lpDIDevice != NULL)
 	{
 		// falseの場合
@@ -853,12 +827,6 @@ void CPlayer::RightSelectionBlock(void)
 			}
 		}
 	}
-}
-//******************************************************************************
-// ブロックを選択する
-//******************************************************************************
-void CPlayer::SelectionBlockNum(void)
-{
 }
 //******************************************************************************
 // 移動処理関数
