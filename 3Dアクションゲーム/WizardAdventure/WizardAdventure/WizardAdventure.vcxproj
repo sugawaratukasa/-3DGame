@@ -152,6 +152,7 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="collision.cpp" />
     <ClCompile Include="debug_proc.cpp" />
+    <ClCompile Include="floor.cpp" />
     <ClCompile Include="frame.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="input.cpp" />
@@ -160,6 +161,7 @@
     <ClCompile Include="light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="manager.cpp" />
+    <ClCompile Include="map.cpp" />
     <ClCompile Include="mode.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="model_hierarchy.cpp" />
@@ -183,6 +185,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="collision.h" />
     <ClInclude Include="debug_proc.h" />
+    <ClInclude Include="floor.h" />
     <ClInclude Include="frame.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="input.h" />
@@ -191,6 +194,7 @@
     <ClInclude Include="light.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="manager.h" />
+    <ClInclude Include="map.h" />
     <ClInclude Include="mode.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="model_hierarchy.h" />

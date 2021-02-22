@@ -67,6 +67,12 @@
     <Filter Include="ソース ファイル\3D\Model\Block">
       <UniqueIdentifier>{e8b4f7cf-4c77-4a8b-830e-4ebd971258eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\3D\3DPolygon">
+      <UniqueIdentifier>{1076387a-d594-4cfb-8baa-7d0f74517504}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\3D\3DPolygon">
+      <UniqueIdentifier>{3cafc1c0-6539-44c6-b68f-9896524943c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="scene2d.cpp">
@@ -103,9 +109,6 @@
       <Filter>ソース ファイル\3D\Particle_Emitter</Filter>
     </ClCompile>
     <ClCompile Include="camera.cpp">
-      <Filter>ソース ファイル\3D</Filter>
-    </ClCompile>
-    <ClCompile Include="frame.cpp">
       <Filter>ソース ファイル\3D</Filter>
     </ClCompile>
     <ClCompile Include="light.cpp">
@@ -156,6 +159,15 @@
     <ClCompile Include="block_manager.cpp">
       <Filter>ソース ファイル\System</Filter>
     </ClCompile>
+    <ClCompile Include="floor.cpp">
+      <Filter>ソース ファイル\3D\3DPolygon</Filter>
+    </ClCompile>
+    <ClCompile Include="frame.cpp">
+      <Filter>ソース ファイル\3D\3DPolygon</Filter>
+    </ClCompile>
+    <ClCompile Include="map.cpp">
+      <Filter>ソース ファイル\3D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scene2d.h">
@@ -192,9 +204,6 @@
       <Filter>ヘッダー ファイル\3D\Particle_Emitter</Filter>
     </ClInclude>
     <ClInclude Include="camera.h">
-      <Filter>ヘッダー ファイル\3D</Filter>
-    </ClInclude>
-    <ClInclude Include="frame.h">
       <Filter>ヘッダー ファイル\3D</Filter>
     </ClInclude>
     <ClInclude Include="light.h">
@@ -244,6 +253,15 @@
     </ClInclude>
     <ClInclude Include="block_manager.h">
       <Filter>ヘッダー ファイル\System</Filter>
+    </ClInclude>
+    <ClInclude Include="floor.h">
+      <Filter>ヘッダー ファイル\3D\3DPolygon</Filter>
+    </ClInclude>
+    <ClInclude Include="frame.h">
+      <Filter>ヘッダー ファイル\3D\3DPolygon</Filter>
+    </ClInclude>
+    <ClInclude Include="map.h">
+      <Filter>ヘッダー ファイル\3D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
