@@ -100,7 +100,7 @@ CScene * CScene::GetScene(int nPriority)
 	// pScene‚ªNULL‚ÌŽž
 	if (pScene == NULL)
 	{
-		m_nNext = 0;
+		m_nNext = INIT_INT;
 	}
 	// ƒ|ƒCƒ“ƒ^‚ð•Ô‚·
 	return pScene;

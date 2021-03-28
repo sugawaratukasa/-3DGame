@@ -16,10 +16,11 @@ class CInputKeyboard;
 class CInputJoystick;
 class CDebugProc;
 class CMode;
+class CTexture;
 //******************************************************************************
 // クラス
 //******************************************************************************
-class CSceneManager
+class CManager
 {
 public:
 	typedef enum
@@ -28,8 +29,8 @@ public:
 		MODE_GAME,
 		MODE_MAX
 	}MODE;
-	CSceneManager();
-	~CSceneManager();
+	CManager();
+	~CManager();
 	HRESULT Init(HINSTANCE hInstance, HWND hWnd, bool bWindouw);
 	void Uninit(void);
 	void Update(void);
@@ -46,6 +47,7 @@ public:
 	static CLight *GetLight(void) { return m_pLight; }
 	static CInputKeyboard *GetInputKeyboard(void) { return m_pKeyboard; }
 	static CInputJoystick *GetInputJoystick(void) { return m_pJoystick; }
+	static CTexture *GetTexture(void) { return m_pTexture; }
 private:
 	static CRenderer *m_pRenderer;			//レンダラー
 	static CCamera *m_pCamera;				//カメラ
@@ -54,6 +56,7 @@ private:
 	static CInputJoystick *m_pJoystick;		// コントローラー
 	static CDebugProc *m_pDebugProc;		// デバッグプロシージャ
 	static CMode *m_pMode;					// モード
+	static CTexture *m_pTexture;			// テクスチャ
 	int m_nCountFPS;						// FPSの値
 	MODE m_Mode;							// モード
 };

@@ -35,7 +35,7 @@ CFloor::~CFloor()
 HRESULT CFloor::Load(void)
 {
 	// レンダラー取得
-	LPDIRECT3DDEVICE9 pDevice = CSceneManager::GetRenderer()->GetDevice();
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	// テクスチャ読み込み
 	D3DXCreateTextureFromFile(pDevice, FLOOR_TEX, &m_pTexture);

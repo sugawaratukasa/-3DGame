@@ -23,8 +23,8 @@ CModel::CModel()
 	m_rot		= INIT_D3DXVECTOR3;
 	m_size		= INIT_D3DXVECTOR3;
 	m_nldxModelParent = INIT_INT;
-	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
-	memset(m_pTexture, 0, sizeof(m_pTexture));
+	memset(m_mtxWorld, NULL, sizeof(m_mtxWorld));
+	memset(m_pTexture, NULL, sizeof(m_pTexture));
 }
 //******************************************************************************
 //デクリメント
@@ -66,15 +66,19 @@ HRESULT CModel::Init()
 void CModel::Uninit(void)
 {
 	// メッシュをNULLに
-	m_pMesh = NULL;
+	m_pMesh	= NULL;
+
 	// バッファをNULLに
 	m_pBuffMat = NULL;
+
 	// マテリアルをNULLに
 	m_nNumMat = NULL;
-	// ワールド座標を0クリア
-	memset(m_mtxWorld, NULL, sizeof(m_mtxWorld));
+
 	// 親をNULLに
 	m_pParent = NULL;
+
+	// ワールド座標を0クリア
+	memset(m_mtxWorld, NULL, sizeof(m_mtxWorld));
 }
 
 //******************************************************************************
@@ -91,7 +95,7 @@ void CModel::Update(void)
 void CModel::Draw(void)
 {
 
-	LPDIRECT3DDEVICE9 pDevice = CSceneManager::GetRenderer()->GetDevice();
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 	D3DXMATRIX mtxRot, mtxTrans;
 	D3DMATERIAL9 matDef;
 	D3DXMATERIAL*pMat;

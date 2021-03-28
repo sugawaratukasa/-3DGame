@@ -14,38 +14,28 @@
 #include "joystick.h"
 #include "model.h"
 #include "frame.h"
+#include "collision.h"
 #include "block.h"
-#include "block_manager.h"
+#include "3d_obj.h"
 //******************************************************************************
 // マクロ定義
 //******************************************************************************
-#define MOVE_VALUE		(D3DXVECTOR3(2.0f,2.0f,0.0f))		// 移動量
-#define FRAME_COLOR1	(D3DXCOLOR(1.0f,1.0f,1.0f,0.0f))	// 枠の色
-#define FRAME_COLOR2	(D3DXCOLOR(1.0f,1.0f,1.0f,1.0f))	// 枠の色
-#define FRAME_COLOR3	(D3DXCOLOR(0.0f,0.8f,1.0f,1.0f))	// 枠の色
-#define BLOCK_WOOD		("data/Model/Object/box.x")			// 木箱
-#define BLOCK_STOON		("data/Model/Object/box_2.x")		// 石の箱
-//******************************************************************************
-//静的メンバ変数
-//******************************************************************************
-LPD3DXMESH CBlock::m_pMesh[TYPE_MAX] = {};
-LPD3DXBUFFER CBlock::m_pBuffMat[TYPE_MAX] = {};
-DWORD CBlock::m_nNumMat[TYPE_MAX] = {};
-char* CBlock::m_apFileName[TYPE_MAX] = { BLOCK_WOOD, BLOCK_STOON };// 箱
-
+#define MOVE_VALUE		(D3DXVECTOR3(2.0f,2.0f,0.0f))						// 移動量
+#define FRAME_COLOR1	(D3DXCOLOR(1.0f,1.0f,1.0f,0.0f))					// 枠の色
+#define FRAME_COLOR2	(D3DXCOLOR(1.0f,1.0f,1.0f,1.0f))					// 枠の色
+#define FRAME_COLOR3	(D3DXCOLOR(0.0f,0.8f,1.0f,1.0f))					// 枠の色
+#define FRAME_ROT1		(D3DXVECTOR3(0.0f,D3DXToRadian(180.0f),0.0f))		// 枠の向き
+#define MIN_MOVE_VALUE	(0)													// 移動量の最小値
+#define DEVIDE_VALUE	(2.0f)													// 割る数
 //******************************************************************************
 // コンストラクタ
 //******************************************************************************
-CBlock::CBlock(int nPriority) :CScene(nPriority)
+CBlock::CBlock(int nPriority) :C3D_Obj(nPriority)
 {
-	m_pos		= INIT_D3DXVECTOR3;
-	m_rot		= INIT_D3DXVECTOR3;
-	m_size		= INIT_D3DXVECTOR3;
-	m_pModel	= NULL;
+	m_posOld	= INIT_D3DXVECTOR3;
+	m_move		= INIT_D3DXVECTOR3;
 	m_pBlock	= NULL;
 	m_pFrame	= NULL;
-	m_Type		= TYPE_NONE;
-	memset(m_mtxWorld, NULL, sizeof(m_mtxWorld));
 }
 
 //******************************************************************************
@@ -57,66 +47,12 @@ CBlock::~CBlock()
 }
 
 //******************************************************************************
-// モデルの読み込み
-//******************************************************************************
-HRESULT CBlock::Load(void)
-{
-	LPDIRECT3DDEVICE9 pDevice = CSceneManager::GetRenderer()->GetDevice();
-
-	for (int nCnt = INIT_INT; nCnt < TYPE_MAX; nCnt++)
-	{
-		// Xファイルの読み込み
-		D3DXLoadMeshFromX(m_apFileName[nCnt],
-			D3DXMESH_SYSTEMMEM,
-			pDevice,
-			NULL,
-			&m_pBuffMat[nCnt],
-			NULL,
-			&m_nNumMat[nCnt],
-			&m_pMesh[nCnt]
-		);
-	}
-	return S_OK;
-}
-//******************************************************************************
-// モデルの破棄
-//******************************************************************************
-void CBlock::Unload(void)
-{
-	for (int nCnt = INIT_INT; nCnt < TYPE_MAX; nCnt++)
-	{
-		// メッシュの破棄
-		if (m_pMesh[nCnt] != NULL)
-		{
-			m_pMesh[nCnt]->Release();
-			m_pMesh[nCnt] = NULL;
-		}
-		// マテリアルの破棄
-		if (m_pBuffMat[nCnt] != NULL)
-		{
-			m_pBuffMat[nCnt]->Release();
-			m_pBuffMat[nCnt] = NULL;
-		}
-		if (m_nNumMat[nCnt] != NULL)
-		{
-			m_nNumMat[nCnt] = NULL;
-		}
-	}
-}
-
-//******************************************************************************
 // 初期化処理
 //******************************************************************************
 HRESULT CBlock::Init(void)
 {
-	// モデルの生成
-	m_pModel = CModel::Create();
-
-	// モデルのバインド
-	m_pModel->BindModel(m_pMesh[m_Type], m_pBuffMat[m_Type], m_nNumMat[m_Type], -1);
-
-	// 情報設定
-	m_pModel->SetModel(m_pos, m_rot, m_size);
+	// 初期化
+	C3D_Obj::Init();
 
 	// 枠を生成
 	SetFrame();
@@ -129,16 +65,8 @@ HRESULT CBlock::Init(void)
 //******************************************************************************
 void CBlock::Uninit(void)
 {
-	if (m_pModel != NULL)
-	{
-		// モデルクラスの終了処理
-		m_pModel->Uninit();
-
-		m_pModel = NULL;
-	}
-
-	// 破棄
-	Release();
+	// 終了
+	C3D_Obj::Uninit();
 }
 
 //******************************************************************************
@@ -146,6 +74,23 @@ void CBlock::Uninit(void)
 //******************************************************************************
 void CBlock::Update(void)
 {
+	// 1フレーム前の
+	D3DXVECTOR3 posOld = GetPos();
+
+	// 更新
+	C3D_Obj::Update();
+
+	// サイズ取得
+	D3DXVECTOR3 size = GetSize();
+
+	// 位置取得
+	D3DXVECTOR3 pos = GetPos();
+
+	// 位置設定
+	SetPos(pos);
+
+	// 当たり判定
+	Collision(pos, posOld, size);
 }
 
 //******************************************************************************
@@ -153,75 +98,71 @@ void CBlock::Update(void)
 //******************************************************************************
 void CBlock::Draw(void)
 {
-	//レンダラー取得
-	LPDIRECT3DDEVICE9 pDevice = CSceneManager::GetRenderer()->GetDevice();
-	D3DXMATRIX mtxRot, mtxTrans;
-
-	//ワールドマトリクスの初期化
-	D3DXMatrixIdentity(&m_mtxWorld);
-
-	//向きを反映
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
-
-	//位置を反映
-	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
-
-	//ワールドマトリックスの設定
-	m_pModel->SetWorldMatrix(m_mtxWorld);
-
-	// モデルクラスの描画処理
-	m_pModel->Draw();
+	// 描画
+	C3D_Obj::Draw();
 }
 //******************************************************************************
 // 移動処理関数
 //******************************************************************************
 void CBlock::Move(void)
 {
-		// コントローラー取得
-		DIJOYSTATE js;
-		CInputJoystick * pInputJoystick = CSceneManager::GetInputJoystick();
-		LPDIRECTINPUTDEVICE8 g_lpDIDevice = CInputJoystick::GetDevice();
+	// コントローラー取得
+	DIJOYSTATE js;
+	js.lZ = NULL;
+	js.lRz = NULL;
+	CInputJoystick * pInputJoystick = CManager::GetInputJoystick();
+	LPDIRECTINPUTDEVICE8 g_lpDIDevice = CInputJoystick::GetDevice();
 
-		D3DXVECTOR3 move = INIT_D3DXVECTOR3;
+	// 位置
+	D3DXVECTOR3 pos = GetPos();
 
-		if (g_lpDIDevice != NULL)
+	if (g_lpDIDevice != NULL)
+	{
+		g_lpDIDevice->Poll();
+		g_lpDIDevice->GetDeviceState(sizeof(DIJOYSTATE), &js);
+	}
+
+	if (g_lpDIDevice != NULL)
+	{
+		// スティックの範囲外の場合
+		if (js.lZ > -STICK_REACTION && js.lZ < STICK_REACTION)
 		{
-			g_lpDIDevice->Poll();
-			g_lpDIDevice->GetDeviceState(sizeof(DIJOYSTATE), &js);
+			// 移動量0
+			m_move.y = MIN_MOVE_VALUE;
 		}
-
-		if (g_lpDIDevice != NULL)
+		if (js.lRz > -STICK_REACTION && js.lRz < STICK_REACTION)
 		{
-			// 右スティックを左に倒す
-			if (js.lZ <= -STICK_REACTION)
-			{
-				move.x = MOVE_VALUE.x;
-			}
-			// 右スティックを右に倒す
-			if (js.lZ >= STICK_REACTION)
-			{
-				move.x = -MOVE_VALUE.x;
-			}
-			// 右スティックを上に倒す
-			if (js.lRz <= -STICK_REACTION)
-			{
-				move.y = MOVE_VALUE.y;
-			}
-			// 右スティックを下に倒す
-			if (js.lRz >= STICK_REACTION)
-			{
-				move.y = -MOVE_VALUE.y;
-			}
+			// 移動量0
+			m_move.x = MIN_MOVE_VALUE;
 		}
+		// 右スティックを左に倒す
+		if (js.lZ <= -STICK_REACTION)
+		{
+			m_move.x = -MOVE_VALUE.x;
+		}
+		// 右スティックを右に倒す
+		if (js.lZ >= STICK_REACTION)
+		{
+			m_move.x = MOVE_VALUE.x;
+		}
+		// 右スティックを上に倒す
+		if (js.lRz <= -STICK_REACTION)
+		{
+			m_move.y = MOVE_VALUE.y;
+		}
+		// 右スティックを下に倒す
+		if (js.lRz >= STICK_REACTION)
+		{
+			m_move.y = -MOVE_VALUE.y;
+		}
+	}
 
-		// 移動
-		m_pos.x += move.x;
-		m_pos.y += move.y;
+	// 移動
+	pos.x += m_move.x;
+	pos.y += m_move.y;
 
-		// 位置更新
-		m_pModel->SetModel(m_pos, m_rot, m_size);
+	// 位置設定
+	SetPos(pos);
 }
 //******************************************************************************
 // 破棄関数
@@ -238,7 +179,12 @@ void CBlock::ReleaseBlock(void)
 //******************************************************************************
 void CBlock::SetFrame(void)
 {
-	m_pFrame = CFrame::Create(m_pos, m_rot, m_size, FRAME_COLOR1, m_pBlock);
+	// 位置
+	D3DXVECTOR3 pos	= GetPos();
+	D3DXVECTOR3 size = GetSize();
+
+	// フレーム生成
+	m_pFrame = CFrame::Create(pos, FRAME_ROT1, size, FRAME_COLOR1, m_pBlock);
 }
 //******************************************************************************
 // 選択されている場合
@@ -264,14 +210,142 @@ void CBlock::PlayerSelection(void)
 //******************************************************************************
 // 情報設定
 //******************************************************************************
-void CBlock::SetBlock(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size, CBlock *pBlock,TYPE type)
+void CBlock::SetBlock(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size, TYPE type, CBlock *pBlock)
 {
-	m_pos = pos;
-	m_rot = rot;
-	m_size = size;
+	SetModel(pos, rot, size, type);
 	m_pBlock = pBlock;
-	m_Type = type;
 
 	// オブジェタイプをブロックに設定
 	SetObjType(OBJTYPE_BLOCK);
+}
+//******************************************************************************
+// 当たり判定
+//******************************************************************************
+void CBlock::Collision(D3DXVECTOR3 pos, D3DXVECTOR3 posOld, D3DXVECTOR3 size)
+{
+	// ブロックとの当たり判定
+	CScene *pScene = NULL;
+	do
+	{
+		// オブジェタイプがブロックの場合
+		pScene = GetScene(OBJTYPE_BLOCK);
+
+		// NULLチェック
+		if (pScene != NULL)
+		{
+			// オブジェタイプ取得
+			OBJTYPE objType = pScene->GetObjType();
+
+			// オブジェクトタイプが敵
+			if (objType == OBJTYPE_BLOCK)
+			{
+				// 座標とサイズ取得
+				D3DXVECTOR3 BlockPos = ((CBlock*)pScene)->GetPos();
+				D3DXVECTOR3 BlockSize = ((CBlock*)pScene)->GetSize();
+
+				// どこの面に当たったか
+				//下
+				if (CCollision::RectangleCollisionMove(pos, posOld, size, BlockPos, BlockSize) == CCollision::SURFACE_DOWN)
+				{
+					// 位置
+					pos.y = (-size.y / DEVIDE_VALUE) + (BlockPos.y - BlockSize.y / DEVIDE_VALUE);
+
+					// 移動量0
+					m_move.y = MIN_MOVE_VALUE;
+				}
+				// 上
+				else if (CCollision::RectangleCollisionMove(pos, posOld, size, BlockPos, BlockSize) == CCollision::SURFACE_UP)
+				{
+					// 位置
+					pos.y = (size.y / DEVIDE_VALUE) + (BlockPos.y + BlockSize.y / DEVIDE_VALUE);
+
+					// 移動量0
+					m_move.y = MIN_MOVE_VALUE;
+				}
+				// 右
+				else if (CCollision::RectangleCollisionMove(pos, posOld, size, BlockPos, BlockSize) == CCollision::SURFACE_RIGHT)
+				{
+					// 位置
+					pos.x = (size.x / DEVIDE_VALUE) + (BlockPos.x + BlockSize.x / DEVIDE_VALUE);
+
+					// 移動量0
+					m_move.x = MIN_MOVE_VALUE;
+
+				}
+				// 左
+				else if (CCollision::RectangleCollisionMove(pos, posOld, size, BlockPos, BlockSize) == CCollision::SURFACE_LEFT)
+				{
+					// 位置
+					pos.x = (-size.x / DEVIDE_VALUE) + (BlockPos.x - BlockSize.x / DEVIDE_VALUE);
+
+					// 移動量0
+					m_move.x = MIN_MOVE_VALUE;
+				}
+			}
+		}
+	} while (pScene != NULL);
+
+	// マップオブジェクトの当たり判定
+	do
+	{
+		// オブジェタイプがブロックの場合
+		pScene = GetScene(OBJTYPE_MAP_OBJ);
+
+		// NULLチェック
+		if (pScene != NULL)
+		{
+			// オブジェタイプ取得
+			OBJTYPE objType = pScene->GetObjType();
+
+			// オブジェクトタイプが敵
+			if (objType == OBJTYPE_MAP_OBJ)
+			{
+				// 座標とサイズ取得
+				D3DXVECTOR3 ObjPos = ((C3D_Obj*)pScene)->GetPos();
+				D3DXVECTOR3 ObjSize = ((C3D_Obj*)pScene)->GetSize();
+
+				// どこの面に当たったか
+				//下
+				if (CCollision::RectangleCollisionMove(pos, posOld, size, ObjPos, ObjSize) == CCollision::SURFACE_DOWN)
+				{
+					// 位置
+					pos.y = (-size.y / DEVIDE_VALUE) + (ObjPos.y - ObjSize.y / DEVIDE_VALUE);
+
+					// 移動量0
+					m_move.y = MIN_MOVE_VALUE;
+				}
+				// 上
+				else if (CCollision::RectangleCollisionMove(pos, posOld, size, ObjPos, ObjSize) == CCollision::SURFACE_UP)
+				{
+					// 位置
+					pos.y = (size.y / DEVIDE_VALUE) + (ObjPos.y + ObjSize.y / DEVIDE_VALUE);
+
+					// 移動量0
+					m_move.y = MIN_MOVE_VALUE;
+				}
+				// 右
+				else if (CCollision::RectangleCollisionMove(pos, posOld, size, ObjPos, ObjSize) == CCollision::SURFACE_RIGHT)
+				{
+					// 位置
+					pos.x = (size.x / DEVIDE_VALUE) + (ObjPos.x + ObjSize.x / DEVIDE_VALUE);
+
+					// 移動量0
+					m_move.x = MIN_MOVE_VALUE;
+
+				}
+				// 左
+				else if (CCollision::RectangleCollisionMove(pos, posOld, size, ObjPos, ObjSize) == CCollision::SURFACE_LEFT)
+				{
+					// 位置
+					pos.x = (-size.x / DEVIDE_VALUE) + (ObjPos.x - ObjSize.x / DEVIDE_VALUE);
+
+					// 移動量0
+					m_move.x = MIN_MOVE_VALUE;
+				}
+			}
+		}
+	} while (pScene != NULL);
+
+	// 位置設定
+	SetPos(pos);
 }

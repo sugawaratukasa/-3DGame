@@ -47,7 +47,7 @@ CFrame::~CFrame()
 HRESULT CFrame::Load(void)
 {
 	// レンダラー取得
-	LPDIRECT3DDEVICE9 pDevice = CSceneManager::GetRenderer()->GetDevice();
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	// テクスチャ読み込み
 	D3DXCreateTextureFromFile(pDevice, "data/Texture/frame.png", &m_pTexture);
@@ -132,7 +132,7 @@ void CFrame::Update(void)
 void CFrame::Draw(void)
 {
 	// レンダラー取得
-	LPDIRECT3DDEVICE9 pDevice = CSceneManager::GetRenderer()->GetDevice();
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	// 加算合成の設定
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);

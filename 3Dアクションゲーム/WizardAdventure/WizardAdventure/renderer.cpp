@@ -109,6 +109,16 @@ HRESULT CRenderer::Init(HWND hWnd, bool bWindow)
 	m_pD3Decvice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
 	m_pD3Decvice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
 
+	//環境光
+	D3DMATERIAL9 material;
+	ZeroMemory(&material, sizeof(D3DMATERIAL9));
+	material.Ambient.r = 1.0f;
+	material.Ambient.g = 1.0f;
+	material.Ambient.b = 1.0f;
+	material.Ambient.a = 1.0f;
+	m_pD3Decvice->SetMaterial(&material);
+	m_pD3Decvice->SetRenderState(D3DRS_AMBIENT, 0x44444444);
+
 #ifdef _DEBUG
 	// デバッグ情報表示用フォントの生成
 	D3DXCreateFont(m_pD3Decvice, 18, 0, 0, 0, FALSE, SHIFTJIS_CHARSET,

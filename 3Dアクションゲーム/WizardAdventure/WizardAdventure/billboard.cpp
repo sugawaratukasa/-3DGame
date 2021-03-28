@@ -47,7 +47,7 @@ CBillboard::~CBillboard()
 HRESULT CBillboard::Init(void)
 {
 	// レンダラー取得
-	LPDIRECT3DDEVICE9 pDevice = CSceneManager::GetRenderer()->GetDevice();
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	// 頂点バッファの生成
 	if (FAILED(pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * NUM_VERTEX,	// 頂点データ用に確保するバッファサイズ(バイト単位)
@@ -150,11 +150,11 @@ void CBillboard::Update(void)
 void CBillboard::Draw(void)
 {
 	// レンダラー取得
-	LPDIRECT3DDEVICE9 pDevice = CSceneManager::GetRenderer()->GetDevice();
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 	D3DXMATRIX mtxRot, mtxTrans; //行列計算用のマトリクス
 
-								 //ライト無効
-	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
+	//ライト無効
+	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 
 	// アルファテスト
 	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);

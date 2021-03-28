@@ -42,7 +42,7 @@ HRESULT CScene2D::Init(void)
 	m_color = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
 	LPDIRECT3DDEVICE9 pDevice;
-	pDevice = CSceneManager::GetRenderer()->GetDevice();
+	pDevice = CManager::GetRenderer()->GetDevice();
 
 	// 頂点バッファの生成
 	if (FAILED(pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * NUM_VERTEX * MAX_POLYGON,	// 頂点データ用に確保するバッファサイズ(バイト単位)
@@ -180,7 +180,7 @@ void CScene2D::Update(void)
 void CScene2D::Draw(void)
 {
 	LPDIRECT3DDEVICE9 pDevice;
-	pDevice = CSceneManager::GetRenderer()->GetDevice();
+	pDevice = CManager::GetRenderer()->GetDevice();
 
 	//アルファテストを有効化
 	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);

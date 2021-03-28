@@ -16,7 +16,6 @@
 //*****************************************************************************
 #define CLASS_NAME		"AppClass"			// ウインドウのクラス名
 #define WINDOW_NAME		"魂首領"			// ウインドウのキャプション名
-#define DIRECTINPUT_VERSION 0x800
 #define	_CRT_SECURE_NO_WARNINGS				//scanfエラー
 //*****************************************************************************
 // プロトタイプ宣言
@@ -76,10 +75,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		hInstance,
 		NULL);
 
-	CSceneManager *pManager = NULL;
+	CManager *pManager = NULL;
 	if (pManager == NULL)
 	{
-		pManager = new CSceneManager;
+		pManager = new CManager;
 		if (pManager != NULL)
 		{
 			pManager->Init(hInstance, hWnd, TRUE);

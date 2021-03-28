@@ -17,8 +17,8 @@
 #define VECU_VALUE			(D3DXVECTOR3(0.0f,1.0f,0.0f))	// vecu値
 #define ROT_VALUE			(D3DXToRadian(1.0f))			// カメラの球面座標の移動
 #define PHI_VALUE			(D3DXToRadian(90.0f))			// phi値
-#define THETA_VALUE			(D3DXToRadian(90.0f))			// theta値
-#define DISTANCE_VALUE		(100.0f)						// 距離
+#define THETA_VALUE			(D3DXToRadian(270.0f))			// theta値
+#define DISTANCE_VALUE		(500.0f)						// 距離
 #define FOV_VALUE			(45.0f)							// 視野角
 #define MAX_DRAW_DISTANCE	(5000.0f)						// 最大描画距離
 #define MIN_DRAW_DISTANCE	(10.0f)							// 最小描画距離
@@ -28,11 +28,11 @@
 //******************************************************************************
 CCamera::CCamera()
 {
-	posV = INIT_D3DXVECTOR3;
-	posR = INIT_D3DXVECTOR3;
-	vecU = INIT_D3DXVECTOR3;
-	m_fPhi = INIT_FLOAT;
-	m_fTheta = INIT_FLOAT;
+	posV		= INIT_D3DXVECTOR3;
+	posR		= INIT_D3DXVECTOR3;
+	vecU		= INIT_D3DXVECTOR3;
+	m_fPhi		= INIT_FLOAT;
+	m_fTheta	= INIT_FLOAT;
 	memset(mtxProjection, NULL, sizeof(mtxProjection));
 	memset(mtxView, NULL, sizeof(mtxView));
 }
@@ -50,11 +50,11 @@ CCamera::~CCamera()
 //******************************************************************************
 void CCamera::Init(void)
 {
-	posV = INIT_D3DXVECTOR3;
-	posR = INIT_D3DXVECTOR3;
-	vecU = VECU_VALUE;
-	m_fPhi = PHI_VALUE;
-	m_fTheta = THETA_VALUE;
+	posV		= INIT_D3DXVECTOR3;
+	posR		= INIT_D3DXVECTOR3;
+	vecU		= VECU_VALUE;
+	m_fPhi		= PHI_VALUE;
+	m_fTheta	= THETA_VALUE;
 	memset(mtxProjection, NULL, sizeof(mtxProjection));
 	memset(mtxView, NULL, sizeof(mtxView));
 }
@@ -73,9 +73,9 @@ void CCamera::Uninit(void)
 void CCamera::Update(void)
 {
 	//デバイスの取得
-	LPDIRECT3DDEVICE9 pDevice = CSceneManager::GetRenderer()->GetDevice();
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 	//キーボードの取得
-	CInputKeyboard *pKeyborad = CSceneManager::GetInputKeyboard();
+	CInputKeyboard *pKeyborad = CManager::GetInputKeyboard();
 
 	// 右回転
 	if (pKeyborad->GetKeyPress(DIK_D))
@@ -121,7 +121,7 @@ void CCamera::Update(void)
 	//プロジェクションマトリックスの初期化
 	D3DXMatrixIdentity(&mtxProjection);
 	//プロジェクションマトリックスの作成
-	D3DXMatrixPerspectiveFovLH(&mtxProjection, FOV_VALUE, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 10.0f, 10000.0f);
+	D3DXMatrixPerspectiveFovLH(&mtxProjection, FOV_VALUE, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, MIN_DRAW_DISTANCE, MAX_DRAW_DISTANCE);
 	//D3DXMatrixOrthoLH(&mtxProjection, (float)SCREEN_WIDTH / DEVIDE_VALUE, (float)SCREEN_HEIGHT / DEVIDE_VALUE, MIN_DRAW_DISTANCE, MAX_DRAW_DISTANCE);
 	//プロジェクションマトリックスの設定
 	pDevice->SetTransform(D3DTS_PROJECTION, &mtxProjection);

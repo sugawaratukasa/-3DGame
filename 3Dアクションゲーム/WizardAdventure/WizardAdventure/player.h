@@ -27,10 +27,33 @@ class CBlock;
 class CPlayer :public CScene
 {
 public:
+	// プレイヤーパーツ
+	typedef enum
+	{
+		PARTS_UNDER_BODY = 0,
+		PARTS_BODY,
+		PARTS_HEAD,
+		PARTS_SHOULDER_R,
+		PARTS_UP_ARM_R,
+		PARTS_DOWN_ARM_R,
+		PARTS_SHOULDER_L,
+		PARTS_UP_ARM_L,
+		PARTS_DOWN_ARM_L,
+		PARTS_THIGTS_R,
+		PARTS_KNEE_R,
+		PARTS_FOOT_R,
+		PARTS_THIGTS_L,
+		PARTS_KNEE_L,
+		PARTS_FOOT_L,
+		PARTS_MAX
+	}PLAYER_PARTS;
+
 	// モーション
 	typedef enum {
 		MOTION_IDLE = 0,// 待機モーション
 		MOTION_RUN,		// 歩きモーション
+		MOTION_JUMP,	// ジャンプモーション
+		MOTION_LANDING,	// 着地モーション
 		MOTION_MAX		// 最大数
 	}MOTIONSTATE;
 
@@ -61,31 +84,41 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
-	void SetPlayer(D3DXVECTOR3 pos, D3DXVECTOR3 rot);
+	void SetPlayer(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size);
+
+	void SetPos(D3DXVECTOR3 pos);
 
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
+	D3DXVECTOR3 GetPosOld(void) { return m_posOld; }
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
 	D3DXVECTOR3 GetSize(void) { return m_size; }
 private:
 	void RightSelectBlock(void);
 	void RightBlock(void);
 	void RightSelectionBlock(void);
+
+	void LeftSelectBlock(void);
+	void LeftBlock(void);
+	void LeftSelectionBlock(void);
+
+	void Collision(void);
 	void Move(void);
 
-	static LPD3DXMESH m_pMesh[MAX_PLAYER_PARTS];		// メッシュ情報のポインタ
-	static LPD3DXBUFFER m_pBuffMat[MAX_PLAYER_PARTS];	// マテリアル情報のポインタ
-	static DWORD m_nNumMat[MAX_PLAYER_PARTS];			// マテリアル情報の数
-	static D3DXMATRIX m_mtxWorld[MAX_PLAYER_PARTS];		// 行列計算用
-	static int m_nldxModelParent[MAX_PLAYER_PARTS];		// 親モデルのインデックス
-	static char* m_apFileName[MAX_PLAYER_PARTS];		// ファイルの名前
-	static char* m_apTextureFileName[MAX_PLAYER_PARTS];	// テクスチャのファイルの名前
-	D3DXVECTOR3 m_pos;									// 場所
+	static LPD3DXMESH m_pMesh[PARTS_MAX];				// メッシュ情報のポインタ
+	static LPD3DXBUFFER m_pBuffMat[PARTS_MAX];			// マテリアル情報のポインタ
+	static DWORD m_nNumMat[PARTS_MAX];					// マテリアル情報の数
+	static D3DXMATRIX m_mtxWorld[PARTS_MAX];			// 行列計算用
+	static int m_nldxModelParent[PARTS_MAX];			// 親モデルのインデックス
+	static char* m_apFileName[PARTS_MAX];				// ファイルの名前
+	static char* m_apTextureFileName[PARTS_MAX];		// テクスチャのファイルの名前
+	D3DXVECTOR3 m_pos;									// 位置
+	D3DXVECTOR3 m_posOld;								// 古い位置
 	D3DXVECTOR3 m_rot;									// 角度
 	D3DXVECTOR3 m_size;									// 大きさ
+	D3DXVECTOR3 m_move;									// 移動量
 	bool m_bAllMotion;									// 全モーションの判定
 	CMotion *m_pMotion;									// モーションクラスのポインタ
-	CModel *m_pModel[MAX_PLAYER_PARTS];					// モデルクラスのポインタ
-	CBlock *m_pAllBlock[MAX_BLOCK];						// 箱の総数
+	CModel *m_pModel[PARTS_MAX];						// モデルクラスのポインタ
 	CBlock *m_pBlock;									// 箱のポインタ
 	BLOCK_ACTIVE m_Blcok_Active;						// 箱を用いての移動
 	ROT_STATE m_Rot_State;								// 向きの状態

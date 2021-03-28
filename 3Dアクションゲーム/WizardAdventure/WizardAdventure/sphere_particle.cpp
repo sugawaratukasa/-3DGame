@@ -21,7 +21,7 @@
 //******************************************************************************
 CSphere_Particle::CSphere_Particle(int nPrirority)
 {
-	m_move = INIT_D3DXVECTOR3;
+	m_move		= INIT_D3DXVECTOR3;
 	m_fMinScale = INIT_FLOAT;
 	m_fMinColor = INIT_FLOAT;
 }
@@ -138,7 +138,7 @@ void CSphere_Particle::Update(void)
 void CSphere_Particle::Draw(void)
 {
 	// ƒŒƒ“ƒ_ƒ‰[Žæ“¾
-	LPDIRECT3DDEVICE9 pDevice = CSceneManager::GetRenderer()->GetDevice();
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	// ‰ÁŽZ‡¬‚ÌÝ’è
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);

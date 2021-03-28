@@ -42,7 +42,7 @@ void CDebugProc::Init(void)
 {
 	LPDIRECT3DDEVICE9 pDevice;
 
-	pDevice = CSceneManager::GetRenderer()->GetDevice();
+	pDevice = CManager::GetRenderer()->GetDevice();
 	// デバッグ情報表示用フォントの生成
 	D3DXCreateFont(pDevice, 18, 0, 0, 0, FALSE, SHIFTJIS_CHARSET,
 		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "Terminal", &m_pFont);

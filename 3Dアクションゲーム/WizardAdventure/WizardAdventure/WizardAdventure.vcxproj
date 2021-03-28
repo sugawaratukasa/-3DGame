@@ -148,7 +148,6 @@
   <ItemGroup>
     <ClCompile Include="billboard.cpp" />
     <ClCompile Include="block.cpp" />
-    <ClCompile Include="block_manager.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="collision.cpp" />
     <ClCompile Include="debug_proc.cpp" />
@@ -166,22 +165,24 @@
     <ClCompile Include="model.cpp" />
     <ClCompile Include="model_hierarchy.cpp" />
     <ClCompile Include="motion.cpp" />
+    <ClCompile Include="3d_obj.cpp" />
+    <ClCompile Include="floor_block.cpp" />
+    <ClCompile Include="needle_block.cpp" />
     <ClCompile Include="particle.cpp" />
+    <ClCompile Include="particle_effect.cpp" />
     <ClCompile Include="particle_emitter.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="scene2d.cpp" />
     <ClCompile Include="scene3d.cpp" />
-    <ClCompile Include="sphere_particle.cpp" />
-    <ClCompile Include="sphere_particle_emitter.cpp" />
     <ClCompile Include="stone_block.cpp" />
+    <ClCompile Include="texture.cpp" />
     <ClCompile Include="wood_block.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="billboard.h" />
     <ClInclude Include="block.h" />
-    <ClInclude Include="block_manager.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="collision.h" />
     <ClInclude Include="debug_proc.h" />
@@ -199,16 +200,19 @@
     <ClInclude Include="model.h" />
     <ClInclude Include="model_hierarchy.h" />
     <ClInclude Include="motion.h" />
+    <ClInclude Include="3d_obj.h" />
+    <ClInclude Include="floor_block.h" />
+    <ClInclude Include="needle_block.h" />
     <ClInclude Include="particle.h" />
+    <ClInclude Include="particle_effect.h" />
     <ClInclude Include="particle_emitter.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="scene2d.h" />
     <ClInclude Include="scene3d.h" />
-    <ClInclude Include="sphere_particle.h" />
-    <ClInclude Include="sphere_particle_emitter.h" />
     <ClInclude Include="stone_block.h" />
+    <ClInclude Include="texture.h" />
     <ClInclude Include="wood_block.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

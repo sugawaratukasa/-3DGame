@@ -23,21 +23,23 @@
 #include "block.h"
 #include "frame.h"
 #include "floor.h"
+#include "3d_obj.h"
+#include "texture.h"
 //******************************************************************************
 // 静的メンバ変数
 //******************************************************************************
-CRenderer *CSceneManager::m_pRenderer = NULL;
-CCamera *CSceneManager::m_pCamera = NULL;
-CLight *CSceneManager::m_pLight = NULL;
-CInputKeyboard *CSceneManager::m_pKeyboard = NULL;
-CInputJoystick *CSceneManager::m_pJoystick = NULL;
-CDebugProc *CSceneManager::m_pDebugProc = NULL;
-CMode *CSceneManager::m_pMode = NULL;
-
+CRenderer *CManager::m_pRenderer = NULL;
+CCamera *CManager::m_pCamera = NULL;
+CLight *CManager::m_pLight = NULL;
+CInputKeyboard *CManager::m_pKeyboard = NULL;
+CInputJoystick *CManager::m_pJoystick = NULL;
+CDebugProc *CManager::m_pDebugProc = NULL;
+CMode *CManager::m_pMode = NULL;
+CTexture *CManager::m_pTexture = NULL;
 //******************************************************************************
 //コンストラクタ
 //******************************************************************************
-CSceneManager::CSceneManager()
+CManager::CManager()
 {
 
 }
@@ -45,7 +47,7 @@ CSceneManager::CSceneManager()
 //******************************************************************************
 //デストラクタ
 //******************************************************************************
-CSceneManager::~CSceneManager()
+CManager::~CManager()
 {
 
 }
@@ -53,7 +55,7 @@ CSceneManager::~CSceneManager()
 //******************************************************************************
 //初期化処理
 //******************************************************************************
-HRESULT CSceneManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindouw)
+HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindouw)
 {
 
 	//クラス生成と初期化	
@@ -99,6 +101,19 @@ HRESULT CSceneManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindouw)
 			m_pDebugProc->Init();
 		}
 	}
+	// テクスチャ
+	if (m_pTexture == NULL)
+	{
+		// メモリ確保
+		m_pTexture = new CTexture;
+
+		// NULLでない場合
+		if (m_pTexture != NULL)
+		{
+			// 初期化
+			m_pTexture->Init();
+		}
+	}
 	//テクスチャの読み込み
 	LoadAll();
 
@@ -110,11 +125,26 @@ HRESULT CSceneManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindouw)
 //******************************************************************************
 //終了処理
 //******************************************************************************
-void CSceneManager::Uninit(void)
+void CManager::Uninit(void)
 {
+	// 全破棄
 	CScene::ReleaseAll();
+
 	//テクスチャの破棄
 	UnloadAll();
+
+	// テクスチャの終了
+	if (m_pTexture != NULL)
+	{
+		// 終了
+		m_pTexture->Uninit();
+
+		// メモリ開放
+		delete m_pTexture;
+
+		// NULLに
+		m_pTexture = NULL;
+	}
 	// モードの終了
 	if (m_pMode != NULL)
 	{
@@ -168,7 +198,7 @@ void CSceneManager::Uninit(void)
 //******************************************************************************
 // 更新処理
 //******************************************************************************
-void CSceneManager::Update(void)
+void CManager::Update(void)
 {
 	if (m_pRenderer != NULL)
 	{
@@ -200,7 +230,7 @@ void CSceneManager::Update(void)
 //******************************************************************************
 // 描画処理
 //******************************************************************************
-void CSceneManager::Draw(void)
+void CManager::Draw(void)
 {
 	if (m_pRenderer != NULL)
 	{
@@ -218,49 +248,43 @@ void CSceneManager::Draw(void)
 //******************************************************************************
 // テクスチャの読み込みまとめ
 //******************************************************************************
-void CSceneManager::LoadAll(void)
+void CManager::LoadAll(void)
 {
-	// テクスチャ読み込み
-	CParticle::Load();
-
 	// プレイヤーモデル読み込み
 	CPlayer::Load();
 
 	// フレーム
 	CFrame::Load();
 
-	// ブロック
-	CBlock::Load();
-
 	// 床
 	CFloor::Load();
+
+	// 3Dオブジェクト
+	C3D_Obj::Load();
 }
 
 //******************************************************************************
 // テクスチャの破棄まとめ
 //******************************************************************************
-void CSceneManager::UnloadAll(void)
+void CManager::UnloadAll(void)
 {
+	// 3Dオブジェクト
+	C3D_Obj::Unload();
+
 	// 床
 	CFloor::Unload();
-
-	// ブロック
-	CBlock::Unload();
 
 	// フレーム
 	CFrame::Unload();
 
 	// プレイヤーモデル破棄
 	CPlayer::Unload();
-
-	// テクスチャ破棄
-	CParticle::Unload();
 }
 
 //******************************************************************************
 // カメラの生成
 //******************************************************************************
-void CSceneManager::CreateCamera(void)
+void CManager::CreateCamera(void)
 {
 	if (m_pCamera == NULL)
 	{
@@ -277,7 +301,7 @@ void CSceneManager::CreateCamera(void)
 //******************************************************************************
 // ライトの生成
 //******************************************************************************
-void CSceneManager::CreateLight(void)
+void CManager::CreateLight(void)
 {
 	if (m_pLight == NULL)
 	{
@@ -293,7 +317,7 @@ void CSceneManager::CreateLight(void)
 //******************************************************************************
 // モードの設定
 //******************************************************************************
-void CSceneManager::SetMode(MODE mode)
+void CManager::SetMode(MODE mode)
 {
 	if (m_pMode != NULL)
 	{

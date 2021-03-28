@@ -21,7 +21,7 @@ CWood_Block::~CWood_Block()
 //******************************************************************************
 // ¶¬ŠÖ”
 //******************************************************************************
-CWood_Block * CWood_Block::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size, CBlock::TYPE type)
+CWood_Block * CWood_Block::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size)
 {
 	// ƒ|ƒCƒ“ƒ^
 	CWood_Block *pWoodBlock;
@@ -30,7 +30,7 @@ CWood_Block * CWood_Block::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 
 	pWoodBlock = new CWood_Block;
 
 	// î•ñÝ’è
-	pWoodBlock->SetBlock(pos, rot, size, pWoodBlock, type);
+	pWoodBlock->SetBlock(pos, rot, size, C3D_Obj::TYPE_WOOD, pWoodBlock);
 
 	// ‰Šú‰»
 	pWoodBlock->Init();

@@ -51,6 +51,7 @@ public:
 		OBJTYPE_BLOCK,
 		OBJTYPE_FRAME,
 		OBJTYPE_FLOOR,
+		OBJTYPE_MAP_OBJ,
 		OBJTYPE_UI,
 		OBJTYPE_FADE,
 		OBJTYPE_MAX
@@ -92,4 +93,4 @@ private:
 	bool m_bDeath;						// 死亡フラグ
 	static bool m_bUpdateStop;			// 更新停止判定
 };
-#endif // !_RENDERER_H_
+#endif

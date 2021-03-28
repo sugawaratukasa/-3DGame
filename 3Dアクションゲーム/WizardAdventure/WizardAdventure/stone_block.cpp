@@ -21,7 +21,7 @@ CStone_Block::~CStone_Block()
 //******************************************************************************
 // ¶¬ŠÖ”
 //******************************************************************************
-CStone_Block * CStone_Block::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size, CBlock::TYPE type)
+CStone_Block * CStone_Block::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size)
 {
 	// ƒ|ƒCƒ“ƒ^
 	CStone_Block *pStone_Block;
@@ -30,7 +30,7 @@ CStone_Block * CStone_Block::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR
 	pStone_Block = new CStone_Block;
 
 	// î•ñÝ’è
-	pStone_Block->SetBlock(pos, rot, size, pStone_Block, type);
+	pStone_Block->SetBlock(pos, rot, size, C3D_Obj::TYPE_STONE, pStone_Block);
 
 	// ‰Šú‰»
 	pStone_Block->Init();

@@ -68,7 +68,7 @@ void CModelhierarchy::Update(void)
 //******************************************************************************
 void CModelhierarchy::Draw(void)
 {
-	LPDIRECT3DDEVICE9 pDevice = CSceneManager::GetRenderer()->GetDevice();
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 	D3DXMATRIX mtxRot, mtxTrans;
 	D3DMATERIAL9 matDef;
 	D3DXMATERIAL*pMat;

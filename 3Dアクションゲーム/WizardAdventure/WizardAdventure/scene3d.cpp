@@ -55,7 +55,7 @@ HRESULT CScene3d::Init(void)
 	// 拡大率を1.0fに設定
 	m_fScale = SCALE_VALUE;
 
-	LPDIRECT3DDEVICE9 pDevice = CSceneManager::GetRenderer()->GetDevice();
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	// 頂点バッファの生成
 	if (FAILED(pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * NUM_VERTEX * MAX_POLYGON,	// 頂点データ用に確保するバッファサイズ(バイト単位)
@@ -164,7 +164,7 @@ void CScene3d::Update(void)
 //******************************************************************************
 void CScene3d::Draw(void)
 {
-	LPDIRECT3DDEVICE9 pDevice = CSceneManager::GetRenderer()->GetDevice();
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	D3DXMATRIX mtxRot, mtxTrans;
 

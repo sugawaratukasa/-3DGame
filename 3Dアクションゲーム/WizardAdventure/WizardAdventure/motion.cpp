@@ -138,9 +138,9 @@ void CMotion::LoadMotion(const char *cText)
 	int  nCntLoad = INIT_INT;		// 読み込んだカウント
 	int	 nCntKey = INIT_INT;		// キーの数のカウント
 	int	 nCntMotion = INIT_INT;		// モーションの数のカウント
-	char cReedText[NUM_TEXT];	// 文字として読み取り用
-	char cHeadText[NUM_TEXT];	// 文字の判別用
-	char cDie[NUM_TEXT];		// 使わない文字
+	char cReedText[NUM_TEXT];		// 文字として読み取り用
+	char cHeadText[NUM_TEXT];		// 文字の判別用
+	char cDie[NUM_TEXT];			// 使わない文字
 
 								// ファイルを開く
 	pFile = fopen(cText, "r");
@@ -183,7 +183,7 @@ void CMotion::LoadMotion(const char *cText)
 						if (strcmp(cHeadText, "LOOP") == INIT_INT)
 						{
 							// m_nLoopにループをするか格納
-							sscanf(cReedText, "%s %s %d", &cDie, &cDie, &m_motion[nCntMotion].m_nLoop);
+							sscanf(cReedText, "%s %s %d", &cDie, &cDie, (int*)&m_motion[nCntMotion].m_nLoop);
 						}
 
 						// cHeadTextがNUM_KEYだったら
@@ -231,7 +231,7 @@ void CMotion::LoadMotion(const char *cText)
 												&m_motion[nCntMotion].m_KeyInfo[nCntKey].m_pos[nCntLoad].z);
 										}
 										// cHeadTextがROTだったら
-										if (strcmp(cHeadText, "ROT") == 0)
+										if (strcmp(cHeadText, "ROT") == INIT_INT)
 										{
 											// m_rotに回転を格納
 											sscanf(cReedText, "%s %s %f %f %f", &cDie, &cDie,
@@ -393,15 +393,6 @@ void CMotion::UpdateMotion(void)
 			m_NumPos[nCntMotion] = ((m_motion[m_motionState].m_KeyInfo[m_nCntKey].m_pos[nCntMotion] -
 				(m_modelParent[nCntMotion].m_pos - m_modelParent[nCntMotion].m_posOrigin))
 				/ float(m_motion[m_motionState].m_KeyInfo[m_nCntKey].m_nFrame));
-			//m_NumPos[nCntMotion].x = ((m_motion[m_motionState].m_KeyInfo[m_nCntKey].m_pos[nCntMotion].x -
-			//	(m_modelParent[nCntMotion].m_pos.x - m_modelParent[nCntMotion].m_posOrigin.x)) 
-			//	/ float(m_motion[m_motionState].m_KeyInfo[m_nCntKey].m_nFrame));
-			//m_NumPos[nCntMotion].y = ((m_motion[m_motionState].m_KeyInfo[m_nCntKey].m_pos[nCntMotion].y -
-			//	(m_modelParent[nCntMotion].m_pos.y - m_modelParent[nCntMotion].m_posOrigin.y)) 
-			//	/ float(m_motion[m_motionState].m_KeyInfo[m_nCntKey].m_nFrame));
-			//m_NumPos[nCntMotion].z = ((m_motion[m_motionState].m_KeyInfo[m_nCntKey].m_pos[nCntMotion].z -
-			//	(m_modelParent[nCntMotion].m_pos.z - m_modelParent[nCntMotion].m_posOrigin.z)) 
-			//	/ float(m_motion[m_motionState].m_KeyInfo[m_nCntKey].m_nFrame));
 
 			m_NumRotDest[nCntMotion] =
 				m_motion[m_motionState].m_KeyInfo[m_nCntKey].m_rot[nCntMotion] - m_modelParent[nCntMotion].m_rot;

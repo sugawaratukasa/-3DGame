@@ -19,18 +19,27 @@ public:
 	void Update(void);
 	void Draw(void);
 
+	//*********************************************
+	// セッター
+	//*********************************************
 	void SetPosition(D3DXVECTOR3 pos);
-	D3DXVECTOR3 GetPosition(void) { return m_pos; }
 	void SetRotation(D3DXVECTOR3 rot);
 	void SetSize(D3DXVECTOR3 size);
 	void SetColor(D3DXCOLOR col);
-	D3DXCOLOR GetColor(void) { return m_col; }
 	void SetTexture(float fTexX, float fTexY, float fTexX2, float fTexY2);
 	void SetScale(float fScale);
+	void SetAlpha(int nAlpha);
+	//*********************************************
+	// ゲッター
+	//*********************************************
+	D3DXVECTOR3 GetPosition(void) { return m_pos; }
+	D3DXVECTOR3 GetRotation(void) { return m_rot; }
+	D3DXVECTOR3 GetSize(void) { return m_size; }
+	D3DXCOLOR GetColor(void) { return m_col; }
 	float GetScale(void) { return m_fScale; }
 
 	void BindTexture(LPDIRECT3DTEXTURE9 pTexture);
-	void SetAlpha(int nAlpha);
+	
 private:
 	LPDIRECT3DTEXTURE9		m_pTexture;		// テクスチャへのポインタ
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;		// 頂点バッファへのポインタ

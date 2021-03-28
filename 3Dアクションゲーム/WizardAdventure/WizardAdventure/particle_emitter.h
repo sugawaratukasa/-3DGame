@@ -16,14 +16,17 @@ class CParticle_Emitter : public CScene
 {
 public:
 	CParticle_Emitter();
-	virtual ~CParticle_Emitter();
-	virtual HRESULT Init(void) = 0;
-	virtual void Uninit(void) = 0;
-	virtual void Update(void) = 0;
-	virtual void Draw(void) = 0;
-	void SetPosition(D3DXVECTOR3 pos);
-	D3DXVECTOR3 GetPosition(void) { return m_pos; }
+	~CParticle_Emitter();
+	static CParticle_Emitter *Create(D3DXVECTOR3 pos);
+	HRESULT Init(void);
+	void Uninit(void);
+	void Update(void);
+	void Draw(void);
+	void Release(void);
 private:
-	D3DXVECTOR3 m_pos;	// 位置座標
+	void Load(const char *cText);
+	D3DXVECTOR3 m_pos;			// 位置座標
+	int m_nCount;				// 間隔
+	int m_nCreateCount;			// 生成カウント
 };
 #endif

@@ -7,16 +7,20 @@
 //******************************************************************************
 #include "collision.h"
 //******************************************************************************
+// マクロ定義
+//******************************************************************************
+#define DEVIDE_VALUE	(2)	// 割る数
+//******************************************************************************
 // 立方体の当たり判定
 //******************************************************************************
 bool CCollision::RectangleCollision(D3DXVECTOR3 pPos1, D3DXVECTOR3 size1, D3DXVECTOR3 pPos2, D3DXVECTOR3 size2)
 {
 	bool bHit = false;
 
-	D3DXVECTOR3 box1Max = D3DXVECTOR3(size1.x / 2, size1.y, size1.z / 2) + pPos1;          //ぶつかる側の最大値
-	D3DXVECTOR3 box1Min = D3DXVECTOR3(-size1.x / 2, -size1.y, -size1.z / 2) + pPos1;       //ぶつかる側の最小値
-	D3DXVECTOR3 box2Max = D3DXVECTOR3(size2.x / 2, size2.y / 2, size2.z / 2) + pPos2;      //ぶつかられる側の最大値
-	D3DXVECTOR3 box2Min = D3DXVECTOR3(-size2.x / 2, -size2.y / 2, -size2.z / 2) + pPos2;   //ぶつかられる側の最小値
+	D3DXVECTOR3 box1Max = D3DXVECTOR3(size1.x / DEVIDE_VALUE, size1.y / DEVIDE_VALUE, size1.z / DEVIDE_VALUE) + pPos1;          //ぶつかる側の最大値
+	D3DXVECTOR3 box1Min = D3DXVECTOR3(-size1.x / DEVIDE_VALUE, -size1.y / DEVIDE_VALUE, -size1.z / DEVIDE_VALUE) + pPos1;       //ぶつかる側の最小値
+	D3DXVECTOR3 box2Max = D3DXVECTOR3(size2.x / DEVIDE_VALUE, size2.y / DEVIDE_VALUE, size2.z / DEVIDE_VALUE) + pPos2;      //ぶつかられる側の最大値
+	D3DXVECTOR3 box2Min = D3DXVECTOR3(-size2.x / DEVIDE_VALUE, -size2.y / DEVIDE_VALUE, -size2.z / DEVIDE_VALUE) + pPos2;   //ぶつかられる側の最小値
 
 	if (box1Max.y > box2Min.y&&
 		box1Min.y < box2Max.y&&
@@ -44,4 +48,52 @@ bool CCollision::SphereCollision(D3DXVECTOR3 pos1, float size1, D3DXVECTOR3 pos2
 
 	// めり込んでいるか
 	return (distance < radius);
+}
+//******************************************************************************
+// 立方体の当たり判定
+//******************************************************************************
+int CCollision::RectangleCollisionMove(D3DXVECTOR3 pPos1, D3DXVECTOR3 pPosOld, D3DXVECTOR3 size1, D3DXVECTOR3 pPos2, D3DXVECTOR3 size2)
+{
+	int nSurFace = 0;
+
+	D3DXVECTOR3 box1Max = D3DXVECTOR3(size1.x / DEVIDE_VALUE, size1.y / DEVIDE_VALUE, size1.z / DEVIDE_VALUE) + pPos1;
+	D3DXVECTOR3 box1Min = D3DXVECTOR3(-size1.x / DEVIDE_VALUE, -size1.y / DEVIDE_VALUE, -size1.z / DEVIDE_VALUE) + pPos1;
+	D3DXVECTOR3 box2Max = D3DXVECTOR3(size2.x / DEVIDE_VALUE, size2.y / DEVIDE_VALUE, size2.z / DEVIDE_VALUE) + pPos2;
+	D3DXVECTOR3 box2Min = D3DXVECTOR3(-size2.x / DEVIDE_VALUE, -size2.y / DEVIDE_VALUE, -size2.z / DEVIDE_VALUE) + pPos2;
+
+	if (box1Max.y > box2Min.y &&	// 下
+		box1Min.y < box2Max.y &&	// 上
+		box1Max.x > box2Min.x &&	// 右から
+		box1Min.x < box2Max.x &&	// 左から
+		box1Max.z > box2Min.z &&	// 奥から
+		box1Min.z < box2Max.z)		// 手前
+	{
+		
+		// 下
+		if (box1Max.y > box2Min.y && pPosOld.y <= box2Min.y)
+		{
+			// 下
+			nSurFace = SURFACE_DOWN;
+		}
+		// 上
+		else if (box1Min.y < box2Max.y && pPosOld.y >= box2Max.y)
+		{
+			// 上
+			nSurFace = SURFACE_UP;
+		}
+		// 左
+		else if (box1Max.x > box2Min.x && pPosOld.x <= box2Min.x)
+		{
+			// 左
+			nSurFace = SURFACE_LEFT;
+		}
+		// 右
+		else if (box1Min.x < box2Max.x && pPosOld.x >= box2Max.x)
+		{
+			// 右
+			nSurFace = SURFACE_RIGHT;
+		}
+	}
+	// 当たった面を返す
+	return nSurFace;
 }
