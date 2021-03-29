@@ -148,12 +148,15 @@
   <ItemGroup>
     <ClCompile Include="billboard.cpp" />
     <ClCompile Include="block.cpp" />
+    <ClCompile Include="button.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="collision.cpp" />
     <ClCompile Include="debug_proc.cpp" />
     <ClCompile Include="floor.cpp" />
     <ClCompile Include="frame.cpp" />
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="gate.cpp" />
+    <ClCompile Include="gate_roof.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="joystick.cpp" />
     <ClCompile Include="keyboard.cpp" />
@@ -177,18 +180,21 @@
     <ClCompile Include="scene2d.cpp" />
     <ClCompile Include="scene3d.cpp" />
     <ClCompile Include="stone_block.cpp" />
-    <ClCompile Include="texture.cpp" />
+    <ClCompile Include="particle_texture.cpp" />
     <ClCompile Include="wood_block.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="billboard.h" />
     <ClInclude Include="block.h" />
+    <ClInclude Include="button.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="collision.h" />
     <ClInclude Include="debug_proc.h" />
     <ClInclude Include="floor.h" />
     <ClInclude Include="frame.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="gate.h" />
+    <ClInclude Include="gate_roof.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="joystick.h" />
     <ClInclude Include="keyboard.h" />
@@ -212,7 +218,7 @@
     <ClInclude Include="scene2d.h" />
     <ClInclude Include="scene3d.h" />
     <ClInclude Include="stone_block.h" />
-    <ClInclude Include="texture.h" />
+    <ClInclude Include="particle_texture.h" />
     <ClInclude Include="wood_block.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

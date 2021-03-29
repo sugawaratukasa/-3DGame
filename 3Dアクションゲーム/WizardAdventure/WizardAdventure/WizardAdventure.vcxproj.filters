@@ -49,12 +49,6 @@
     <Filter Include="ヘッダー ファイル\3D\Model">
       <UniqueIdentifier>{f049617a-0d40-4628-9d0a-9946c2172389}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\3D\Particle">
-      <UniqueIdentifier>{26945729-11b5-4651-b2fd-291db254a5a5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\3D\Particle">
-      <UniqueIdentifier>{2aac200e-a97a-4234-9d28-f884c7c23a74}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\3D\Model\Block">
       <UniqueIdentifier>{54cce072-e0ed-4757-8e3b-e3a0364fb3df}</UniqueIdentifier>
     </Filter>
@@ -73,16 +67,22 @@
     <Filter Include="ヘッダー ファイル\3D\Model\Object">
       <UniqueIdentifier>{3e736c9e-f601-49de-b1f8-d5c35a14d6bb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\3D\Particle\Particle_Emitter">
+    <Filter Include="ソース ファイル\3D\3DPolygon\Particle">
+      <UniqueIdentifier>{26945729-11b5-4651-b2fd-291db254a5a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\3D\3DPolygon\Particle\Particle_Emitter">
       <UniqueIdentifier>{09985285-b0cd-4669-8b34-643ec3ac53fd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\3D\Particle\Particle_Emitter">
-      <UniqueIdentifier>{6c81aefd-e8dc-45db-9f56-aace6693b5c9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\3D\Particle\Particle_Effect">
+    <Filter Include="ソース ファイル\3D\3DPolygon\Particle\Particle_Effect">
       <UniqueIdentifier>{aefaebf7-74d8-43d6-bcb3-8bbd36fd1fbb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\3D\Particle\Particle_Effect">
+    <Filter Include="ヘッダー ファイル\3D\3DPolygon\Particle">
+      <UniqueIdentifier>{2aac200e-a97a-4234-9d28-f884c7c23a74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\3D\3DPolygon\Particle\Particle_Emitter">
+      <UniqueIdentifier>{6c81aefd-e8dc-45db-9f56-aace6693b5c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\3D\3DPolygon\Particle\Particle_Effect">
       <UniqueIdentifier>{5b11357c-fe2a-4ff1-a55e-14614d8c4b54}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -91,9 +91,6 @@
       <Filter>ソース ファイル\2D</Filter>
     </ClCompile>
     <ClCompile Include="scene3d.cpp">
-      <Filter>ソース ファイル\3D</Filter>
-    </ClCompile>
-    <ClCompile Include="billboard.cpp">
       <Filter>ソース ファイル\3D</Filter>
     </ClCompile>
     <ClCompile Include="model.cpp">
@@ -109,10 +106,10 @@
       <Filter>ソース ファイル\3D\Model</Filter>
     </ClCompile>
     <ClCompile Include="particle.cpp">
-      <Filter>ソース ファイル\3D\Particle</Filter>
+      <Filter>ソース ファイル\3D\3DPolygon\Particle</Filter>
     </ClCompile>
     <ClCompile Include="particle_emitter.cpp">
-      <Filter>ソース ファイル\3D\Particle\Particle_Emitter</Filter>
+      <Filter>ソース ファイル\3D\3DPolygon\Particle\Particle_Emitter</Filter>
     </ClCompile>
     <ClCompile Include="camera.cpp">
       <Filter>ソース ファイル\3D</Filter>
@@ -177,14 +174,26 @@
     <ClCompile Include="floor_block.cpp">
       <Filter>ソース ファイル\3D\Model\Object\Block</Filter>
     </ClCompile>
-    <ClCompile Include="texture.cpp">
-      <Filter>ソース ファイル\System</Filter>
-    </ClCompile>
     <ClCompile Include="particle_effect.cpp">
-      <Filter>ソース ファイル\3D\Particle\Particle_Effect</Filter>
+      <Filter>ソース ファイル\3D\3DPolygon\Particle\Particle_Effect</Filter>
     </ClCompile>
     <ClCompile Include="needle_block.cpp">
       <Filter>ソース ファイル\3D\Model\Object\Block</Filter>
+    </ClCompile>
+    <ClCompile Include="button.cpp">
+      <Filter>ソース ファイル\3D\Model\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="gate.cpp">
+      <Filter>ソース ファイル\3D\Model\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="gate_roof.cpp">
+      <Filter>ソース ファイル\3D\Model\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="billboard.cpp">
+      <Filter>ソース ファイル\3D\3DPolygon</Filter>
+    </ClCompile>
+    <ClCompile Include="particle_texture.cpp">
+      <Filter>ソース ファイル\System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -210,10 +219,10 @@
       <Filter>ヘッダー ファイル\3D\Model</Filter>
     </ClInclude>
     <ClInclude Include="particle.h">
-      <Filter>ヘッダー ファイル\3D\Particle</Filter>
+      <Filter>ヘッダー ファイル\3D\3DPolygon\Particle</Filter>
     </ClInclude>
     <ClInclude Include="particle_emitter.h">
-      <Filter>ヘッダー ファイル\3D\Particle\Particle_Emitter</Filter>
+      <Filter>ヘッダー ファイル\3D\3DPolygon\Particle\Particle_Emitter</Filter>
     </ClInclude>
     <ClInclude Include="camera.h">
       <Filter>ヘッダー ファイル\3D</Filter>
@@ -278,14 +287,23 @@
     <ClInclude Include="floor_block.h">
       <Filter>ヘッダー ファイル\3D\Model\Block</Filter>
     </ClInclude>
-    <ClInclude Include="texture.h">
-      <Filter>ヘッダー ファイル\System</Filter>
-    </ClInclude>
     <ClInclude Include="particle_effect.h">
-      <Filter>ヘッダー ファイル\3D\Particle\Particle_Effect</Filter>
+      <Filter>ヘッダー ファイル\3D\3DPolygon\Particle\Particle_Effect</Filter>
     </ClInclude>
     <ClInclude Include="needle_block.h">
       <Filter>ヘッダー ファイル\3D\Model\Block</Filter>
+    </ClInclude>
+    <ClInclude Include="button.h">
+      <Filter>ヘッダー ファイル\3D\Model\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="gate.h">
+      <Filter>ヘッダー ファイル\3D\Model\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="gate_roof.h">
+      <Filter>ヘッダー ファイル\3D\Model\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="particle_texture.h">
+      <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -10,13 +10,17 @@
 #include "manager.h"
 #include "renderer.h"
 #include "model_hierarchy.h"
-
+//******************************************************************************
+// インクルードファイル
+//******************************************************************************
+#define MODEL_PARENT	(-1)	// モデル毎の親
 //******************************************************************************
 // インクリメント
 //******************************************************************************
 CModelhierarchy::CModelhierarchy(int nPriority) :CScene3d(nPriority)
 {
-	for (int nCount = INIT_INT; nCount < 14; nCount++)
+	// パーツの最大数分回す
+	for (int nCount = INIT_INT; nCount < MAX_PARTS; nCount++)
 	{
 		m_Model[nCount].m_pMeshParts = NULL;
 		m_Model[nCount].m_pBuffMatParts = NULL;
@@ -37,7 +41,6 @@ CModelhierarchy::~CModelhierarchy()
 {
 
 }
-
 //******************************************************************************
 // 初期化処理
 //******************************************************************************
@@ -46,7 +49,6 @@ HRESULT CModelhierarchy::Init(void)
 
 	return S_OK;
 }
-
 //******************************************************************************
 // 終了処理
 //******************************************************************************
@@ -54,7 +56,6 @@ void CModelhierarchy::Uninit(void)
 {
 	CScene3d::Uninit();
 }
-
 //******************************************************************************
 // 更新処理
 //******************************************************************************
@@ -62,7 +63,6 @@ void CModelhierarchy::Update(void)
 {
 
 }
-
 //******************************************************************************
 // 描画処理
 //******************************************************************************
@@ -84,6 +84,7 @@ void CModelhierarchy::Draw(void)
 	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 
+	// モデルパーツ分
 	for (int nCount = INIT_INT; nCount < m_nNumModel; nCount++)
 	{
 		//ワールドマトリクスの初期化
@@ -104,7 +105,8 @@ void CModelhierarchy::Draw(void)
 		}
 
 		D3DXMATRIX mtxParent;
-		if (m_Model[nCount].m_nldxModelParent == -1)
+
+		if (m_Model[nCount].m_nldxModelParent == MODEL_PARENT)
 		{
 			mtxParent = m_mtxWorld;
 		}
@@ -127,6 +129,7 @@ void CModelhierarchy::Draw(void)
 			//マテリアルの設定
 			pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 
+			// 色
 			pMat[nCntMat].MatD3D.Ambient = pMat[nCntMat].MatD3D.Diffuse;
 
 			if (m_Model[nCount].m_pMeshParts != NULL)

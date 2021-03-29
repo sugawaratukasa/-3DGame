@@ -24,7 +24,7 @@
 #include "frame.h"
 #include "floor.h"
 #include "3d_obj.h"
-#include "texture.h"
+#include "particle_texture.h"
 //******************************************************************************
 // 静的メンバ変数
 //******************************************************************************
@@ -35,7 +35,7 @@ CInputKeyboard *CManager::m_pKeyboard = NULL;
 CInputJoystick *CManager::m_pJoystick = NULL;
 CDebugProc *CManager::m_pDebugProc = NULL;
 CMode *CManager::m_pMode = NULL;
-CTexture *CManager::m_pTexture = NULL;
+CParticle_Texture *CManager::m_pParticle_Texture = NULL;
 //******************************************************************************
 //コンストラクタ
 //******************************************************************************
@@ -102,16 +102,16 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindouw)
 		}
 	}
 	// テクスチャ
-	if (m_pTexture == NULL)
+	if (m_pParticle_Texture == NULL)
 	{
 		// メモリ確保
-		m_pTexture = new CTexture;
+		m_pParticle_Texture = new CParticle_Texture;
 
 		// NULLでない場合
-		if (m_pTexture != NULL)
+		if (m_pParticle_Texture != NULL)
 		{
 			// 初期化
-			m_pTexture->Init();
+			m_pParticle_Texture->Init();
 		}
 	}
 	//テクスチャの読み込み
@@ -134,16 +134,16 @@ void CManager::Uninit(void)
 	UnloadAll();
 
 	// テクスチャの終了
-	if (m_pTexture != NULL)
+	if (m_pParticle_Texture != NULL)
 	{
 		// 終了
-		m_pTexture->Uninit();
+		m_pParticle_Texture->Uninit();
 
 		// メモリ開放
-		delete m_pTexture;
+		delete m_pParticle_Texture;
 
 		// NULLに
-		m_pTexture = NULL;
+		m_pParticle_Texture = NULL;
 	}
 	// モードの終了
 	if (m_pMode != NULL)

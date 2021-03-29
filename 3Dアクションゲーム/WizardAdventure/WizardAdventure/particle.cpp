@@ -10,7 +10,7 @@
 #include "manager.h"
 #include "renderer.h"
 #include "billboard.h"
-#include "texture.h"
+#include "particle_texture.h"
 #include "particle.h"
 //******************************************************************************
 // マクロ定義
@@ -24,37 +24,36 @@
 #define MIN_SCALE		(0.0f)							// 拡大率の最小値
 #define DEVIDE_SIZE		(10)							// サイズ除算
 #define ROT_RANDOM		(360)							// 向きのランダム値
-#define COLOR_A			(255)							// α値
 //******************************************************************************
 // コンストラクタ
 //******************************************************************************
 CParticle::CParticle()
 {
-	m_bAlpha_Blend		 = false;
-	m_bLife				 = false;
-	m_bRandomPos		 = false;
-	m_bRandomSize		 = false;
-	m_bAddScale			 = false;
-	m_bSubColor			 = false;
-	m_bRotRandom		 = false;
-	m_bTexRandom		 = false;
-	m_pos				 = INIT_D3DXVECTOR3;
-	m_Random_pos		 = INIT_D3DXVECTOR3;
-	m_size				 = INIT_D3DXVECTOR3;
-	m_move				 = INIT_D3DXVECTOR3;
-	m_AddAngle			 = INIT_D3DXVECTOR3;
-	m_color				 = INIT_COLOR;
-	m_SubColor			 = INIT_COLOR;
-	m_nAlpha			 = INIT_INT;
-	m_nLife				 = INIT_INT;
-	m_nTexNum			 = INIT_INT;
-	m_nMinTex_RandomNum	 = INIT_INT;
-	m_nMaxTex_RandomNum  = INIT_INT;
-	m_fAngle			 = INIT_FLOAT;
-	m_fAddAngle			 = INIT_FLOAT;
-	m_fRandom_Min_Size	 = INIT_FLOAT;
-	m_fRandom_Max_Size	 = INIT_FLOAT;
-	m_fAddScale			 = INIT_FLOAT;
+	m_bAlpha_Blend		= false;
+	m_bLife				= false;
+	m_bRandomPos		= false;
+	m_bRandomSize		= false;
+	m_bAddScale			= false;
+	m_bSubColor			= false;
+	m_bRotRandom		= false;
+	m_bTexRandom		= false;
+	m_pos				= INIT_D3DXVECTOR3;
+	m_Random_pos		= INIT_D3DXVECTOR3;
+	m_size				= INIT_D3DXVECTOR3;
+	m_move				= INIT_D3DXVECTOR3;
+	m_AddAngle			= INIT_D3DXVECTOR3;
+	m_color				= INIT_COLOR;
+	m_SubColor			= INIT_COLOR;
+	m_nAlpha			= INIT_INT;
+	m_nLife				= INIT_INT;
+	m_nTexNum			= INIT_INT;
+	m_nMinTex_RandomNum = INIT_INT;
+	m_nMaxTex_RandomNum = INIT_INT;
+	m_fAngle			= INIT_FLOAT;
+	m_fAddAngle			= INIT_FLOAT;
+	m_fRandom_Min_Size	= INIT_FLOAT;
+	m_fRandom_Max_Size	= INIT_FLOAT;
+	m_fAddScale			= INIT_FLOAT;
 }
 //******************************************************************************
 // デストラクタ
@@ -74,13 +73,13 @@ CParticle *CParticle::Create(D3DXVECTOR3 pos, const char *cText)
 	pParticle = new CParticle;
 
 	// 位置代入
-	pParticle->m_pos = pos;
+	pParticle->SetPosition(pos);
 
 	// テキスト読み込み
 	pParticle->LoadParticle(cText);
 
 	// 初期化
- 	pParticle->Init();
+	pParticle->Init();
 
 	// ポインタを返す
 	return pParticle;
@@ -94,38 +93,19 @@ HRESULT CParticle::Init(void)
 	// 初期化
 	CBillboard::Init();
 
-	// 位置設定
-	SetPosition(m_pos);
-
 	// サイズ設定
 	SetSize(m_size);
 
 	// サイズ設定
 	SetRotation(ROT);
-	// false
-	if (m_bColorRandom == false)
-	{
-		// 色設定
-		SetColor(m_color);
-	}
-	// true
-	if (m_bColorRandom == true)
-	{
-		m_nColor_R = (rand() % m_nColor_R);
-		m_nColor_G = (rand() % m_nColor_G);
-		m_nColor_B = (rand() % m_nColor_B);
 
-		// 色
-		m_color = D3DCOLOR_RGBA(m_nColor_R, m_nColor_G, m_nColor_B, COLOR_A);
-
-		// 色設定
-		SetColor(m_color);
-	}
+	// 色設定
+	SetColor(m_color);
 
 	if (m_bTexRandom == false)
 	{
 		// テクスチャ受け渡し
-		BindTexture(CManager::GetTexture()->GetTexture(m_nTexNum));
+		BindTexture(CManager::GetParticle_Texture()->GetTexture(m_nTexNum));
 	}
 
 	if (m_bTexRandom == true)
@@ -134,7 +114,7 @@ HRESULT CParticle::Init(void)
 		int nTexNum = (rand() % m_nMaxTex_RandomNum + m_nMinTex_RandomNum);
 
 		// テクスチャ受け渡し
-		BindTexture(CManager::GetTexture()->GetTexture(nTexNum));
+		BindTexture(CManager::GetParticle_Texture()->GetTexture(nTexNum));
 	}
 
 	// trueの場合
@@ -297,7 +277,6 @@ void CParticle::Update(void)
 	pos.y += sinf(D3DXToRadian(m_Angle.y))*m_move.y;
 	pos.z += sinf(D3DXToRadian(m_Angle.z))*m_move.z;
 
-	// 位置設定
 	SetPosition(pos);
 }
 
@@ -435,12 +414,6 @@ void CParticle::LoadParticle(const char * cText)
 								// 情報をm_bTexRandomに格納
 								sscanf(cReedText, "%s %s %d", &cDie, &cDie, (int*)&m_bTexRandom);
 							}
-							// cHeadTextがTEX_RANDOMの場合
-							if (strcmp(cHeadText, "COLOR_RANDOM") == INIT_INT)
-							{
-								// 情報をm_bTexRandomに格納
-								sscanf(cReedText, "%s %s %d", &cDie, &cDie, (int*)&m_bColorRandom);
-							}
 							// cHeadTextがTEXTURE_NUMの場合
 							if (strcmp(cHeadText, "TEXTURE_NUM") == INIT_INT)
 							{
@@ -506,24 +479,6 @@ void CParticle::LoadParticle(const char * cText)
 							{
 								/// 情報をm_fAddScaleに格納
 								sscanf(cReedText, "%s %s %f", &cDie, &cDie, &m_fAddScale);
-							}
-							// cHeadTextがCOLOR_R_VALUEの場合
-							if (strcmp(cHeadText, "COLOR_R_VALUE") == INIT_INT)
-							{
-								/// 情報をm_nColor_Rに格納
-								sscanf(cReedText, "%s %s %d", &cDie, &cDie, &m_nColor_R);
-							}
-							// cHeadTextがCOLOR_G_VALUEの場合
-							if (strcmp(cHeadText, "COLOR_G_VALUE") == INIT_INT)
-							{
-								/// 情報をm_nColor_Gに格納
-								sscanf(cReedText, "%s %s %d", &cDie, &cDie, &m_nColor_G);
-							}
-							// cHeadTextがCOLOR_B_VALUEの場合
-							if (strcmp(cHeadText, "COLOR_B_VALUE") == INIT_INT)
-							{
-								/// 情報をm_nColor_Bに格納
-								sscanf(cReedText, "%s %s %d", &cDie, &cDie, &m_nColor_B);
 							}
 							// cHeadTextがCOLOR_SUB_VALUEの場合
 							if (strcmp(cHeadText, "COLOR_SUB_VALUE") == INIT_INT)

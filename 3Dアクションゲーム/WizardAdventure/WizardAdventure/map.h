@@ -36,11 +36,13 @@ public:
 	// 種類
 	typedef enum
 	{
-		BLOCK_TYPE_NONE = 0,	// 無し
-		BLOCK_TYPE_NORMAL,		// 床ブロック
-		BLOCK_TYPE_NEEDLE,		// 針ブロック
-		BLOCK_TYPE_MAX			// 最大
-	}BLOCK_TYPE;
+		OBJ_TYPE_NONE = 0,		// 無し
+		OBJ_TYPE_NORMAL_BLOCK,	// 床ブロック
+		OBJ_TYPE_NEEDLE,		// 針ブロック
+		OBJ_TYPE_BUTTON,		// ボタン
+		OBJ_TYPE_GATE,			// 扉
+		OBJ_TYPE_MAX			// 最大
+	}OBJ_TYPE;
 
 	CMap(int nPriority = OBJTYPE_FLOOR);
 	~CMap();
@@ -59,7 +61,7 @@ private:
 	void SetRowCol(LOAD_TYPE load_type);
 
 	FLOOR_TYPE **m_apFloorIndex;	// 行列
-	BLOCK_TYPE **m_apBlockIndex;	// 行列
+	OBJ_TYPE **m_apBlockIndex;	// 行列
 	int m_nRow;						// 行
 	int m_nCol;						// 列
 };

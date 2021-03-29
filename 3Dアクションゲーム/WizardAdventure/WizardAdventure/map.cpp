@@ -9,22 +9,34 @@
 #include "floor.h"
 #include "floor_block.h"
 #include "needle_block.h"
+#include "button.h"
 #include "map.h"
+#include "gate.h"
+#include "gate_roof.h"
 //******************************************************************************
 //	マクロ定義
 //******************************************************************************
-#define FLOOR_TEXT	("data/Map/Text/Floor.csv")																		// マップ
-#define BLOCK_TEXT	("data/Map/Text/Block.csv")																		// 床
-#define FLOOR_SIZE	(D3DXVECTOR3(200.0f,200.0f,200.0f))																// 床のサイズ
-#define FLOOR_POS	(D3DXVECTOR3(nCountCol * -FLOOR_SIZE.x + 1000.0f,0.0f,nCountRow * -FLOOR_SIZE.z))				// 床の位置
-#define FLOOR_ROT	(D3DXVECTOR3(D3DXToRadian(90.0f),0.0f,0.0f))													// 床の向き
-#define FLOOR_COL	(D3DXCOLOR(1.0f,1.0f,1.0f,1.0f))																// 色
-#define BLOCK_SIZE	(D3DXVECTOR3(30.0f,30.0f,30.0f))																// ブロックのサイズ
-#define BLOCK_POS	(D3DXVECTOR3(nCountCol * BLOCK_SIZE.x - 290.0f,nCountRow * -BLOCK_SIZE.y + 150.0f ,-200.0f))	// ブロックの位置
-#define BLOCK_ROT	(D3DXVECTOR3(0.0f,0.0f,0.0f))																	// ブロックの向き
-#define NEEDLE_SIZE	(D3DXVECTOR3(30.0f,15.0f,30.0f))																// 針のサイズ
-#define NEEDLE_POS	(D3DXVECTOR3(nCountCol * NEEDLE_SIZE.x - 290.0f,nCountRow * -NEEDLE_SIZE.y * 2 + 150.0f ,-200.0f))	// ブロックの位置
-#define BYTE_NUM	(1024)																							// 最大バイト数
+#define FLOOR_TEXT		("data/Map/Text/Floor.csv")																							// マップ
+#define BLOCK_TEXT		("data/Map/Text/Block.csv")																							// 床
+#define FLOOR_SIZE		(D3DXVECTOR3(200.0f,200.0f,200.0f))																					// 床のサイズ
+#define FLOOR_POS		(D3DXVECTOR3(nCountCol * -FLOOR_SIZE.x + 1000.0f,0.0f,nCountRow * -FLOOR_SIZE.z))									// 床の位置
+#define FLOOR_ROT		(D3DXVECTOR3(D3DXToRadian(90.0f),0.0f,0.0f))																		// 床の向き
+#define FLOOR_COL		(D3DXCOLOR(1.0f,1.0f,1.0f,1.0f))																					// 色
+#define BLOCK_SIZE		(D3DXVECTOR3(30.0f,30.0f,30.0f))																					// ブロックのサイズ
+#define BLOCK_POS		(D3DXVECTOR3(nCountCol * BLOCK_SIZE.x - 290.0f,nCountRow * -BLOCK_SIZE.y + 150.0f ,-200.0f))						// ブロックの位置
+#define BLOCK_ROT		(D3DXVECTOR3(0.0f,0.0f,0.0f))																						// ブロックの向き
+#define NEEDLE_SIZE		(D3DXVECTOR3(30.0f,15.0f,30.0f))																					// 針のサイズ
+#define NEEDLE_POS		(D3DXVECTOR3(nCountCol * NEEDLE_SIZE.x - 290.0f,nCountRow * -NEEDLE_SIZE.y * 2 + 150.0f ,-200.0f))					// ブロックの位置
+#define BUTTON_SIZE		(D3DXVECTOR3(30.0f,10.0f,30.0f))																					// ボタンサイズ
+#define BUTTON_POS		(D3DXVECTOR3(nCountCol * BUTTON_SIZE.x - 290.0f,nCountRow * -BLOCK_SIZE.y + BUTTON_SIZE.y * 1.5f + 150.0f ,-200.0f))// ボタンの位置
+#define BUTTON_ROT		(D3DXVECTOR3(0.0f,0.0f,0.0f))																						// 向き
+#define GATE_SIZE		(D3DXVECTOR3(30.0f,37.0f,10.0f))																					// 扉サイズ
+#define GATE_POS		(D3DXVECTOR3(nCountCol * GATE_SIZE.x - GATE_SIZE.x / 2 - 290.0f,nCountRow * -BLOCK_SIZE.y + GATE_SIZE.y + 150.0f ,-200.0f))			// 扉の位置
+#define GATE_ROT		(D3DXVECTOR3(0.0f,D3DXToRadian(90.0f),0.0f))																		// 扉向き
+#define GATE_ROOF_SIZE	(D3DXVECTOR3(30.0f,37.0f,20.0f))																					// 扉の屋根のサイズ
+#define GATE_ROOF_POS	(D3DXVECTOR3(nCountCol * GATE_ROOF_SIZE.x - 290.0f,nCountRow * -BLOCK_SIZE.y + GATE_ROOF_SIZE.y + 150.0f ,-200.0f))			// 扉の屋根の位置
+#define GATE_ROOF_ROT	(D3DXVECTOR3(0.0f,D3DXToRadian(270.0f),0.0f))																		// 扉の屋根
+#define BYTE_NUM		(1024)																												// 最大バイト数
 //******************************************************************************
 // コンストラクタ
 //******************************************************************************
@@ -255,20 +267,38 @@ void CMap::BlockCreate(void)
 			{
 				switch (m_apBlockIndex[nCountRow][nCountCol])
 				{
-					// 床
-				case BLOCK_TYPE_NONE:
+					// 無し
+				case OBJ_TYPE_NONE:
 					break;
 
 					// 床
-				case BLOCK_TYPE_NORMAL:
+				case OBJ_TYPE_NORMAL_BLOCK:
 					// 床生成
 					CFloor_Block::Create(BLOCK_POS, BLOCK_ROT, BLOCK_SIZE);
 					break;
 
 					// 針
-				case BLOCK_TYPE_NEEDLE:
+				case OBJ_TYPE_NEEDLE:
 					// 針生成
 					CNeedle_Block::Create(NEEDLE_POS, BLOCK_ROT, NEEDLE_SIZE);
+					break;
+
+					// ボタン
+				case OBJ_TYPE_BUTTON:
+					// 床生成
+					CFloor_Block::Create(BLOCK_POS, BLOCK_ROT, BLOCK_SIZE);
+					// ボタン生成
+					CButton::Create(BUTTON_POS, BUTTON_ROT, BUTTON_SIZE);
+					break;
+
+					// ボタン
+				case OBJ_TYPE_GATE:
+					// 床生成
+					CFloor_Block::Create(BLOCK_POS, BLOCK_ROT, BLOCK_SIZE);
+					// 扉生成
+					CGate::Create(GATE_POS, GATE_ROT, GATE_SIZE);
+					// 扉生成
+					CGate_Roof::Create(GATE_ROOF_POS, GATE_ROOF_ROT, GATE_ROOF_SIZE);
 					break;
 
 				default:
@@ -309,7 +339,7 @@ void CMap::BlockLoad(void)
 		if (m_apBlockIndex == NULL)
 		{
 			// メモリ確保
-			m_apBlockIndex = new BLOCK_TYPE*[m_nRow];
+			m_apBlockIndex = new OBJ_TYPE*[m_nRow];
 
 			// NULLでない場合
 			if (m_apBlockIndex != NULL)
@@ -318,7 +348,7 @@ void CMap::BlockLoad(void)
 				for (int nCnt = INIT_INT; nCnt < m_nRow; nCnt++)
 				{
 					// 列分回す
-					m_apBlockIndex[nCnt] = new BLOCK_TYPE[m_nCol];
+					m_apBlockIndex[nCnt] = new OBJ_TYPE[m_nCol];
 				}
 				// 一行取得
 				while (fgets(str, BYTE_NUM, pfile) != NULL)
@@ -346,7 +376,7 @@ void CMap::BlockLoad(void)
 						if (strchr(cTokStr, cSearchStr) == NULL)
 						{
 							// 行列にブロックのタイプを格納
-							m_apBlockIndex[nRowIndex][nColIndex] = (BLOCK_TYPE)atoi(cTokStr);
+							m_apBlockIndex[nRowIndex][nColIndex] = (OBJ_TYPE)atoi(cTokStr);
 
 							// 次の列へ
 							nColIndex++;

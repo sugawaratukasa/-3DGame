@@ -8,20 +8,21 @@
 //******************************************************************************
 #include "particle.h"
 #include "particle_emitter.h"
+
 //******************************************************************************
 // マクロ定義
 //******************************************************************************
-#define MAX_TEXT	(1024)							// テキストの最大数
-#define DATA_TEXT	("data//Effect//Test_Data.txt")	// テキスト
-#define REMAINDER	(0)								// 余り0
+#define MAX_TEXT	(1024)										// テキストの最大数
+#define BOAD_EFFECT_TEXT	("data/Effect/BoadEffect_Data.txt")	// テキスト
+#define REMAINDER	(0)											// 余り0
 //******************************************************************************
 // コンストラクタ
 //******************************************************************************
 CParticle_Emitter::CParticle_Emitter()
 {
-	m_pos				= INIT_D3DXVECTOR3;
-	m_nCount			= INIT_INT;
-	m_nCreateCount		= INIT_INT;
+	m_pos = INIT_D3DXVECTOR3;
+	m_nCount = INIT_INT;
+	m_nCreateCount = INIT_INT;
 }
 //******************************************************************************
 // デストラクタ
@@ -32,7 +33,7 @@ CParticle_Emitter::~CParticle_Emitter()
 //******************************************************************************
 // 生成関数
 //******************************************************************************
-CParticle_Emitter * CParticle_Emitter::Create(D3DXVECTOR3 pos)
+CParticle_Emitter * CParticle_Emitter::Create(D3DXVECTOR3 pos, TYPE type)
 {
 	// CParticle_Emitterのポインタ
 	CParticle_Emitter *pParticle_Emitter;
@@ -43,8 +44,8 @@ CParticle_Emitter * CParticle_Emitter::Create(D3DXVECTOR3 pos)
 	// 位置代入
 	pParticle_Emitter->m_pos = pos;
 
-	// テキストファイル読み込み
-	pParticle_Emitter->Load(DATA_TEXT);
+	// 位置代入
+	pParticle_Emitter->m_Type = type;
 
 	// 初期化
 	pParticle_Emitter->Init();
@@ -57,6 +58,17 @@ CParticle_Emitter * CParticle_Emitter::Create(D3DXVECTOR3 pos)
 //******************************************************************************
 HRESULT CParticle_Emitter::Init(void)
 {
+	// タイプ
+	switch (m_Type)
+	{
+	case TYPE_BOAD:
+		// テキストファイル読み込み
+		sprintf(m_cText, BOAD_EFFECT_TEXT);
+		break;
+	}
+
+	// 読み込み
+	Load(m_cText);
 	return S_OK;
 }
 //******************************************************************************
@@ -78,7 +90,7 @@ void CParticle_Emitter::Update(void)
 	// 余りが0の場合
 	if (m_nCount % m_nCreateCount == REMAINDER)
 	{
-		CParticle::Create(m_pos, DATA_TEXT);
+		CParticle::Create(m_pos, m_cText);
 	}
 }
 //******************************************************************************

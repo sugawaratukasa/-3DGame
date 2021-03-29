@@ -16,7 +16,7 @@ class CInputKeyboard;
 class CInputJoystick;
 class CDebugProc;
 class CMode;
-class CTexture;
+class CParticle_Texture;
 //******************************************************************************
 // クラス
 //******************************************************************************
@@ -47,7 +47,7 @@ public:
 	static CLight *GetLight(void) { return m_pLight; }
 	static CInputKeyboard *GetInputKeyboard(void) { return m_pKeyboard; }
 	static CInputJoystick *GetInputJoystick(void) { return m_pJoystick; }
-	static CTexture *GetTexture(void) { return m_pTexture; }
+	static CParticle_Texture *GetParticle_Texture(void) { return m_pParticle_Texture; }
 private:
 	static CRenderer *m_pRenderer;			//レンダラー
 	static CCamera *m_pCamera;				//カメラ
@@ -56,8 +56,8 @@ private:
 	static CInputJoystick *m_pJoystick;		// コントローラー
 	static CDebugProc *m_pDebugProc;		// デバッグプロシージャ
 	static CMode *m_pMode;					// モード
-	static CTexture *m_pTexture;			// テクスチャ
+	static CParticle_Texture *m_pParticle_Texture;			// テクスチャ
 	int m_nCountFPS;						// FPSの値
 	MODE m_Mode;							// モード
 };
-#endif // !_MANAGER_H_
+#endif

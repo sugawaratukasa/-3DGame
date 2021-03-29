@@ -25,13 +25,16 @@
 #define NEEDLE_BLOCK	("data/Model/Object/Needle.x")		// 針
 #define BLOCK_WOOD		("data/Model/Object/box.x")			// 木箱
 #define BLOCK_STOON		("data/Model/Object/box_2.x")		// 石の箱
+#define BUTTON			("data/Model/Object/Button.x")		// ボタン
+#define GATE			("data/Model/Object/Gate_2.x")		// 扉
+#define GATEROOF		("data/Model/Object/GateRoof.x")	// 扉屋根
 //******************************************************************************
 //静的メンバ変数
 //******************************************************************************
 LPD3DXMESH C3D_Obj::m_pMesh[TYPE_MAX] = {};
 LPD3DXBUFFER C3D_Obj::m_pBuffMat[TYPE_MAX] = {};
 DWORD C3D_Obj::m_nNumMat[TYPE_MAX] = {};
-char* C3D_Obj::m_apFileName[TYPE_MAX] = { FLOOR_BLOCK,NEEDLE_BLOCK,BLOCK_WOOD, BLOCK_STOON };
+char* C3D_Obj::m_apFileName[TYPE_MAX] = { FLOOR_BLOCK,NEEDLE_BLOCK,BLOCK_WOOD, BLOCK_STOON ,BUTTON, GATE, GATEROOF };
 LPDIRECT3DTEXTURE9 C3D_Obj::m_apTexture[TYPE_MAX][MAX_MATERIAL] = {};
 //******************************************************************************
 // コンストラクタ

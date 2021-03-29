@@ -33,7 +33,6 @@ private:
 	bool m_bSubColor;			// 色減算を行うか
 	bool m_bRotRandom;			// 向きランダム
 	bool m_bTexRandom;			// テクスチャランダム
-	bool m_bColorRandom;		// カラーランダム
 	D3DXVECTOR3 m_pos;			// 位置
 	D3DXVECTOR3 m_Random_pos;	// 位置ランダム
 	D3DXVECTOR3 m_size;			// サイズ
@@ -47,9 +46,6 @@ private:
 	int m_nTexNum;				// テクスチャナンバー
 	int m_nMinTex_RandomNum;	// テクスチャナンバー
 	int m_nMaxTex_RandomNum;	// テクスチャナンバー
-	int m_nColor_R;				// 赤
-	int m_nColor_G;				// 緑
-	int m_nColor_B;				// 青
 	float m_fAngle;				// 角度
 	float m_fAddAngle;			// 角度の加算量
 	float m_fRandom_Min_Size;	// ランダムサイズの最小値

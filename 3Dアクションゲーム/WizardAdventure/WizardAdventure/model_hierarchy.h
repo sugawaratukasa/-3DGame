@@ -11,6 +11,10 @@
 #include "scene3d.h"
 
 //******************************************************************************
+// インクルードファイル
+//******************************************************************************
+#define MAX_PARTS (14)	// パーツの最大数
+//******************************************************************************
 // モデルヒエラルキークラス
 //******************************************************************************
 class CModelhierarchy :public CScene3d
@@ -43,13 +47,13 @@ private:
 		D3DXVECTOR3 m_rot;	   // 角度
 	}MODELPARENT;
 
-	D3DXVECTOR3 m_pos;	   // 座標
-	D3DXVECTOR3 m_rot;	   // 回転
-	D3DXVECTOR3 m_size;	   // サイズ
-	D3DXMATRIX m_mtxWorld; // 行列計算用
-	int m_nNumModel;	   // モデルの数
-	MODEL m_Model[13];	   // モデルのパーツごとの情報
-	MODELPARENT m_modelParent[13];
+	D3DXVECTOR3 m_pos;							// 座標
+	D3DXVECTOR3 m_rot;							// 回転
+	D3DXVECTOR3 m_size;							// サイズ
+	D3DXMATRIX m_mtxWorld;						// 行列計算用
+	int m_nNumModel;							// モデルの数
+	MODEL m_Model[MAX_PARTS];					// モデルのパーツごとの情報
+	MODELPARENT m_modelParent[MAX_PARTS];		// 親
 };
 
 #endif

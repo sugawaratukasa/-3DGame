@@ -9,7 +9,8 @@
 //******************************************************************************
 // マクロ定義
 //******************************************************************************
-#define DEVIDE_VALUE	(2)	// 割る数
+#define DEVIDE_VALUE	(2)		// 割る数
+#define SQUARE			(2.0f)	// 2乗
 //******************************************************************************
 // 立方体の当たり判定
 //******************************************************************************
@@ -41,10 +42,10 @@ bool CCollision::RectangleCollision(D3DXVECTOR3 pPos1, D3DXVECTOR3 size1, D3DXVE
 bool CCollision::SphereCollision(D3DXVECTOR3 pos1, float size1, D3DXVECTOR3 pos2, float size2)
 {
 	// 位置
-	float distance = powf(pos1.x - pos2.x, 2.0f) + powf(pos1.y - pos2.y, 2.0f) + powf(pos1.z - pos2.z, 2.0f);
+	float distance = powf(pos1.x - pos2.x, SQUARE) + powf(pos1.y - pos2.y, SQUARE) + powf(pos1.z - pos2.z, SQUARE);
 
 	// 半径
-	float radius = powf(size1 + size2, 2.0f);
+	float radius = powf(size1 + size2, SQUARE);
 
 	// めり込んでいるか
 	return (distance < radius);
@@ -54,7 +55,7 @@ bool CCollision::SphereCollision(D3DXVECTOR3 pos1, float size1, D3DXVECTOR3 pos2
 //******************************************************************************
 int CCollision::RectangleCollisionMove(D3DXVECTOR3 pPos1, D3DXVECTOR3 pPosOld, D3DXVECTOR3 size1, D3DXVECTOR3 pPos2, D3DXVECTOR3 size2)
 {
-	int nSurFace = 0;
+	int nSurFace = INIT_INT;
 
 	D3DXVECTOR3 box1Max = D3DXVECTOR3(size1.x / DEVIDE_VALUE, size1.y / DEVIDE_VALUE, size1.z / DEVIDE_VALUE) + pPos1;
 	D3DXVECTOR3 box1Min = D3DXVECTOR3(-size1.x / DEVIDE_VALUE, -size1.y / DEVIDE_VALUE, -size1.z / DEVIDE_VALUE) + pPos1;

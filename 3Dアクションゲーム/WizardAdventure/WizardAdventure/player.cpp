@@ -52,7 +52,8 @@
 #define ROT_MOVE			(0.2f)										// 向きの移動
 #define POW_VALUE			(2.0f)										// 二乗
 #define MIN_MOVE_VALUE		(0.0f)										// 移動量の最小値
-#define GRAVITY_VALUE		(0.4f)										// 重力
+#define GRAVITY_VALUE		(1.0f)										// 重力
+#define JUMP_VALUE			(15.0f)										// ジャンプ量
 //******************************************************************************
 // 静的メンバ変数
 //******************************************************************************
@@ -83,20 +84,21 @@ char* CPlayer::m_apFileName[PARTS_MAX] = {
 //******************************************************************************
 CPlayer::CPlayer(int nPriority) : CScene(nPriority)
 {
-	m_pos					= INIT_D3DXVECTOR3;		// 位置
-	m_posOld				= INIT_D3DXVECTOR3;		// 古い位置
-	m_rot					= INIT_D3DXVECTOR3;		// 角度
-	m_size					= INIT_D3DXVECTOR3;		// 大きさ
-	m_move					= INIT_D3DXVECTOR3;		// 移動量
-	m_bAllMotion			= false;				// 全モーションの判定
-	m_pMotion				= NULL;					// モーションクラスのポインタ
-	m_pBlock				= NULL;					// 箱のポインタ
-	m_Blcok_Active			= BLOCK_ACTIVE_NONE;	// ブロックの行動種類
-	m_nBlockNum				= INIT_INT;				// 箱の数
-	m_nBlock_Select_Num		= INIT_INT;				// 箱の選択する数
-	m_bStick				= false;				// スティック判定
-	m_Rot_State				= ROT_STATE_RIGHT;		// 左右どちらを向いているか
-	memset(m_pModel, NULL, sizeof(m_pModel));		// モデルクラスのポインタ
+	m_pos					= INIT_D3DXVECTOR3;		
+	m_posOld				= INIT_D3DXVECTOR3;		
+	m_rot					= INIT_D3DXVECTOR3;		
+	m_size					= INIT_D3DXVECTOR3;		
+	m_move					= INIT_D3DXVECTOR3;		
+	m_bAllMotion			= false;				
+	m_pMotion				= NULL;					
+	m_pBlock				= NULL;					
+	m_Blcok_Active			= BLOCK_ACTIVE_NONE;	
+	m_nBlockNum				= INIT_INT;				
+	m_nBlock_Select_Num		= INIT_INT;				
+	m_bStick				= false;				
+	m_Rot_State				= ROT_STATE_RIGHT;		
+	m_bJump					= false;				
+	memset(m_pModel, NULL, sizeof(m_pModel));		
 }
 
 //******************************************************************************
@@ -321,6 +323,10 @@ void CPlayer::Update(void)
 		// 箱の処理
 		LeftBlock();
 	}
+
+	// 当たり判定
+	Collision();
+
 	// ブロック選択中でない場合
 	if (m_Blcok_Active != BLOCK_ACTIVE_SELECT)
 	{
@@ -336,9 +342,6 @@ void CPlayer::Update(void)
 	}
 	// 座標、回転、サイズのセット
 	m_pModel[PARTS_UNDER_BODY]->SetModel(m_pMotion->GetPos(PARTS_UNDER_BODY) + m_pos, m_pMotion->GetRot(PARTS_UNDER_BODY) + m_rot, m_size);
-	
-	// 当たり判定
-	Collision();
 }
 
 //******************************************************************************
@@ -867,9 +870,6 @@ void CPlayer::RightSelectionBlock(void)
 				// 最大値の場合
 				if (m_nBlock_Select_Num >= m_nSelect_Save_Num - ARRAY_SUB_VALUE)
 				{
-					// 0番目に設定
-					//m_nBlock_Select_Num = MIN_BLOCK_NUM;
-
 					// 0番目に設定
 					m_nBlock_Select_Num = m_nSelect_Save_Num - ARRAY_SUB_VALUE;
 				}
@@ -1450,20 +1450,20 @@ void CPlayer::Collision(void)
 				 //下
 				if (CCollision::RectangleCollisionMove(pos, m_posOld, m_size, BlockPos, BlockSize) == CCollision::SURFACE_DOWN)
 				{
-					// 位置
-					m_pos.y = (m_size.y / DEVIDE_VALUE) + (BlockPos.y - BlockSize.y / DEVIDE_VALUE);
-
 					// 移動量0
 					m_move.y = MIN_MOVE_VALUE;
+
+					// 位置
+					m_pos.y = (m_size.y / DEVIDE_VALUE) + (BlockPos.y - BlockSize.y / DEVIDE_VALUE);
 				}
 				// 上
 				else if (CCollision::RectangleCollisionMove(m_pos, m_posOld, m_size, BlockPos, BlockSize) == CCollision::SURFACE_UP)
 				{
-					// 位置
-					m_pos.y = (-m_size.y / DEVIDE_VALUE) + (BlockPos.y + BlockSize.y / DEVIDE_VALUE);
-
 					// 移動量0
 					m_move.y = MIN_MOVE_VALUE;
+
+					// 位置
+					m_pos.y = (-m_size.y / DEVIDE_VALUE) + (BlockPos.y + BlockSize.y / DEVIDE_VALUE);
 				}
 				// 右
 				else if (CCollision::RectangleCollisionMove(pos, m_posOld, m_size, BlockPos, BlockSize) == CCollision::SURFACE_RIGHT)
@@ -1536,7 +1536,6 @@ void CPlayer::Collision(void)
 
 					// 位置
 					m_pos.x = (m_size.x / DEVIDE_VALUE) + (ObjPos.x + ObjSize.x / DEVIDE_VALUE);
-
 				}
 				// 左
 				else if (CCollision::RectangleCollisionMove(pos, m_posOld, m_size, ObjPos, ObjSize) == CCollision::SURFACE_LEFT)
@@ -1558,8 +1557,8 @@ void CPlayer::Move(void)
 {
 	// コントローラー取得
 	DIJOYSTATE js;
-	js.lY = 0;
-	js.lX = 0;
+	js.lY = INIT_INT;
+	js.lX = INIT_INT;
 	CInputJoystick * pInputJoystick = CManager::GetInputJoystick();
 	LPDIRECTINPUTDEVICE8 g_lpDIDevice = CInputJoystick::GetDevice();
 
@@ -1610,8 +1609,23 @@ void CPlayer::Move(void)
 			// 移動量0
 			m_move.x = MIN_MOVE_VALUE;
 		}
+		// ジャンプ
+		if (m_bJump == false)
+		{
+			// Aボタンを押した場合
+			if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_A))
+			{
+				// trueに
+				//m_bJump = true;
+
+				// 移動
+				m_move.y += JUMP_VALUE;
+			}
+		}
 	}
+	// 重力
 	m_move.y += -GRAVITY_VALUE;
+
 	// 移動
 	m_pos.x += m_move.x;
 	m_pos.y += m_move.y;
