@@ -70,10 +70,10 @@ HRESULT CBillboard::Init(void)
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	// èÍèäÇÃê›íË
-	pVtx[0].pos = D3DXVECTOR3((-m_size.x / DEVIDE_VALUE), (m_size.y / DEVIDE_VALUE), (m_size.z / DEVIDE_VALUE)) * m_fScale;
-	pVtx[1].pos = D3DXVECTOR3((+m_size.x / DEVIDE_VALUE), (m_size.y / DEVIDE_VALUE), (m_size.z / DEVIDE_VALUE)) * m_fScale;
+	pVtx[0].pos = D3DXVECTOR3((-m_size.x / DEVIDE_VALUE), (m_size.y / DEVIDE_VALUE), (-m_size.z / DEVIDE_VALUE)) * m_fScale;
+	pVtx[1].pos = D3DXVECTOR3((m_size.x / DEVIDE_VALUE), (m_size.y / DEVIDE_VALUE), (-m_size.z / DEVIDE_VALUE)) * m_fScale;
 	pVtx[2].pos = D3DXVECTOR3((-m_size.x / DEVIDE_VALUE), (-m_size.y / DEVIDE_VALUE), (m_size.z / DEVIDE_VALUE)) * m_fScale;
-	pVtx[3].pos = D3DXVECTOR3((+m_size.x / DEVIDE_VALUE), (-m_size.y / DEVIDE_VALUE), (m_size.z / DEVIDE_VALUE)) * m_fScale;
+	pVtx[3].pos = D3DXVECTOR3((m_size.x / DEVIDE_VALUE), (-m_size.y / DEVIDE_VALUE), (m_size.z / DEVIDE_VALUE)) * m_fScale;
 
 	// ñ@ê¸ÇÃê›íË
 	pVtx[0].nor = NOR;
@@ -103,6 +103,14 @@ HRESULT CBillboard::Init(void)
 //******************************************************************************
 void CBillboard::Uninit(void)
 {
+	if (m_pVtxBuff != NULL)
+	{
+		// îjä¸
+		m_pVtxBuff->Release();
+
+		// NULLÇ…
+		m_pVtxBuff = NULL;
+	}
 	// îjä¸
 	Release();
 }
@@ -118,10 +126,10 @@ void CBillboard::Update(void)
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	// èÍèäÇÃê›íË
-	pVtx[0].pos = D3DXVECTOR3((-m_size.x / DEVIDE_VALUE), (m_size.y / DEVIDE_VALUE), (m_size.z / DEVIDE_VALUE)) * m_fScale;
-	pVtx[1].pos = D3DXVECTOR3((+m_size.x / DEVIDE_VALUE), (m_size.y / DEVIDE_VALUE), (m_size.z / DEVIDE_VALUE)) * m_fScale;
+	pVtx[0].pos = D3DXVECTOR3((-m_size.x / DEVIDE_VALUE), (m_size.y / DEVIDE_VALUE), (-m_size.z / DEVIDE_VALUE)) * m_fScale;
+	pVtx[1].pos = D3DXVECTOR3((m_size.x / DEVIDE_VALUE), (m_size.y / DEVIDE_VALUE), (-m_size.z / DEVIDE_VALUE)) * m_fScale;
 	pVtx[2].pos = D3DXVECTOR3((-m_size.x / DEVIDE_VALUE), (-m_size.y / DEVIDE_VALUE), (m_size.z / DEVIDE_VALUE)) * m_fScale;
-	pVtx[3].pos = D3DXVECTOR3((+m_size.x / DEVIDE_VALUE), (-m_size.y / DEVIDE_VALUE), (m_size.z / DEVIDE_VALUE)) * m_fScale;
+	pVtx[3].pos = D3DXVECTOR3((m_size.x / DEVIDE_VALUE), (-m_size.y / DEVIDE_VALUE), (m_size.z / DEVIDE_VALUE)) * m_fScale;
 
 	// ñ@ê¸ÇÃê›íË
 	pVtx[0].nor = NOR;

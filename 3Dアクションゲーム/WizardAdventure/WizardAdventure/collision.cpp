@@ -77,19 +77,19 @@ int CCollision::RectangleCollisionMove(D3DXVECTOR3 pPos1, D3DXVECTOR3 pPosOld, D
 			nSurFace = SURFACE_DOWN;
 		}
 		// è„
-		else if (box1Min.y < box2Max.y && pPosOld.y >= box2Max.y)
+		if (box1Min.y < box2Max.y && pPosOld.y >= box2Max.y)
 		{
 			// è„
 			nSurFace = SURFACE_UP;
 		}
 		// ç∂
-		else if (box1Max.x > box2Min.x && pPosOld.x <= box2Min.x)
+		if (box1Max.x > box2Min.x && pPosOld.x <= box2Min.x)
 		{
 			// ç∂
 			nSurFace = SURFACE_LEFT;
 		}
 		// âE
-		else if (box1Min.x < box2Max.x && pPosOld.x >= box2Max.x)
+		if (box1Min.x < box2Max.x && pPosOld.x >= box2Max.x)
 		{
 			// âE
 			nSurFace = SURFACE_RIGHT;

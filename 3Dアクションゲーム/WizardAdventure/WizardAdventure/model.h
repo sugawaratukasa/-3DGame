@@ -29,7 +29,9 @@ public:
 		int nldxModelParent);
 	void BindTexture(LPDIRECT3DTEXTURE9 Texture, int nCount);
 	void SetModel(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size);
-
+	void SetPos(D3DXVECTOR3 pos);
+	void SetRot(D3DXVECTOR3 rot);
+	void SetSize(D3DXVECTOR3 size);
 	void SetParent(CModel *cmodel);
 	void SetWorldMatrix(D3DXMATRIX mtxWorld);
 

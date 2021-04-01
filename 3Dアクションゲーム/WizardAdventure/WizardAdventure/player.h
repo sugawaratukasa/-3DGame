@@ -128,6 +128,7 @@ private:
 	bool m_bStick;										// スティック判定
 	bool m_bRot;										// 向き
 	bool m_bJump;										// ジャンプ判定
+	bool m_bCollision;									// 当たり判定をしていない時
 };
 
 #endif

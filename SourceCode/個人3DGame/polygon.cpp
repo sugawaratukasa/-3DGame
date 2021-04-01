@@ -160,7 +160,9 @@ void CPolygon::Update(void)
 	SetPosition(pos);
 
 	// ìñÇΩÇËîªíËèàóù
-	Collision();
+	//Collision();
+
+	DotCollision();
 }
 //******************************************************************************
 // ï`âÊä÷êî
@@ -214,11 +216,12 @@ void CPolygon::DotCollision(void)
 
 					D3DXVECTOR3 movePos = (D3DXVECTOR3(cosf(D3DXToRadian(fAngle)),
 						sinf(D3DXToRadian(fAngle)),
-						sinf(D3DXToRadian(fAngle))));
+						0.0f));
 
-					movePos += move;
+					pos += movePos * 3.5f;
+
 					// à íuê›íË
-					SetPosition(movePos);
+					SetPosition(pos);
 				
 				}
 			}

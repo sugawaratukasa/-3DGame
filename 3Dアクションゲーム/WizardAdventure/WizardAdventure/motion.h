@@ -57,21 +57,10 @@ class CMotion
 {
 public:
 	typedef enum {
-		MOTION_IDLE = 0,	 // 待機モーション
-		MOTION_RUN,			 // 歩きモーション
-		MOTION_DAMAGE,		 // ダメージを受けるモーション
-		MOTION_HOLDGUN,		 // 銃構えモーション
-		MOTION_SHOT,		 // 射撃モーション
-		MOTION_HOLDKNIFE,	 // ナイフ構えモーション
-		MOTION_SLASH,		 // ナイフを振るモーション
-		MOTION_BACK,		 // 後ろに下がるモーション
-		MOTION_DYINGNEUTRAL, // 瀕死状態の待機モーション
-		MOTION_DYINGRUNNING, // 瀕死状態の歩きモーション
-		MOTION_DEATH,		 // 死ぬモーション
-		MOTION_HOLDENEMY,	 // 敵をつかむモーション
-		MOTION_SPIN,		 // 敵を回すモーション
-		MOTION_SPINEND,		 // 回すのを止めるモーション
-		MOTION_RELOAD,		 // リロードモーション
+		MOTION_IDLE = 0,				// 待機モーション
+		MOTION_RUN,						// 走りモーション
+		MOTION_JUMP,					// ジャンプモーション
+		MOTION_MOTION_LANDING,			// ジャンプモーション
 		MOTION_MAX
 	}MOTIONSTATE;
 
