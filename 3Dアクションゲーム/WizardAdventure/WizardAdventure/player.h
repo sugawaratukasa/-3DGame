@@ -21,6 +21,7 @@
 class CMotion;
 class CModel;
 class CBlock;
+class CStone_Block;
 //******************************************************************************
 // プレイヤークラス
 //******************************************************************************
@@ -101,6 +102,7 @@ private:
 	void LeftBlock(void);
 	void LeftSelectionBlock(void);
 
+	void Block_Crate(void);
 	void Collision(void);
 	void Move(void);
 
@@ -120,6 +122,7 @@ private:
 	CMotion *m_pMotion;									// モーションクラスのポインタ
 	CModel *m_pModel[PARTS_MAX];						// モデルクラスのポインタ
 	CBlock *m_pBlock;									// 箱のポインタ
+	CStone_Block *m_pStoneBlock;						// 石の箱のポインタ
 	BLOCK_ACTIVE m_Blcok_Active;						// 箱を用いての移動
 	ROT_STATE m_Rot_State;								// 向きの状態
 	int m_nBlockNum;									// 箱の数
@@ -128,7 +131,6 @@ private:
 	bool m_bStick;										// スティック判定
 	bool m_bRot;										// 向き
 	bool m_bJump;										// ジャンプ判定
-	bool m_bCollision;									// 当たり判定をしていない時
+	bool m_bJumpValue;									// ジャンプ量判定
 };
-
 #endif

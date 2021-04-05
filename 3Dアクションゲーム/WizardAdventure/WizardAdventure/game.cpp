@@ -87,14 +87,14 @@ HRESULT CGame::Init(void)
 	// プレイヤー生成
 	CPlayer::Create(PLAYER_POS, PLAYER_ROT, PLAYER_SIZE);
 
-	// ブロック
-	CWood_Block::Create(TEST_POS2, TEST_ROT, TEST_SIZE);
+	//// ブロック
+	//CWood_Block::Create(TEST_POS2, TEST_ROT, TEST_SIZE);
 
-	// ブロック
-	CWood_Block::Create(TEST_POS3, TEST_ROT, TEST_SIZE);
+	//// ブロック
+	//CWood_Block::Create(TEST_POS3, TEST_ROT, TEST_SIZE);
 
-	// ブロック
-	CWood_Block::Create(TEST_POS, TEST_ROT, TEST_SIZE);
+	//// ブロック
+	//CWood_Block::Create(TEST_POS, TEST_ROT, TEST_SIZE);
 
 	// パーティクル生成
 	//CParticle_Emitter::Create(PLAYER_POS);
@@ -117,15 +117,6 @@ void CGame::Update(void)
 {
 	// インクリメント
 	m_nCount++;
-
-	// 60になったら
-	if (m_nCount == CREATE_COUNT)
-	{
-		// 生成
-		//CParticle_Effect::Create(PLAYER_POS);
-
-		m_nCount = INIT_INT;
-	}
 }
 
 //*****************************************************************************

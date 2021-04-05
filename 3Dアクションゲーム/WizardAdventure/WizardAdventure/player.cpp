@@ -52,8 +52,9 @@
 #define ROT_MOVE			(0.2f)										// 向きの移動
 #define POW_VALUE			(2.0f)										// 二乗
 #define MIN_MOVE_VALUE		(0.0f)										// 移動量の最小値
-#define GRAVITY_VALUE		(-1.0f)										// 重力
-#define JUMP_VALUE			(15.0f)										// ジャンプ量
+#define GRAVITY_VALUE		(-1.5f)										// 重力
+#define JUMP_VALUE			(21.5f)										// ジャンプ量
+#define JUMP_VALUE_2		(0.1f)										// ジャンプ量
 //******************************************************************************
 // 静的メンバ変数
 //******************************************************************************
@@ -91,14 +92,15 @@ CPlayer::CPlayer(int nPriority) : CScene(nPriority)
 	m_move					= INIT_D3DXVECTOR3;		
 	m_bAllMotion			= false;				
 	m_pMotion				= NULL;					
-	m_pBlock				= NULL;					
+	m_pBlock				= NULL;	
+	m_pStoneBlock			= NULL;
 	m_Blcok_Active			= BLOCK_ACTIVE_NONE;	
 	m_nBlockNum				= INIT_INT;				
 	m_nBlock_Select_Num		= INIT_INT;				
 	m_bStick				= false;				
 	m_Rot_State				= ROT_STATE_RIGHT;		
 	m_bJump					= false;				
-	m_bCollision			= false;
+	m_bJumpValue			= false;
 	memset(m_pModel, NULL, sizeof(m_pModel));		
 }
 
@@ -254,7 +256,7 @@ void CPlayer::Uninit(void)
 void CPlayer::Update(void)
 {
 	// 位置代入
-	m_posOld = D3DXVECTOR3(m_pModel[PARTS_UNDER_BODY]->GetMtxWorld()._41, m_pModel[PARTS_UNDER_BODY]->GetMtxWorld()._42, m_pModel[PARTS_UNDER_BODY]->GetMtxWorld()._43);
+	m_posOld = m_pModel[PARTS_UNDER_BODY]->GetPos();
 
 	// コントローラー取得
 	CInputJoystick * pInputJoystick = CManager::GetInputJoystick();
@@ -268,59 +270,70 @@ void CPlayer::Update(void)
 	// モーションの更新処理
 	m_pMotion->UpdateMotion();
 
-	// 右向きの場合
-	if (m_Rot_State == ROT_STATE_RIGHT)
+	// NULLでない場合
+	if (m_pBlock != NULL)
 	{
-		// LTを押した場合
-		if (g_lpDIDevice != NULL && pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_LT))
+		// 右向きの場合
+		if (m_Rot_State == ROT_STATE_RIGHT)
 		{
-			// 0に
-			m_nBlock_Select_Num = MIN_BLOCK_NUM;
+			// LTを押した場合
+			if (g_lpDIDevice != NULL && pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_LT))
+			{
 
-			// 選択中の状態に
-			m_Blcok_Active = BLOCK_ACTIVE_SELECT;
+				// 0に
+				m_nBlock_Select_Num = MIN_BLOCK_NUM;
+
+				// 選択中の状態に
+				m_Blcok_Active = BLOCK_ACTIVE_SELECT;
+			}
+			// 選択中の状態の場合
+			if (m_Blcok_Active == BLOCK_ACTIVE_SELECT)
+			{
+				// 箱の選択処理
+				RightSelectionBlock();
+			}
+			// ブロックで何もしていない状態
+			if (m_Blcok_Active == BLOCK_ACTIVE_NONE)
+			{
+				// 右向きの時ブロックを最も近いブロックを選択中にする処理
+				RightSelectBlock();
+			}
+			// 箱の処理
+			RightBlock();
 		}
-		// 選択中の状態の場合
-		if (m_Blcok_Active == BLOCK_ACTIVE_SELECT)
+		// 左向きの場合
+		if (m_Rot_State == ROT_STATE_LEFT)
 		{
-			// 箱の選択処理
-			RightSelectionBlock();
+			// LTを押した場合
+			if (g_lpDIDevice != NULL && pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_LT))
+			{
+				// 0に
+				m_nBlock_Select_Num = MIN_BLOCK_NUM;
+
+				// 選択中の状態に
+				m_Blcok_Active = BLOCK_ACTIVE_SELECT;
+			}
+			// 選択中の状態の場合
+			if (m_Blcok_Active == BLOCK_ACTIVE_SELECT)
+			{
+				// 箱の選択処理
+				LeftSelectionBlock();
+			}
+			// ブロックで何もしていない状態
+			if (m_Blcok_Active == BLOCK_ACTIVE_NONE)
+			{
+				// 左向きの時ブロックを最も近いブロックを選択中にする処理
+				LeftSelectBlock();
+			}
+			// 箱の処理
+			LeftBlock();
 		}
-		// ブロックで何もしていない状態
-		if (m_Blcok_Active == BLOCK_ACTIVE_NONE)
-		{
-			// 右向きの時ブロックを最も近いブロックを選択中にする処理
-			RightSelectBlock();
-		}
-		// 箱の処理
-		RightBlock();
 	}
-	// 左向きの場合
-	if (m_Rot_State == ROT_STATE_LEFT)
+	// Xボタンが押された場合
+	if (g_lpDIDevice != NULL && pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_X))
 	{
-		// LTを押した場合
-		if (g_lpDIDevice != NULL && pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_LT))
-		{
-			// 0に
-			m_nBlock_Select_Num = MIN_BLOCK_NUM;
-
-			// 選択中の状態に
-			m_Blcok_Active = BLOCK_ACTIVE_SELECT;
-		}
-		// 選択中の状態の場合
-		if (m_Blcok_Active == BLOCK_ACTIVE_SELECT)
-		{
-			// 箱の選択処理
-			LeftSelectionBlock();
-		}
-		// ブロックで何もしていない状態
-		if (m_Blcok_Active == BLOCK_ACTIVE_NONE)
-		{
-			// 左向きの時ブロックを最も近いブロックを選択中にする処理
-			LeftSelectBlock();
-		}
-		// 箱の処理
-		LeftBlock();
+		// ブロック生成
+		Block_Crate();
 	}
 	// ブロック選択中でない場合
 	if (m_Blcok_Active != BLOCK_ACTIVE_SELECT)
@@ -1413,6 +1426,33 @@ void CPlayer::LeftSelectionBlock(void)
 	}
 }
 //******************************************************************************
+// ブロック生成関数
+//******************************************************************************
+void CPlayer::Block_Crate(void)
+{
+	// NULLの場合
+	if (m_pStoneBlock == NULL)
+	{
+		// 生成
+		m_pStoneBlock = CStone_Block::Create(BLOCK_POS, BLOCK_ROT, BLOCK_SIZE);
+
+		// 代入
+		m_pBlock = m_pStoneBlock;
+	}
+	// NULLでない場合
+	if (m_pStoneBlock != NULL)
+	{
+		// 破棄
+		m_pStoneBlock->ReleaseBlock();
+
+		// 生成
+		m_pStoneBlock = CStone_Block::Create(BLOCK_POS, BLOCK_ROT, BLOCK_SIZE);
+
+		// 代入
+		m_pBlock = m_pStoneBlock;
+	}
+}												   
+//******************************************************************************
 // 当たり判定処理関数
 //******************************************************************************
 void CPlayer::Collision(void)
@@ -1449,9 +1489,6 @@ void CPlayer::Collision(void)
 
 					// 位置
 					m_pos.y = (m_size.y / DEVIDE_VALUE) - (BlockPos.y + BlockSize.y / DEVIDE_VALUE);
-
-					// trueに
-					m_bCollision = true;
 				}
 				// 上
 				else if (CCollision::RectangleCollisionMove(m_pos, m_posOld, m_size, BlockPos, BlockSize) == CCollision::SURFACE_UP)
@@ -1520,8 +1557,6 @@ void CPlayer::Collision(void)
 					// 位置
 					m_pos.y = (m_size.y / DEVIDE_VALUE) - (ObjPos.y + ObjSize.y / DEVIDE_VALUE);
 
-					// trueに
-					m_bCollision = true;
 				}
 				// 上
 				if (CCollision::RectangleCollisionMove(m_pos, m_posOld, m_size, ObjPos, ObjSize) == CCollision::SURFACE_UP)
@@ -1537,6 +1572,9 @@ void CPlayer::Collision(void)
 					{
 						// falseに
 						m_bJump = false;
+
+						// falseに
+						m_bJumpValue = false;
 					}
 				}
 				// 左
@@ -1560,6 +1598,7 @@ void CPlayer::Collision(void)
 				}
 			}
 		}
+		// pSceneがNULLの場合
 	} while (pScene != NULL);
 }
 //******************************************************************************
@@ -1588,32 +1627,94 @@ void CPlayer::Move(void)
 		// 左
 		if (js.lX <= -STICK_REACTION)
 		{
-			// 移動モーション
-			m_pMotion->SetMotion(CMotion::MOTION_RUN);
+			if (g_lpDIDevice != NULL && pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
+			{
+				if (m_pBlock != NULL)
+				{
+					if (m_Rot_State == ROT_STATE_RIGHT)
+					{
+						// 移動モーション
+						m_pMotion->SetMotion(CMotion::MOTION_BLOCK_RUN);
 
-			// 後ろ
-			m_move.x = -MOVE_VALUE.x;
+						// 後ろ
+						m_move.x = -MOVE_VALUE.x;
 
-			// 向き
-			RotDest.y = RIGHT_ROT.y;
+						// 向き
+						RotDest.y = RIGHT_ROT.y;
+					}
+					if (m_Rot_State == ROT_STATE_LEFT)
+					{
+						// 移動モーション
+						m_pMotion->SetMotion(CMotion::MOTION_BACKRUN);
 
-			// 左向きの状態
-			m_Rot_State = ROT_STATE_RIGHT;
+						// 後ろ
+						m_move.x = MOVE_VALUE.x / DEVIDE_VALUE;
+
+						// 向き
+						RotDest.y = RIGHT_ROT.y;
+					}
+				}
+			}
+			else
+			{
+				// 移動モーション
+				m_pMotion->SetMotion(CMotion::MOTION_RUN);
+
+				// 後ろ
+				m_move.x = -MOVE_VALUE.x;
+
+				// 向き
+				RotDest.y = RIGHT_ROT.y;
+
+				// 左向きの状態
+				m_Rot_State = ROT_STATE_RIGHT;
+			}
 		}
 		// 右
 		if (js.lX >= STICK_REACTION)
 		{
-			// 移動モーション
-			m_pMotion->SetMotion(CMotion::MOTION_RUN);
+			if (g_lpDIDevice != NULL && pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
+			{
+				if (m_pBlock != NULL)
+				{
+					if (m_Rot_State == ROT_STATE_LEFT)
+					{
+						// 移動モーション
+						m_pMotion->SetMotion(CMotion::MOTION_BLOCK_RUN);
 
-			// 前に進む
-			m_move.x = MOVE_VALUE.x;
+						// 後ろ
+						m_move.x = MOVE_VALUE.x;
 
-			// 向き
-			RotDest.y = LEFT_ROT.y;
+						// 向き
+						RotDest.y = LEFT_ROT.y;
+					}
+					if (m_Rot_State == ROT_STATE_RIGHT)
+					{
+						// 移動モーション
+						m_pMotion->SetMotion(CMotion::MOTION_BACKRUN);
 
-			// 右向きの状態
-			m_Rot_State = ROT_STATE_LEFT;
+						// 後ろ
+						m_move.x = -MOVE_VALUE.x / DEVIDE_VALUE;
+
+						// 向き
+						RotDest.y = LEFT_ROT.y;
+					}
+				}
+			}
+			else
+			{
+				// 移動モーション
+				m_pMotion->SetMotion(CMotion::MOTION_RUN);
+
+				// 前に進む
+				m_move.x = MOVE_VALUE.x;
+
+				// 向き
+				RotDest.y = LEFT_ROT.y;
+
+				// 右向きの状態
+				m_Rot_State = ROT_STATE_LEFT;
+			}
 		}
 		// スティックの範囲外の場合
 		if (js.lX > -STICK_REACTION && js.lX < STICK_REACTION)
@@ -1630,8 +1731,20 @@ void CPlayer::Move(void)
 			// Aボタンを押した場合
 			if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_A))
 			{
-				// 移動
-				m_move.y += JUMP_VALUE;
+				// falseの場合
+				if (m_bJumpValue == false)
+				{
+					// 移動
+					m_move.y += JUMP_VALUE;
+
+					m_bJumpValue = true;
+				}
+				// trueの場合
+				if (m_bJumpValue == true)
+				{
+					// 移動
+					m_move.y += JUMP_VALUE_2;
+				}
 
 				// trueに
 				m_bJump = true;

@@ -59,6 +59,8 @@ public:
 	typedef enum {
 		MOTION_IDLE = 0,				// 待機モーション
 		MOTION_RUN,						// 走りモーション
+		MOTION_BACKRUN,					// 後ろ歩き
+		MOTION_BLOCK_RUN,				// ブロック移動
 		MOTION_JUMP,					// ジャンプモーション
 		MOTION_MOTION_LANDING,			// ジャンプモーション
 		MOTION_MAX
