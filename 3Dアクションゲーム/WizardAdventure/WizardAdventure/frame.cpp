@@ -18,11 +18,12 @@
 // マクロ定義
 //******************************************************************************
 #define MOVE_VALUE	(D3DXVECTOR3(2.0f, 2.0f, 0.0f))
+#define POS			(D3DXVECTOR3(pos.x,pos.y,pos.z - 15.0f))
 #define FRAME_ROT1	(D3DXVECTOR3(0.0f,D3DXToRadian(0.0f),0.0f))
 #define FRAME_ROT2	(D3DXVECTOR3(0.0f,D3DXToRadian(90.0f),0.0f))
 #define FRAME_ROT3	(D3DXVECTOR3(0.0f,D3DXToRadian(270.0f),0.0f))
 #define FRAME_ROT4	(D3DXVECTOR3(D3DXToRadian(90.0f),0.0f,0.0f))
-#define MAX_FRAME	(4)
+#define MAX_FRAME	(2)
 #define RADIUS		(15.0f)
 //******************************************************************************
 // 静的メンバ変数初期化
@@ -123,6 +124,9 @@ void CFrame::Update(void)
 	// 位置座標取得
 	D3DXVECTOR3 pos = m_pBlock->GetPos();
 
+	// 位置代入
+	pos = POS;
+
 	// 位置更新
 	SetPosition(pos);
 }
@@ -143,17 +147,6 @@ void CFrame::Draw(void)
 	// 元に戻す
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
-}
-//******************************************************************************
-// フレーム生成
-//******************************************************************************
-void CFrame::FrameCreate(D3DXVECTOR3 pos, D3DXVECTOR3 size, D3DXCOLOR col, CBlock *pBlock)
-{
-	for (int nCnt = INIT_INT; nCnt < 2; nCnt++)
-	{
-		// 生成
-		Create(pos, FRAME_ROT1, size, col, pBlock);
-	}
 }
 //******************************************************************************
 // 選択中の色に設定

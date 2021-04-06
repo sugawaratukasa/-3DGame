@@ -286,10 +286,12 @@ void CManager::UnloadAll(void)
 //******************************************************************************
 void CManager::CreateCamera(void)
 {
+	// NULLの場合
 	if (m_pCamera == NULL)
 	{
 		// ポインタの動的確保
 		m_pCamera = new CCamera;
+
 		if (m_pCamera != NULL)
 		{
 			// 初期化

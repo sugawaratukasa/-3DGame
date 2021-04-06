@@ -34,19 +34,21 @@ public:
 	void Draw(void);
 
 	void Move(void);
+	void Create_Move(void);
 	void ReleaseBlock(void);
 	void SetFrame(void);
 	void Selecting(void);
 	void UnSelected(void);
 	void PlayerSelection(void);
 	void SetBlock(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size, TYPE type, CBlock *pBlock);
-
+	void SetbMove(bool bMove);
 private:
-	void Collision(D3DXVECTOR3 pos, D3DXVECTOR3 posOld, D3DXVECTOR3 size);
-	D3DXVECTOR3 m_posOld;	// 古い位置
-	D3DXVECTOR3 m_move;		// 移動
-	CBlock *m_pBlock;		// ポインタ
-	CFrame *m_pFrame;		// 枠のポインタ
+	void Collision(D3DXVECTOR3 posOld, D3DXVECTOR3 size);
+	D3DXVECTOR3 m_posOld;													// 古い位置
+	D3DXVECTOR3 m_move;														// 移動
+	CBlock *m_pBlock;														// ポインタ
+	CFrame *m_pFrame;														// 枠のポインタ
+	bool m_bMove;															// 移動の判定
 };
 
 #endif

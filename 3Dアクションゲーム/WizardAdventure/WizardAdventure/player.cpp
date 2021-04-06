@@ -16,45 +16,50 @@
 #include "frame.h"
 #include "collision.h"
 #include "3d_obj.h"
+#include "game.h"
+#include "camera.h"
 #include "player.h"
 //******************************************************************************
 // マクロ定義
 //******************************************************************************
-#define UNDER_BODY			("data/MODEL/PLAYER/00_UnderBody.x")		// 下半身
-#define BODY				("data/MODEL/PLAYER/01_Body.x")				// 上半身
-#define HEAD				("data/MODEL/PLAYER/02_Head.x")				// 頭
-#define SHOULDER_R			("data/MODEL/PLAYER/03_shoulder_R.x")		// 右肩
-#define UP_ARM_R			("data/MODEL/PLAYER/04_up_arm_R.x")			// 右上腕
-#define DOWN_ARM_R			("data/MODEL/PLAYER/05_down_arm_R.x")		// 右前腕	
-#define SHOULDER_L			("data/MODEL/PLAYER/06_shoulder_L.x")		// 左肩
-#define UP_ARM_L			("data/MODEL/PLAYER/07_up_arm_L.x")			// 左上腕
-#define DOWN_ARM_L			("data/MODEL/PLAYER/08_down_arm_L.x")		// 左前腕
-#define THIGTS_R			("data/MODEL/PLAYER/09_Thigts_R.x")			// 右太もも
-#define KNEE_R				("data/MODEL/PLAYER/10_Knee_R.x")			// 右膝
-#define FOOT_R				("data/MODEL/PLAYER/11_foot_R.x")			// 右足
-#define THIGTS_L			("data/MODEL/PLAYER/12_Thigts_L.x")			// 左太もも
-#define KNEE_L				("data/MODEL/PLAYER/13_Knee_L.x")			// 左膝
-#define FOOT_L				("data/MODEL/PLAYER/14_foot_L.x")			// 左足
-#define MOTION_PLAYER_TEXT	("data/MODEL/PLAYER/Motion/motion.txt")		// モーションのテキスト
-#define LOAD_PLAYER_TEXT	("data/MODEL/PLAYER/Motion/player.txt")		// 各モデルパーツの初期値
-#define BLOCK_POS			(D3DXVECTOR3(m_pos.x,m_pos.y + 80,m_pos.z))	// 箱生成位置
-#define BLOCK_ROT			(D3DXVECTOR3(0.0f,0.0f,0.0f))				// 箱の向き
-#define BLOCK_SIZE			(D3DXVECTOR3(30.0f,30.0f,30.0f))			// 箱のサイズ
-#define MOVE_VALUE			(D3DXVECTOR3(2.0f,2.0f,2.0f))				// 移動量
-#define RIGHT_ROT			(D3DXVECTOR3(0.0f,D3DXToRadian(90.0f),0.0f))// 向き
-#define LEFT_ROT			(D3DXVECTOR3(0.0f,D3DXToRadian(270.0f),0.0f))// 向き
-#define MIN_BLOCK_NUM		(0)											// ブロックの最小数
-#define ARRAY_FIRST_NUM		(0)											// 配列の先頭
-#define ARRAY_MOVE_NUMBER	(1)											// 配列の移動
-#define ARRAY_SUB_VALUE		(1)											// 配列に合わせるための値
-#define DEVIDE_VALUE		(2.0f)										// 割る数
-#define PARENT_NUMBER		(-1)										// 親の数値
-#define ROT_MOVE			(0.2f)										// 向きの移動
-#define POW_VALUE			(2.0f)										// 二乗
-#define MIN_MOVE_VALUE		(0.0f)										// 移動量の最小値
-#define GRAVITY_VALUE		(-1.5f)										// 重力
-#define JUMP_VALUE			(21.5f)										// ジャンプ量
-#define JUMP_VALUE_2		(0.1f)										// ジャンプ量
+#define UNDER_BODY				("data/MODEL/PLAYER/00_UnderBody.x")				// 下半身
+#define BODY					("data/MODEL/PLAYER/01_Body.x")						// 上半身
+#define HEAD					("data/MODEL/PLAYER/02_Head.x")						// 頭
+#define SHOULDER_R				("data/MODEL/PLAYER/03_shoulder_R.x")				// 右肩
+#define UP_ARM_R				("data/MODEL/PLAYER/04_up_arm_R.x")					// 右上腕
+#define DOWN_ARM_R				("data/MODEL/PLAYER/05_down_arm_R.x")				// 右前腕	
+#define SHOULDER_L				("data/MODEL/PLAYER/06_shoulder_L.x")				// 左肩
+#define UP_ARM_L				("data/MODEL/PLAYER/07_up_arm_L.x")					// 左上腕
+#define DOWN_ARM_L				("data/MODEL/PLAYER/08_down_arm_L.x")				// 左前腕
+#define THIGTS_R				("data/MODEL/PLAYER/09_Thigts_R.x")					// 右太もも
+#define KNEE_R					("data/MODEL/PLAYER/10_Knee_R.x")					// 右膝
+#define FOOT_R					("data/MODEL/PLAYER/11_foot_R.x")					// 右足
+#define THIGTS_L				("data/MODEL/PLAYER/12_Thigts_L.x")					// 左太もも
+#define KNEE_L					("data/MODEL/PLAYER/13_Knee_L.x")					// 左膝
+#define FOOT_L					("data/MODEL/PLAYER/14_foot_L.x")					// 左足
+#define MOTION_PLAYER_TEXT		("data/MODEL/PLAYER/Motion/motion.txt")				// モーションのテキスト
+#define LOAD_PLAYER_TEXT		("data/MODEL/PLAYER/Motion/player.txt")				// 各モデルパーツの初期値
+#define BLOCK_CREATE_RIGHTPOS	(D3DXVECTOR3(m_pos.x + 20.0f,m_pos.y + 80,m_pos.z))	// 箱生成位置
+#define BLOCK_CREATE_LEFTPOS	(D3DXVECTOR3(m_pos.x - 20.0f,m_pos.y + 80,m_pos.z))	// 箱生成位置
+#define BLOCK_ROT				(D3DXVECTOR3(0.0f,0.0f,0.0f))						// 箱の向き
+#define BLOCK_SIZE				(D3DXVECTOR3(30.0f,30.0f,30.0f))					// 箱のサイズ
+#define MOVE_VALUE				(D3DXVECTOR3(2.0f,2.0f,2.0f))						// 移動量
+#define RIGHT_ROT				(D3DXVECTOR3(0.0f,D3DXToRadian(270.0f),0.0f))		// 向き
+#define LEFT_ROT				(D3DXVECTOR3(0.0f,D3DXToRadian(90.0f),0.0f))		// 向き
+#define MIN_BLOCK_NUM			(0)													// ブロックの最小数
+#define ARRAY_FIRST_NUM			(0)													// 配列の先頭
+#define ARRAY_MOVE_NUMBER		(1)													// 配列の移動
+#define ARRAY_SUB_VALUE			(1)													// 配列に合わせるための値
+#define DEVIDE_VALUE			(2.0f)												// 割る数
+#define CAMERA_POS_DEVIDE		(13)												// カメラの位置を割る数
+#define PARENT_NUMBER			(-1)												// 親の数値
+#define ROT_MOVE				(0.2f)												// 向きの移動
+#define POW_VALUE				(2.0f)												// 二乗
+#define MIN_MOVE_VALUE			(0.0f)												// 移動量の最小値
+#define GRAVITY_VALUE			(-1.3f)												// 重力
+#define JUMP_VALUE				(18.0f)												// ジャンプ量
+#define JUMP_VALUE_2			(0.01f)												// ジャンプ量
+#define DEAD_ZONE_MIN			(0)													// スティックのデッドゾーン最小値
 //******************************************************************************
 // 静的メンバ変数
 //******************************************************************************
@@ -101,6 +106,7 @@ CPlayer::CPlayer(int nPriority) : CScene(nPriority)
 	m_Rot_State				= ROT_STATE_RIGHT;		
 	m_bJump					= false;				
 	m_bJumpValue			= false;
+	m_bBlock_Move			= false;
 	memset(m_pModel, NULL, sizeof(m_pModel));		
 }
 
@@ -214,7 +220,7 @@ HRESULT CPlayer::Init(void)
 		m_pModel[nCount]->BindModel(m_pMesh[nCount], m_pBuffMat[nCount], m_nNumMat[nCount], m_nldxModelParent[nCount]);
 
 		// モデルのパーツごとの座標と回転を受け取る
-		m_pModel[nCount]->SetModel(m_pMotion->GetPos(nCount), m_pMotion->GetRot(nCount), m_size);
+		m_pModel[nCount]->SetModel(m_pMotion->GetPos(nCount), m_pMotion->GetRot(nCount) + m_pModel[nCount]->GetRot(), m_size);
 	}
 
 	// 座標、回転、サイズのセット
@@ -270,16 +276,21 @@ void CPlayer::Update(void)
 	// モーションの更新処理
 	m_pMotion->UpdateMotion();
 
-	// NULLでない場合
-	if (m_pBlock != NULL)
+	// 右向きの場合
+	if (m_Rot_State == ROT_STATE_RIGHT)
 	{
-		// 右向きの場合
-		if (m_Rot_State == ROT_STATE_RIGHT)
+		// ブロックで何もしていない状態
+		if (m_Blcok_Active == BLOCK_ACTIVE_NONE)
+		{
+			// 右向きの時ブロックを最も近いブロックを選択中にする処理
+			RightSelectBlock();
+		}
+		// NULLでない場合
+		if (m_pBlock != NULL)
 		{
 			// LTを押した場合
 			if (g_lpDIDevice != NULL && pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_LT))
 			{
-
 				// 0に
 				m_nBlock_Select_Num = MIN_BLOCK_NUM;
 
@@ -292,17 +303,21 @@ void CPlayer::Update(void)
 				// 箱の選択処理
 				RightSelectionBlock();
 			}
-			// ブロックで何もしていない状態
-			if (m_Blcok_Active == BLOCK_ACTIVE_NONE)
-			{
-				// 右向きの時ブロックを最も近いブロックを選択中にする処理
-				RightSelectBlock();
-			}
 			// 箱の処理
 			RightBlock();
 		}
-		// 左向きの場合
-		if (m_Rot_State == ROT_STATE_LEFT)
+	}
+	// 左向きの場合
+	if (m_Rot_State == ROT_STATE_LEFT)
+	{
+		// ブロックで何もしていない状態
+		if (m_Blcok_Active == BLOCK_ACTIVE_NONE)
+		{
+			// 左向きの時ブロックを最も近いブロックを選択中にする処理
+			LeftSelectBlock();
+		}
+		// NULLでない場合
+		if (m_pBlock != NULL)
 		{
 			// LTを押した場合
 			if (g_lpDIDevice != NULL && pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_LT))
@@ -319,12 +334,6 @@ void CPlayer::Update(void)
 				// 箱の選択処理
 				LeftSelectionBlock();
 			}
-			// ブロックで何もしていない状態
-			if (m_Blcok_Active == BLOCK_ACTIVE_NONE)
-			{
-				// 左向きの時ブロックを最も近いブロックを選択中にする処理
-				LeftSelectBlock();
-			}
 			// 箱の処理
 			LeftBlock();
 		}
@@ -340,8 +349,7 @@ void CPlayer::Update(void)
 	{
 		// 移動処理
 		Move();
-	}
-
+	} 
 	// パーツ数分回す
 	for (int nCount = INIT_INT; nCount < PARTS_MAX; nCount++)
 	{
@@ -400,13 +408,6 @@ void CPlayer::SetPlayer(D3DXVECTOR3 pos, D3DXVECTOR3 rot ,D3DXVECTOR3 size)
 	SetObjType(OBJTYPE_PLAYER);
 }
 //******************************************************************************
-// 位置設定
-//******************************************************************************
-void CPlayer::SetPos(D3DXVECTOR3 pos)
-{
-	m_pos = pos;
-}
-//******************************************************************************
 // 箱の選択
 //******************************************************************************
 void CPlayer::RightSelectBlock(void)
@@ -432,13 +433,13 @@ void CPlayer::RightSelectBlock(void)
 				D3DXVECTOR3 BlockPos = ((CBlock*)pScene)->GetPos();
 
 				// プレイヤーが正面を向いていて箱の位置が前にある場合
-				if (m_pos.x > BlockPos.x)
+				if (m_pos.x < BlockPos.x)
 				{
 					// インクリメント
 					m_nBlockNum++;
 				}
 				// プレイヤーが正面を向いていて箱の位置が前後ろにある場合
-				if (m_pos.x < BlockPos.x)
+				if (m_pos.x > BlockPos.x)
 				{
 					((CBlock*)pScene)->UnSelected();
 				}
@@ -480,7 +481,7 @@ void CPlayer::RightSelectBlock(void)
 							D3DXVECTOR3 BlockPos = ((CBlock*)pScene)->GetPos();
 
 							// プレイヤーが右を向いていて箱の位置が前にある場合
-							if (m_pos.x > BlockPos.x)
+							if (m_pos.x < BlockPos.x)
 							{
 								// ポインタ代入
 								apBlock[m_nBlockNum] = (CBlock*)pScene;
@@ -602,33 +603,76 @@ void CPlayer::RightBlock(void)
 		// 箱の位置取得
 		D3DXVECTOR3 BlockPos = m_pBlock->GetPos();
 
-		// プレイヤーが右を向いていて箱の位置が後ろにある場合
-		if (m_pos.x < BlockPos.x)
-		{
-			// 選択外に
-			m_pBlock->UnSelected();
-
-			// ブロックを移動状態に
-			m_Blcok_Active = BLOCK_ACTIVE_NONE;
-		}
 		// プレイヤーが右を向いていて箱の位置が前にある場合
-		if (m_pos.x > BlockPos.x)
+		if (m_pos.x < BlockPos.x)
 		{
 			// 選択中の場合
 			m_pBlock->Selecting();
 
+			// 生成時の場合
+			if (m_Blcok_Active == BLOCK_ACTIVE_CREATE)
+			{
+				// trueに
+				m_pBlock->SetbMove(true);
+
+				// 移動する処理
+				m_pBlock->Create_Move();
+			}
+		}
+		// RTを押した場合
+		if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
+		{
 			// 選択状態以外の場合
 			if (m_Blcok_Active != BLOCK_ACTIVE_SELECT)
 			{
-				// RTを押した場合
-				if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
-				{
-					// 移動状態に
-					m_Blcok_Active = BLOCK_ACTIVE_MOVE;
+				// 移動の判定設定
+				m_pBlock->SetbMove(true);
 
-					// ブロックの移動
-					m_pBlock->Move();
+				// 移動状態に
+				m_Blcok_Active = BLOCK_ACTIVE_MOVE;
+
+				// ブロックの移動
+				m_pBlock->Move();
+			}
+			// falseの場合
+			if (m_bBlock_Move == false)
+			{
+				// プレイヤーより左にある場合
+				if (m_pos.x > BlockPos.x)
+				{
+					m_Rot_State = ROT_STATE_LEFT;
 				}
+			}
+			// trueの場合
+			if (m_bBlock_Move == true)
+			{
+				// プレイヤーより左にある場合
+				if (m_pos.x > BlockPos.x)
+				{
+					// 移動の判定設定
+					m_pBlock->SetbMove(false);
+
+					// ブロックで行動してない状態に
+					m_Blcok_Active = BLOCK_ACTIVE_NONE;
+
+					// NULLに
+					m_pBlock = NULL;
+				}
+			}
+		}
+		else
+		{
+			// 移動の判定設定
+			m_pBlock->SetbMove(false);
+
+			// プレイヤーが右を向いていて箱の位置が後ろにある場合
+			if (m_pos.x > BlockPos.x)
+			{
+				// 選択外に
+				m_pBlock->UnSelected();
+
+				// ブロックを移動状態に
+				m_Blcok_Active = BLOCK_ACTIVE_NONE;
 			}
 		}
 	}
@@ -673,13 +717,13 @@ void CPlayer::RightSelectionBlock(void)
 				D3DXVECTOR3 BlockPos = ((CBlock*)pScene)->GetPos();
 
 				// プレイヤーが正面を向いていて箱の位置が前にある場合
-				if (m_pos.x > BlockPos.x)
+				if (m_pos.x < BlockPos.x)
 				{
 					// インクリメント
 					m_nBlockNum++;
 				}
 				// プレイヤーが正面を向いていて箱の位置が前後ろにある場合
-				if (m_pos.x < BlockPos.x)
+				if (m_pos.x > BlockPos.x)
 				{
 					((CBlock*)pScene)->UnSelected();
 				}
@@ -723,7 +767,7 @@ void CPlayer::RightSelectionBlock(void)
 							D3DXVECTOR3 BlockPos = ((CBlock*)pScene)->GetPos();
 
 							// プレイヤーが右を向いていて箱の位置が前にある場合
-							if (m_pos.x > BlockPos.x)
+							if (m_pos.x < BlockPos.x)
 							{
 								// ポインタ代入
 								apBlock[m_nBlockNum] = (CBlock*)pScene;
@@ -861,9 +905,6 @@ void CPlayer::RightSelectionBlock(void)
 				if (m_nBlock_Select_Num == MIN_BLOCK_NUM)
 				{
 					// ブロックの最大値にする
-					//m_nBlock_Select_Num = m_nSelect_Save_Num - ARRAY_SUB_VALUE;
-
-					// ブロックの最大値にする
 					m_nBlock_Select_Num = MIN_BLOCK_NUM;
 				}
 
@@ -894,12 +935,12 @@ void CPlayer::RightSelectionBlock(void)
 		if (m_bStick == true)
 		{
 			// -500より大きく0より小さい場合
-			if (js.lZ > -STICK_REACTION && js.lZ <= INIT_INT)
+			if (js.lZ > -STICK_REACTION && js.lZ <= DEAD_ZONE_MIN)
 			{
 				m_bStick = false;
 			}
 			// 500より小さく0より大きい場合
-			if (js.lZ < STICK_REACTION && js.lZ >= INIT_INT)
+			if (js.lZ < STICK_REACTION && js.lZ >= DEAD_ZONE_MIN)
 			{
 				m_bStick = false;
 			}
@@ -937,6 +978,7 @@ void CPlayer::LeftSelectBlock(void)
 		{
 			// オブジェクトタイプ取得
 			OBJTYPE objType = pScene->GetObjType();
+
 			// オブジェクトタイプがBLOCKの場合
 			if (objType == OBJTYPE_BLOCK)
 			{
@@ -944,13 +986,13 @@ void CPlayer::LeftSelectBlock(void)
 				D3DXVECTOR3 BlockPos = ((CBlock*)pScene)->GetPos();
 
 				// プレイヤーが左を向いていて箱の位置が前にある場合
-				if (m_pos.x < BlockPos.x)
+				if (m_pos.x > BlockPos.x)
 				{
 					// インクリメント
 					m_nBlockNum++;
 				}
 				// プレイヤーが左を向いていて箱の位置が前後ろにある場合
-				if (m_pos.x > BlockPos.x)
+				if (m_pos.x < BlockPos.x)
 				{
 					((CBlock*)pScene)->UnSelected();
 				}
@@ -979,6 +1021,7 @@ void CPlayer::LeftSelectBlock(void)
 				{
 					// オブジェタイプが敵の場合
 					pScene = GetScene(OBJTYPE_BLOCK);
+
 					// NULLでない場合
 					if (pScene != NULL)
 					{
@@ -991,8 +1034,8 @@ void CPlayer::LeftSelectBlock(void)
 							// 座標とサイズ取得
 							D3DXVECTOR3 BlockPos = ((CBlock*)pScene)->GetPos();
 
-							// プレイヤーが右を向いていて箱の位置が前にある場合
-							if (m_pos.x < BlockPos.x)
+							// プレイヤーが左を向いていて箱の位置が前にある場合
+							if (m_pos.x > BlockPos.x)
 							{
 								// ポインタ代入
 								apBlock[m_nBlockNum] = (CBlock*)pScene;
@@ -1114,33 +1157,76 @@ void CPlayer::LeftBlock(void)
 		// 箱の位置取得
 		D3DXVECTOR3 BlockPos = m_pBlock->GetPos();
 
-		// プレイヤーが左を向いていて箱の位置が後ろにある場合
-		if (m_pos.x > BlockPos.x)
-		{
-			// 選択外に
-			m_pBlock->UnSelected();
-
-			// ブロックを移動状態に
-			m_Blcok_Active = BLOCK_ACTIVE_NONE;
-		}
 		// プレイヤーが左を向いていて箱の位置が前にある場合
-		if (m_pos.x < BlockPos.x)
+		if (m_pos.x > BlockPos.x)
 		{
 			// 選択中の場合
 			m_pBlock->Selecting();
 
-			// 選択状態以外の場合
+			// 生成時の場合
+			if (m_Blcok_Active == BLOCK_ACTIVE_CREATE)
+			{
+				// trueに
+				m_pBlock->SetbMove(true);
+
+				// 移動する処理
+				m_pBlock->Create_Move();
+			}
+		}
+		// RTを押した場合
+		if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
+		{
+				// 選択状態以外の場合
 			if (m_Blcok_Active != BLOCK_ACTIVE_SELECT)
 			{
-				// RTを押した場合
-				if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
-				{
-					// 移動状態に
-					m_Blcok_Active = BLOCK_ACTIVE_MOVE;
+				// 移動の判定設定
+				m_pBlock->SetbMove(true);
 
-					// ブロックの移動
-					m_pBlock->Move();
+				// 移動状態に
+				m_Blcok_Active = BLOCK_ACTIVE_MOVE;
+
+				// ブロックの移動
+				m_pBlock->Move();
+			}
+			// falseの場合
+			if (m_bBlock_Move == false)
+			{
+				// プレイヤーより右にある場合
+				if (m_pos.x < BlockPos.x)
+				{
+					m_Rot_State = ROT_STATE_RIGHT;
 				}
+			}
+			// trueの場合
+			if (m_bBlock_Move == true)
+			{
+				// プレイヤーより左にある場合
+				if (m_pos.x < BlockPos.x)
+				{
+					// 移動の判定設定
+					m_pBlock->SetbMove(false);
+
+					// ブロックで行動してない状態に
+					m_Blcok_Active = BLOCK_ACTIVE_NONE;
+
+					// NULLに
+					m_pBlock = NULL;
+				}
+			}
+		}
+		else
+		{
+			// 移動の判定設定
+			m_pBlock->SetbMove(false);
+
+			// プレイヤーが左を向いていて箱の位置が後ろにある場合
+			if (m_pos.x < BlockPos.x)
+			{
+				// 選択外に
+				m_pBlock->UnSelected();
+
+				// ブロックを移動状態に
+				m_Blcok_Active = BLOCK_ACTIVE_NONE;
 			}
 		}
 	}
@@ -1152,8 +1238,9 @@ void CPlayer::LeftSelectionBlock(void)
 {
 	// コントローラー取得
 	DIJOYSTATE js;
-	js.lY = INIT_INT;
-	js.lX = INIT_INT;
+	// 初期化
+	js.lY = DEAD_ZONE_MIN;
+	js.lX = DEAD_ZONE_MIN;
 	CInputJoystick * pInputJoystick = CManager::GetInputJoystick();
 	LPDIRECTINPUTDEVICE8 g_lpDIDevice = CInputJoystick::GetDevice();
 
@@ -1166,7 +1253,7 @@ void CPlayer::LeftSelectionBlock(void)
 	// CSceneのポインタ
 	CScene *pScene = NULL;
 
-	// 箱
+	// ブロック
 	do
 	{
 		// オブジェタイプが敵の場合
@@ -1185,13 +1272,13 @@ void CPlayer::LeftSelectionBlock(void)
 				D3DXVECTOR3 BlockPos = ((CBlock*)pScene)->GetPos();
 
 				// プレイヤーが正面を向いていて箱の位置が前にある場合
-				if (m_pos.x < BlockPos.x)
+				if (m_pos.x > BlockPos.x)
 				{
 					// インクリメント
 					m_nBlockNum++;
 				}
 				// プレイヤーが正面を向いていて箱の位置が前後ろにある場合
-				if (m_pos.x > BlockPos.x)
+				if (m_pos.x < BlockPos.x)
 				{
 					((CBlock*)pScene)->UnSelected();
 				}
@@ -1235,7 +1322,7 @@ void CPlayer::LeftSelectionBlock(void)
 							D3DXVECTOR3 BlockPos = ((CBlock*)pScene)->GetPos();
 
 							// プレイヤーが左を向いていて箱の位置が前にある場合
-							if (m_pos.x < BlockPos.x)
+							if (m_pos.x > BlockPos.x)
 							{
 								// ポインタ代入
 								apBlock[m_nBlockNum] = (CBlock*)pScene;
@@ -1401,12 +1488,12 @@ void CPlayer::LeftSelectionBlock(void)
 		if (m_bStick == true)
 		{
 			// -500より大きく0より小さい場合
-			if (js.lZ > -STICK_REACTION && js.lZ <= 0)
+			if (js.lZ > -STICK_REACTION && js.lZ <= DEAD_ZONE_MIN)
 			{
 				m_bStick = false;
 			}
 			// 500より小さく0より大きい場合
-			if (js.lZ < STICK_REACTION && js.lZ >= 0)
+			if (js.lZ < STICK_REACTION && js.lZ >= DEAD_ZONE_MIN)
 			{
 				m_bStick = false;
 			}
@@ -1430,12 +1517,24 @@ void CPlayer::LeftSelectionBlock(void)
 //******************************************************************************
 void CPlayer::Block_Crate(void)
 {
+	// 生成状態に
+	m_Blcok_Active = BLOCK_ACTIVE_CREATE;
+
 	// NULLの場合
 	if (m_pStoneBlock == NULL)
 	{
-		// 生成
-		m_pStoneBlock = CStone_Block::Create(BLOCK_POS, BLOCK_ROT, BLOCK_SIZE);
-
+		// 右向きの場合
+		if (m_Rot_State == ROT_STATE_RIGHT)
+		{
+			// 生成
+			m_pStoneBlock = CStone_Block::Create(BLOCK_CREATE_RIGHTPOS, BLOCK_ROT, BLOCK_SIZE);
+		}
+		// 左向きの場合
+		if (m_Rot_State == ROT_STATE_LEFT)
+		{
+			// 生成
+			m_pStoneBlock = CStone_Block::Create(BLOCK_CREATE_LEFTPOS, BLOCK_ROT, BLOCK_SIZE);
+		}
 		// 代入
 		m_pBlock = m_pStoneBlock;
 	}
@@ -1445,9 +1544,18 @@ void CPlayer::Block_Crate(void)
 		// 破棄
 		m_pStoneBlock->ReleaseBlock();
 
-		// 生成
-		m_pStoneBlock = CStone_Block::Create(BLOCK_POS, BLOCK_ROT, BLOCK_SIZE);
-
+		// 右向きの場合
+		if (m_Rot_State == ROT_STATE_RIGHT)
+		{
+			// 生成
+			m_pStoneBlock = CStone_Block::Create(BLOCK_CREATE_RIGHTPOS, BLOCK_ROT, BLOCK_SIZE);
+		}
+		// 左向きの場合
+		if (m_Rot_State == ROT_STATE_LEFT)
+		{
+			// 生成
+			m_pStoneBlock = CStone_Block::Create(BLOCK_CREATE_LEFTPOS, BLOCK_ROT, BLOCK_SIZE);
+		}
 		// 代入
 		m_pBlock = m_pStoneBlock;
 	}
@@ -1504,6 +1612,9 @@ void CPlayer::Collision(void)
 					{
 						// falseに
 						m_bJump = false;
+
+						// falseに
+						m_bJumpValue = false;
 					}
 				}
 				// 左
@@ -1555,11 +1666,10 @@ void CPlayer::Collision(void)
 					m_move.y = MIN_MOVE_VALUE;
 
 					// 位置
-					m_pos.y = (m_size.y / DEVIDE_VALUE) - (ObjPos.y + ObjSize.y / DEVIDE_VALUE);
-
+					m_pos.y = (m_size.y / DEVIDE_VALUE) -  (ObjPos.y + ObjSize.y / DEVIDE_VALUE);
 				}
 				// 上
-				if (CCollision::RectangleCollisionMove(m_pos, m_posOld, m_size, ObjPos, ObjSize) == CCollision::SURFACE_UP)
+				else if (CCollision::RectangleCollisionMove(m_pos, m_posOld, m_size, ObjPos, ObjSize) == CCollision::SURFACE_UP)
 				{
 					// 移動量0
 					m_move.y = MIN_MOVE_VALUE;
@@ -1578,7 +1688,7 @@ void CPlayer::Collision(void)
 					}
 				}
 				// 左
-				if (CCollision::RectangleCollisionMove(pos, m_posOld, m_size, ObjPos, ObjSize) == CCollision::SURFACE_LEFT)
+				else if (CCollision::RectangleCollisionMove(pos, m_posOld, m_size, ObjPos, ObjSize) == CCollision::SURFACE_LEFT)
 				{
 					// 移動量0
 					m_move.x = MIN_MOVE_VALUE;
@@ -1587,7 +1697,7 @@ void CPlayer::Collision(void)
 					m_pos.x = (-m_size.x / DEVIDE_VALUE) + (ObjPos.x - ObjSize.x / DEVIDE_VALUE);
 				}
 				// 右
-				if (CCollision::RectangleCollisionMove(pos, m_posOld, m_size, ObjPos, ObjSize) == CCollision::SURFACE_RIGHT)
+				else if (CCollision::RectangleCollisionMove(pos, m_posOld, m_size, ObjPos, ObjSize) == CCollision::SURFACE_RIGHT)
 				{
 					// 移動量0
 					m_move.x = MIN_MOVE_VALUE;
@@ -1622,16 +1732,33 @@ void CPlayer::Move(void)
 	// 目的の向き
 	D3DXVECTOR3 RotDest = m_rot;
 
+	// カメラ取得
+	CCamera *pCamera = CManager::GetCamera();
+
+	// カメラの位置取得
+	D3DXVECTOR3 CameraPos = pCamera->GetPos();
+
 	if (g_lpDIDevice != NULL)
 	{
 		// 左
 		if (js.lX <= -STICK_REACTION)
 		{
-			if (g_lpDIDevice != NULL && pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
+			// trueに
+			m_bBlock_Move = true;
+
+			// カメラの位置より引く場合
+			if (m_pos.x < CameraPos.x - SCREEN_WIDTH / CAMERA_POS_DEVIDE)
 			{
+				pCamera->Move(-MOVE_VALUE.x);
+			}
+			// Rトリガーが押されている場合
+			if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
+			{
+				// NULLでない場合
 				if (m_pBlock != NULL)
 				{
-					if (m_Rot_State == ROT_STATE_RIGHT)
+					// 右向きの場合
+					if (m_Rot_State == ROT_STATE_LEFT)
 					{
 						// 移動モーション
 						m_pMotion->SetMotion(CMotion::MOTION_BLOCK_RUN);
@@ -1640,54 +1767,9 @@ void CPlayer::Move(void)
 						m_move.x = -MOVE_VALUE.x;
 
 						// 向き
-						RotDest.y = RIGHT_ROT.y;
-					}
-					if (m_Rot_State == ROT_STATE_LEFT)
-					{
-						// 移動モーション
-						m_pMotion->SetMotion(CMotion::MOTION_BACKRUN);
-
-						// 後ろ
-						m_move.x = MOVE_VALUE.x / DEVIDE_VALUE;
-
-						// 向き
-						RotDest.y = RIGHT_ROT.y;
-					}
-				}
-			}
-			else
-			{
-				// 移動モーション
-				m_pMotion->SetMotion(CMotion::MOTION_RUN);
-
-				// 後ろ
-				m_move.x = -MOVE_VALUE.x;
-
-				// 向き
-				RotDest.y = RIGHT_ROT.y;
-
-				// 左向きの状態
-				m_Rot_State = ROT_STATE_RIGHT;
-			}
-		}
-		// 右
-		if (js.lX >= STICK_REACTION)
-		{
-			if (g_lpDIDevice != NULL && pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
-			{
-				if (m_pBlock != NULL)
-				{
-					if (m_Rot_State == ROT_STATE_LEFT)
-					{
-						// 移動モーション
-						m_pMotion->SetMotion(CMotion::MOTION_BLOCK_RUN);
-
-						// 後ろ
-						m_move.x = MOVE_VALUE.x;
-
-						// 向き
 						RotDest.y = LEFT_ROT.y;
 					}
+					// 左向きの場合
 					if (m_Rot_State == ROT_STATE_RIGHT)
 					{
 						// 移動モーション
@@ -1703,22 +1785,77 @@ void CPlayer::Move(void)
 			}
 			else
 			{
+				// 左向きの状態
+				m_Rot_State = ROT_STATE_LEFT;
+
+				// 移動モーション
+				m_pMotion->SetMotion(CMotion::MOTION_RUN);
+
+				// 後ろ
+				m_move.x = -MOVE_VALUE.x;
+			}
+		}
+		// 右
+		if (js.lX >= STICK_REACTION)
+		{
+			// trueに
+			m_bBlock_Move = true;
+
+			// カメラの位置より引く場合
+			if (m_pos.x > CameraPos.x + SCREEN_WIDTH / CAMERA_POS_DEVIDE)
+			{
+				pCamera->Move(MOVE_VALUE.x);
+			}
+			// Rトリガーが押されている場合
+			if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
+			{
+				// NULLでない場合
+				if (m_pBlock != NULL)
+				{
+					// 左向きの場合
+					if (m_Rot_State == ROT_STATE_RIGHT)
+					{
+						// 移動モーション
+						m_pMotion->SetMotion(CMotion::MOTION_BLOCK_RUN);
+
+						// 後ろ
+						m_move.x = MOVE_VALUE.x;
+
+						// 向き
+						RotDest.y = RIGHT_ROT.y;
+					}
+					// 右向きの場合
+					if (m_Rot_State == ROT_STATE_LEFT)
+					{
+						// 移動モーション
+						m_pMotion->SetMotion(CMotion::MOTION_BACKRUN);
+
+						// 後ろ
+						m_move.x = MOVE_VALUE.x / DEVIDE_VALUE;
+
+						// 向き
+						RotDest.y = RIGHT_ROT.y;
+					}
+				}
+			}
+			else
+			{
+				// 右向きの状態
+				m_Rot_State = ROT_STATE_RIGHT;
+
 				// 移動モーション
 				m_pMotion->SetMotion(CMotion::MOTION_RUN);
 
 				// 前に進む
 				m_move.x = MOVE_VALUE.x;
-
-				// 向き
-				RotDest.y = LEFT_ROT.y;
-
-				// 右向きの状態
-				m_Rot_State = ROT_STATE_LEFT;
 			}
 		}
 		// スティックの範囲外の場合
 		if (js.lX > -STICK_REACTION && js.lX < STICK_REACTION)
 		{
+			// trueに
+			m_bBlock_Move = false;
+
 			// 移動量0
 			m_move.x = MIN_MOVE_VALUE;
 
@@ -1731,6 +1868,8 @@ void CPlayer::Move(void)
 			// Aボタンを押した場合
 			if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_A))
 			{
+				// trueに
+				m_bJump = true;
 				// falseの場合
 				if (m_bJumpValue == false)
 				{
@@ -1745,13 +1884,21 @@ void CPlayer::Move(void)
 					// 移動
 					m_move.y += JUMP_VALUE_2;
 				}
-
-				// trueに
-				m_bJump = true;
 			}
 		}
 	}
-
+	// 右を向いてる場合
+	if (m_Rot_State == ROT_STATE_RIGHT)
+	{
+		// 向き
+		RotDest.y = RIGHT_ROT.y;
+	}
+	// 左を向いてる場合
+	if (m_Rot_State == ROT_STATE_LEFT)
+	{
+		// 向き
+		RotDest.y = LEFT_ROT.y;
+	}
 	// 向き
 	m_rot += (RotDest - m_rot) * ROT_MOVE;
 

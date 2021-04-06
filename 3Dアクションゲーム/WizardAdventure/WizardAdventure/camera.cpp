@@ -8,9 +8,11 @@
 //******************************************************************************
 #include "manager.h"
 #include "renderer.h"
-#include "scene.h"
-#include "camera.h"
 #include "keyboard.h"
+#include "scene.h"
+#include "player.h"
+#include "camera.h"
+
 //******************************************************************************
 // マクロ定義
 //******************************************************************************
@@ -23,18 +25,20 @@
 #define MAX_DRAW_DISTANCE	(5000.0f)						// 最大描画距離
 #define MIN_DRAW_DISTANCE	(10.0f)							// 最小描画距離
 #define DEVIDE_VALUE		(3)								// 割る数
+#define MOVE_VALUE			(2.0f)							// 移動量
 //******************************************************************************
 // コンストラクタ
 //******************************************************************************
 CCamera::CCamera()
 {
-	posV		= INIT_D3DXVECTOR3;
-	posR		= INIT_D3DXVECTOR3;
-	vecU		= INIT_D3DXVECTOR3;
+	m_posV		= INIT_D3DXVECTOR3;
+	m_posR		= INIT_D3DXVECTOR3;
+	m_vecU		= INIT_D3DXVECTOR3;
+	AddPosV		= INIT_FLOAT;
 	m_fPhi		= INIT_FLOAT;
 	m_fTheta	= INIT_FLOAT;
-	memset(mtxProjection, NULL, sizeof(mtxProjection));
-	memset(mtxView, NULL, sizeof(mtxView));
+	memset(m_mtxProjection, NULL, sizeof(m_mtxProjection));
+	memset(m_mtxView, NULL, sizeof(m_mtxView));
 }
 
 //******************************************************************************
@@ -50,13 +54,13 @@ CCamera::~CCamera()
 //******************************************************************************
 void CCamera::Init(void)
 {
-	posV		= INIT_D3DXVECTOR3;
-	posR		= INIT_D3DXVECTOR3;
-	vecU		= VECU_VALUE;
+	m_posV		= INIT_D3DXVECTOR3;
+	m_posR		= INIT_D3DXVECTOR3;
+	m_vecU		= VECU_VALUE;
 	m_fPhi		= PHI_VALUE;
 	m_fTheta	= THETA_VALUE;
-	memset(mtxProjection, NULL, sizeof(mtxProjection));
-	memset(mtxView, NULL, sizeof(mtxView));
+	memset(m_mtxProjection, NULL, sizeof(m_mtxProjection));
+	memset(m_mtxView, NULL, sizeof(m_mtxView));
 }
 
 //******************************************************************************
@@ -76,6 +80,30 @@ void CCamera::Update(void)
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 	//キーボードの取得
 	CInputKeyboard *pKeyborad = CManager::GetInputKeyboard();
+
+	// シーン
+	CScene *pScene = NULL;
+
+	D3DXVECTOR3 PlayerPos;
+	do
+	{
+		// オブジェタイプがブロックの場合
+		pScene = CScene::GetScene(CScene::OBJTYPE_PLAYER);
+
+		// NULLチェック
+		if (pScene != NULL)
+		{
+			// オブジェタイプ取得
+			CScene::OBJTYPE objType = pScene->GetObjType();
+
+			// オブジェクトタイプが敵
+			if (objType == CScene::OBJTYPE_PLAYER)
+			{
+				// 座標とサイズ取得
+				PlayerPos = ((CPlayer*)pScene)->GetPos();
+			}
+		}
+	} while (pScene != NULL);
 
 	// 右回転
 	if (pKeyborad->GetKeyPress(DIK_D))
@@ -99,30 +127,37 @@ void CCamera::Update(void)
 	}
 
 	// 注視点
-	posR.x = (sinf(m_fTheta)*cosf(m_fPhi));
-	posR.y = cosf(m_fTheta);
-	posR.z = (sinf(m_fTheta)*sinf(m_fPhi));
-
+	m_posR.x = AddPosV + (sinf(m_fTheta)*cosf(m_fPhi));
+	m_posR.y = cosf(m_fTheta);
+	m_posR.z = (sinf(m_fTheta)*sinf(m_fPhi));
 
 	// 距離
 	m_fDistance = DISTANCE_VALUE;
 
 	// 視点	
-	posV.x = m_fDistance*(sinf(m_fTheta)*cosf(m_fPhi));
-	posV.y = m_fDistance*cosf(m_fTheta);
-	posV.z = m_fDistance*(sinf(m_fTheta)*sinf(m_fPhi));
+	m_posV.x = AddPosV + (sinf(m_fTheta)*cosf(m_fPhi)) *  m_fDistance;
+	m_posV.y = (cosf(m_fTheta)) * m_fDistance;
+	m_posV.z = (sinf(m_fTheta)*sinf(m_fPhi))  * m_fDistance;
 
 	//ビューマトリックスの初期化
-	D3DXMatrixIdentity(&mtxView);
+	D3DXMatrixIdentity(&m_mtxView);
 	//ビューマトリックスの作成
-	D3DXMatrixLookAtLH(&mtxView, &posV, &posR, &vecU);
+	D3DXMatrixLookAtLH(&m_mtxView, &m_posV, &m_posR, &m_vecU);
 	//ビューマトリックスの設定
-	pDevice->SetTransform(D3DTS_VIEW, &mtxView);
+	pDevice->SetTransform(D3DTS_VIEW, &m_mtxView);
 	//プロジェクションマトリックスの初期化
-	D3DXMatrixIdentity(&mtxProjection);
+	D3DXMatrixIdentity(&m_mtxProjection);
 	//プロジェクションマトリックスの作成
-	D3DXMatrixPerspectiveFovLH(&mtxProjection, FOV_VALUE, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, MIN_DRAW_DISTANCE, MAX_DRAW_DISTANCE);
-	//D3DXMatrixOrthoLH(&mtxProjection, (float)SCREEN_WIDTH / DEVIDE_VALUE, (float)SCREEN_HEIGHT / DEVIDE_VALUE, MIN_DRAW_DISTANCE, MAX_DRAW_DISTANCE);
+	D3DXMatrixPerspectiveFovLH(&m_mtxProjection, FOV_VALUE, (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, MIN_DRAW_DISTANCE, MAX_DRAW_DISTANCE);
+	//D3DXMatrixOrthoLH(&m_mtxProjection, (float)SCREEN_WIDTH / DEVIDE_VALUE, (float)SCREEN_HEIGHT / DEVIDE_VALUE, MIN_DRAW_DISTANCE, MAX_DRAW_DISTANCE);
 	//プロジェクションマトリックスの設定
-	pDevice->SetTransform(D3DTS_PROJECTION, &mtxProjection);
+	pDevice->SetTransform(D3DTS_PROJECTION, &m_mtxProjection);
+}
+//******************************************************************************
+// 移動処理関数
+//******************************************************************************
+void CCamera::Move(float fMove)
+{
+	// 移動
+	AddPosV += fMove;
 }

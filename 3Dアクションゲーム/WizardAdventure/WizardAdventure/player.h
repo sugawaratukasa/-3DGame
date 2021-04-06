@@ -62,6 +62,7 @@ public:
 	typedef enum
 	{
 		BLOCK_ACTIVE_NONE = 0,	// ブロックを用いて行動をしていない状態
+		BLOCK_ACTIVE_CREATE,	// ブロック生成時
 		BLOCK_ACTIVE_MOVE,		// ブロックを移動させている状態
 		BLOCK_ACTIVE_SELECT,	// ブロックを選択している状態
 		BLOCK_ACTIVE_SELECTED,	// ブロックを選択した状態
@@ -87,12 +88,11 @@ public:
 	void Draw(void);
 	void SetPlayer(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size);
 
-	void SetPos(D3DXVECTOR3 pos);
-
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
 	D3DXVECTOR3 GetPosOld(void) { return m_posOld; }
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
 	D3DXVECTOR3 GetSize(void) { return m_size; }
+	BLOCK_ACTIVE GetBlockActive(void) { return m_Blcok_Active; }
 private:
 	void RightSelectBlock(void);
 	void RightBlock(void);
@@ -132,5 +132,6 @@ private:
 	bool m_bRot;										// 向き
 	bool m_bJump;										// ジャンプ判定
 	bool m_bJumpValue;									// ジャンプ量判定
+	bool m_bBlock_Move;									// ブロックの移動判定
 };
 #endif

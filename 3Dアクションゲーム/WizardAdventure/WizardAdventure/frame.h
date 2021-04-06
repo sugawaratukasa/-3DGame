@@ -27,7 +27,6 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
-	static void FrameCreate(D3DXVECTOR3 pos, D3DXVECTOR3 size, D3DXCOLOR col, CBlock *pBlock);
 	void SetSelectingColor(D3DXCOLOR col);
 private:
 	static LPDIRECT3DTEXTURE9 m_pTexture;		// テクスチャへのポインタ

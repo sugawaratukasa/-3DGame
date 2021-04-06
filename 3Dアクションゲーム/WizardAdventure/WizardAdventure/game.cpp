@@ -30,7 +30,7 @@
 //*****************************************************************************
 #define PLAYER_POS	(D3DXVECTOR3(100.0f, 0.0f, -200.0f))
 #define PLAYER_ROT	(D3DXVECTOR3(0.0f,D3DXToRadian(90.0f),0.0f))
-#define PLAYER_SIZE	(D3DXVECTOR3(25.0f,20.0f,30.0f))
+#define PLAYER_SIZE	(D3DXVECTOR3(30.0f,15.0f,30.0f))
 #define TEST_POS	(D3DXVECTOR3(-150.0f, -70.0f, -200.0f))
 #define TEST_ROT	(D3DXVECTOR3(0.0f,0.0,0.0))
 #define TEST_SIZE	(D3DXVECTOR3(30.0f,30.0f, 30.0f))

@@ -18,9 +18,9 @@
 //******************************************************************************
 #define FLOOR_TEXT		("data/Map/Text/Floor.csv")																							// マップ
 #define BLOCK_TEXT		("data/Map/Text/Block.csv")																							// 床
-#define FLOOR_SIZE		(D3DXVECTOR3(200.0f,200.0f,200.0f))																					// 床のサイズ
-#define FLOOR_POS		(D3DXVECTOR3(nCountCol * -FLOOR_SIZE.x + 1000.0f,0.0f,nCountRow * -FLOOR_SIZE.z))									// 床の位置
-#define FLOOR_ROT		(D3DXVECTOR3(D3DXToRadian(90.0f),0.0f,0.0f))																		// 床の向き
+#define FLOOR_SIZE		(D3DXVECTOR3(180.0f,0.0f,180.0f))																					// 床のサイズ
+#define FLOOR_POS		(D3DXVECTOR3(nCountCol * -FLOOR_SIZE.x + 1000.0f,-45.0f,nCountRow * FLOOR_SIZE.z - 400.0f))						// 床の位置
+#define FLOOR_ROT		(D3DXVECTOR3(0.0f,0.0f,0.0f))																						// 床の向き
 #define FLOOR_COL		(D3DXCOLOR(1.0f,1.0f,1.0f,1.0f))																					// 色
 #define BLOCK_SIZE		(D3DXVECTOR3(30.0f,30.0f,30.0f))																					// ブロックのサイズ
 #define BLOCK_POS		(D3DXVECTOR3(nCountCol * BLOCK_SIZE.x - 290.0f,nCountRow * -BLOCK_SIZE.y + 150.0f ,-200.0f))						// ブロックの位置
