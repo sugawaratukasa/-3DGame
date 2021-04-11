@@ -6,23 +6,24 @@
 //******************************************************************************
 // インクルードファイル
 //******************************************************************************
+#include "player.h"
+#include "scene.h"
 #include "particle.h"
 #include "particle_emitter.h"
-
 //******************************************************************************
 // マクロ定義
 //******************************************************************************
-#define MAX_TEXT	(1024)										// テキストの最大数
-#define BOAD_EFFECT_TEXT	("data/Effect/BoadEffect_Data.txt")	// テキスト
-#define REMAINDER	(0)											// 余り0
+#define MAX_TEXT			(1024)									// テキストの最大数
+#define STAR_EMITTER_TEXT	("data/Effect/StarEmitter01_Data.txt")	// テキスト
+#define REMAINDER			(0)										// 余り0
 //******************************************************************************
 // コンストラクタ
 //******************************************************************************
 CParticle_Emitter::CParticle_Emitter()
 {
-	m_pos = INIT_D3DXVECTOR3;
-	m_nCount = INIT_INT;
-	m_nCreateCount = INIT_INT;
+	m_pos			= INIT_D3DXVECTOR3;
+	m_nCount		= INIT_INT;
+	m_nCreateCount	= INIT_INT;
 }
 //******************************************************************************
 // デストラクタ
@@ -61,9 +62,13 @@ HRESULT CParticle_Emitter::Init(void)
 	// タイプ
 	switch (m_Type)
 	{
-	case TYPE_BOAD:
+	case TYPE_STAR_RIGHT:
 		// テキストファイル読み込み
-		sprintf(m_cText, BOAD_EFFECT_TEXT);
+		sprintf(m_cText, STAR_EMITTER_TEXT);
+		break;
+	case TYPE_STAR_LEFT:
+		// テキストファイル読み込み
+		sprintf(m_cText, STAR_EMITTER_TEXT);
 		break;
 	}
 
@@ -84,13 +89,20 @@ void CParticle_Emitter::Uninit(void)
 //******************************************************************************
 void CParticle_Emitter::Update(void)
 {
-	// インクリメント
-	m_nCount++;
+	// 生成処理
+	CreateParticle();
 
-	// 余りが0の場合
-	if (m_nCount % m_nCreateCount == REMAINDER)
+	// タイプが星右の場合
+	if (m_Type == TYPE_STAR_RIGHT)
 	{
-		CParticle::Create(m_pos, m_cText);
+		// 星の処理
+		Right_Arm();
+	}
+	// タイプが星左の場合
+	if (m_Type == TYPE_STAR_LEFT)
+	{
+		// 星の処理
+		Left_Arm();
 	}
 }
 //******************************************************************************
@@ -107,6 +119,28 @@ void CParticle_Emitter::Release(void)
 	// 終了
 	Uninit();
 	return;
+}
+//******************************************************************************
+// 位置設定関数
+//******************************************************************************
+void CParticle_Emitter::SetPos(D3DXVECTOR3 pos)
+{
+	// 位置代入
+	m_pos = pos;
+}
+//******************************************************************************
+// パーティクル生成処理関数
+//******************************************************************************
+void CParticle_Emitter::CreateParticle(void)
+{
+	// インクリメント
+	m_nCount++;
+
+	// 余りが0の場合
+	if (m_nCount % m_nCreateCount == REMAINDER)
+	{
+		CParticle::Create(m_pos, m_cText);
+	}
 }
 //******************************************************************************
 // 読み込み関数
@@ -186,4 +220,80 @@ void CParticle_Emitter::Load(const char * cText)
 			}
 		}
 	}
+}
+//******************************************************************************
+// 右手の処理関数
+//******************************************************************************
+void CParticle_Emitter::Right_Arm(void)
+{
+	// 位置
+	D3DXVECTOR3 pos;
+
+	// CSceneのポインタ
+	CScene *pScene = NULL;
+
+	// プレイヤー取得
+	do
+	{
+		// シーン取得
+		pScene = GetScene(OBJTYPE_PLAYER);
+
+		// NULLでない場合
+		if (pScene != NULL)
+		{
+			// オブジェクトタイプ取得
+			OBJTYPE objtype = pScene->GetObjType();
+
+			// オブジェクトタイププレイヤー
+			if (objtype == OBJTYPE_PLAYER)
+			{
+				// 位置取得
+				pos.x = ((CPlayer*)pScene)->GetMtxWorld(CPlayer::PARTS_DOWN_ARM_R)._41;
+				pos.y = ((CPlayer*)pScene)->GetMtxWorld(CPlayer::PARTS_DOWN_ARM_R)._42;
+				pos.z = ((CPlayer*)pScene)->GetMtxWorld(CPlayer::PARTS_DOWN_ARM_R)._43;
+
+				// 位置代入
+				m_pos = pos;
+			}
+		}
+		// NULLになるまで繰り返す
+	} while (pScene != NULL);
+}
+//******************************************************************************
+// 左手の処理関数
+//******************************************************************************
+void CParticle_Emitter::Left_Arm(void)
+{
+	// 位置
+	D3DXVECTOR3 pos;
+
+	// CSceneのポインタ
+	CScene *pScene = NULL;
+
+	// プレイヤー取得
+	do
+	{
+		// シーン取得
+		pScene = GetScene(OBJTYPE_PLAYER);
+
+		// NULLでない場合
+		if (pScene != NULL)
+		{
+			// オブジェクトタイプ取得
+			OBJTYPE objtype = pScene->GetObjType();
+
+			// オブジェクトタイププレイヤー
+			if (objtype == OBJTYPE_PLAYER)
+			{
+				// 位置取得
+				pos.x = ((CPlayer*)pScene)->GetMtxWorld(CPlayer::PARTS_DOWN_ARM_L)._41;
+				pos.y = ((CPlayer*)pScene)->GetMtxWorld(CPlayer::PARTS_DOWN_ARM_L)._42;
+				pos.z = ((CPlayer*)pScene)->GetMtxWorld(CPlayer::PARTS_DOWN_ARM_L)._43;
+
+				// 位置代入
+				m_pos = pos;
+			}
+		}
+		// NULLになるまで繰り返す
+	} while (pScene != NULL);
 }

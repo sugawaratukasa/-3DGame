@@ -17,6 +17,7 @@
 #include "collision.h"
 #include "player.h"
 #include "block.h"
+#include "camera.h"
 #include "3d_obj.h"
 //******************************************************************************
 // マクロ定義
@@ -28,13 +29,17 @@
 #define BUTTON			("data/Model/Object/Button.x")		// ボタン
 #define GATE			("data/Model/Object/Gate_2.x")		// 扉
 #define GATEROOF		("data/Model/Object/GateRoof.x")	// 扉屋根
+#define TREE			("data/Model/Object/Tree.x")		// 木
+#define STONE_0			("data/Model/Object/stone000.x")	// 石
+#define STONE_1			("data/Model/Object/stone001.x")	// 石
+#define STONE_2			("data/Model/Object/stone002.x")	// 石
 //******************************************************************************
 //静的メンバ変数
 //******************************************************************************
 LPD3DXMESH C3D_Obj::m_pMesh[TYPE_MAX] = {};
 LPD3DXBUFFER C3D_Obj::m_pBuffMat[TYPE_MAX] = {};
 DWORD C3D_Obj::m_nNumMat[TYPE_MAX] = {};
-char* C3D_Obj::m_apFileName[TYPE_MAX] = { FLOOR_BLOCK,NEEDLE_BLOCK,BLOCK_WOOD, BLOCK_STOON ,BUTTON, GATE, GATEROOF };
+char* C3D_Obj::m_apFileName[TYPE_MAX] = { FLOOR_BLOCK,NEEDLE_BLOCK,BLOCK_WOOD, BLOCK_STOON ,BUTTON, GATE, GATEROOF, TREE,STONE_0, STONE_1, STONE_2 };
 LPDIRECT3DTEXTURE9 C3D_Obj::m_apTexture[TYPE_MAX][MAX_MATERIAL] = {};
 //******************************************************************************
 // コンストラクタ
@@ -46,6 +51,7 @@ C3D_Obj::C3D_Obj(int nPriority) :CScene(nPriority)
 	m_size		= INIT_D3DXVECTOR3;
 	m_pModel	= NULL;
 	m_Type		= TYPE_NONE;
+	m_bDraw		= true;
 	memset(m_mtxWorld, NULL, sizeof(m_mtxWorld));
 }
 
@@ -214,6 +220,31 @@ void C3D_Obj::Update(void)
 {
 	// 位置更新
 	m_pModel->SetModel(m_pos, m_rot, m_size);
+
+	// カメラの位置取得
+	D3DXVECTOR3 CameraPos = CManager::GetCamera()->GetPos();
+
+	// 描画判定
+	// 範囲外の場合
+	if (m_pos.x > CameraPos.x + SCREEN_WIDTH / CAMERA_POS_DEVIDE2 || m_pos.x < CameraPos.x - SCREEN_WIDTH / CAMERA_POS_DEVIDE2)
+	{
+		// trueの場合
+		if (m_bDraw == true)
+		{
+			// falseに
+			m_bDraw = false;
+		}
+	}
+	// 範囲内の場合
+	if (m_pos.x < CameraPos.x + SCREEN_WIDTH / CAMERA_POS_DEVIDE2 && m_pos.x > CameraPos.x - SCREEN_WIDTH / CAMERA_POS_DEVIDE2)
+	{
+		// falseの場合
+		if (m_bDraw == false)
+		{
+			// trueに
+			m_bDraw = true;
+		}
+	}
 }
 
 //******************************************************************************
@@ -239,8 +270,12 @@ void C3D_Obj::Draw(void)
 	//ワールドマトリックスの設定
 	m_pModel->SetWorldMatrix(m_mtxWorld);
 
-	// モデルクラスの描画処理
-	m_pModel->Draw();
+	// trueの場合
+	if (m_bDraw == true)
+	{
+		// モデルクラスの描画処理
+		m_pModel->Draw();
+	}
 }
 //******************************************************************************
 // 情報設定

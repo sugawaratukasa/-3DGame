@@ -9,6 +9,7 @@
 #include "main.h"
 #include "manager.h"
 #include "renderer.h"
+#include "camera.h"
 #include "scene3d.h"
 //******************************************************************************
 // マクロ定義
@@ -22,17 +23,18 @@
 //******************************************************************************
 CScene3d::CScene3d(int nPriority) :CScene(nPriority)
 {
-	m_pTexture = NULL;
-	m_pVtxBuff = NULL;
-	m_pos = INIT_D3DXVECTOR3;
-	m_rot = INIT_D3DXVECTOR3;
-	m_size = INIT_D3DXVECTOR3;
-	m_col = INIT_COLOR;
-	m_fTex_X = INIT_FLOAT;
-	m_fTex_X2 = INIT_FLOAT;
-	m_fTex_Y = INIT_FLOAT;
-	m_fTex_Y2 = INIT_FLOAT;
-	m_fScale = INIT_FLOAT;
+	m_pTexture	= NULL;
+	m_pVtxBuff	= NULL;
+	m_pos		= INIT_D3DXVECTOR3;
+	m_rot		= INIT_D3DXVECTOR3;
+	m_size		= INIT_D3DXVECTOR3;
+	m_col		= INIT_COLOR;
+	m_fTex_X	= INIT_FLOAT;
+	m_fTex_X2	= INIT_FLOAT;
+	m_fTex_Y	= INIT_FLOAT;
+	m_fTex_Y2	= INIT_FLOAT;
+	m_fScale	= INIT_FLOAT;
+	m_bDraw		= true;
 	memset(m_mtxWorld, NULL, sizeof(m_mtxWorld));
 }
 
@@ -55,6 +57,7 @@ HRESULT CScene3d::Init(void)
 	// 拡大率を1.0fに設定
 	m_fScale = SCALE_VALUE;
 
+	// デバイス取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	// 頂点バッファの生成
@@ -125,6 +128,9 @@ void CScene3d::Uninit(void)
 //******************************************************************************
 void CScene3d::Update(void)
 {
+	// カメラの位置取得
+	D3DXVECTOR3 CameraPos = CManager::GetCamera()->GetPos();
+
 	// 頂点情報を設定
 	VERTEX_3D *pVtx = NULL;
 
@@ -157,6 +163,28 @@ void CScene3d::Update(void)
 
 	// 頂点バッファのアンロック
 	m_pVtxBuff->Unlock();
+
+	// 描画判定
+	// 範囲外の場合
+	if (m_pos.x > CameraPos.x + SCREEN_WIDTH / CAMERA_POS_DEVIDE2 || m_pos.x < CameraPos.x - SCREEN_WIDTH / CAMERA_POS_DEVIDE2)
+	{
+		// trueの場合
+		if (m_bDraw == true)
+		{
+			// falseに
+			m_bDraw = false;
+		}
+	}
+	// 範囲内の場合
+	if (m_pos.x < CameraPos.x + SCREEN_WIDTH / CAMERA_POS_DEVIDE2 && m_pos.x > CameraPos.x - SCREEN_WIDTH / CAMERA_POS_DEVIDE2)
+	{
+		// falseの場合
+		if (m_bDraw == false)
+		{
+			// trueに
+			m_bDraw = true;
+		}
+	}
 }
 
 //******************************************************************************
@@ -164,35 +192,39 @@ void CScene3d::Update(void)
 //******************************************************************************
 void CScene3d::Draw(void)
 {
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
+	// trueの場合
+	if (m_bDraw == true)
+	{
+		LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
-	D3DXMATRIX mtxRot, mtxTrans;
+		D3DXMATRIX mtxRot, mtxTrans;
 
-	// マトリックス初期化
-	D3DXMatrixIdentity(&m_mtxWorld);
+		// マトリックス初期化
+		D3DXMatrixIdentity(&m_mtxWorld);
 
-	// 向き
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+		// 向き
+		D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
+		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
 
-	// 位置
-	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
+		// 位置
+		D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 
-	// ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+		// ワールドマトリックスの設定
+		pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 
-	// テクスチャ設定
-	pDevice->SetTexture(0, m_pTexture);
+		// テクスチャ設定
+		pDevice->SetTexture(0, m_pTexture);
 
-	// 頂点バッファをデバイスのデータストリームに設定
-	pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_3D));
+		// 頂点バッファをデバイスのデータストリームに設定
+		pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_3D));
 
-	// 頂点フォーマットの設定
-	pDevice->SetFVF(FVF_VERTEX_3D);
+		// 頂点フォーマットの設定
+		pDevice->SetFVF(FVF_VERTEX_3D);
 
-	// ポリゴン描画 
-	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+		// ポリゴン描画 
+		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+	}
 }
 //******************************************************************************
 // 場所

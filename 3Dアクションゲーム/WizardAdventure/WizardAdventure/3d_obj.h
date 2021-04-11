@@ -34,6 +34,10 @@ public:
 		TYPE_BUTTON,
 		TYPE_GATE,
 		TYPE_GATE_ROOF,
+		TYPE_TREE,
+		TYPE_STONE_0,
+		TYPE_STONE_1,
+		TYPE_STONE_2,
 		TYPE_MAX
 	}TYPE;
 
@@ -76,6 +80,7 @@ private:
 	D3DXVECTOR3 m_size;														// 大きさ
 	CModel *m_pModel;														// モデルクラスのポインタ
 	TYPE m_Type;															// 種類
+	bool m_bDraw;															// 描画判定
 };
 
 #endif

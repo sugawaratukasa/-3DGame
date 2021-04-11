@@ -14,8 +14,8 @@
 class CScene3d :public CScene
 {
 public:
-	CScene3d(int nPriority = OBJTYPE_DEFAULT);//インクリメント
-	~CScene3d();//デクリメント
+	CScene3d(int nPriority = OBJTYPE_DEFAULT);
+	~CScene3d();
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
@@ -48,5 +48,6 @@ private:
 	float m_fTex_Y;							// テクスチャY
 	float m_fTex_Y2;						// テクスチャY2
 	float m_fScale;							// 拡大率
+	bool m_bDraw;							// 描画判定
 };
-#endif //_SCENE3D_H_
+#endif

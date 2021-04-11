@@ -10,20 +10,21 @@
 #include "manager.h"
 #include "renderer.h"
 #include "scene.h"
+#include "camera.h"
 #include "model.h"
 //******************************************************************************
 //インクリメント
 //******************************************************************************
 CModel::CModel()
 {
-	m_pMesh		= NULL;
-	m_pBuffMat	= NULL;
-	m_nNumMat	= NULL;
-	m_pParent	= NULL;
-	m_pos		= INIT_D3DXVECTOR3;
-	m_rot		= INIT_D3DXVECTOR3;
-	m_size		= INIT_D3DXVECTOR3;
-	m_nldxModelParent = INIT_INT;
+	m_pMesh				= NULL;
+	m_pBuffMat			= NULL;
+	m_nNumMat			= NULL;
+	m_pParent			= NULL;
+	m_pos				= INIT_D3DXVECTOR3;
+	m_rot				= INIT_D3DXVECTOR3;
+	m_size				= INIT_D3DXVECTOR3;
+	m_nldxModelParent	= INIT_INT;
 	memset(m_mtxWorld, NULL, sizeof(m_mtxWorld));
 	memset(m_pTexture, NULL, sizeof(m_pTexture));
 }
@@ -87,7 +88,6 @@ void CModel::Uninit(void)
 //******************************************************************************
 void CModel::Update(void)
 {
-
 }
 
 //******************************************************************************
@@ -95,7 +95,6 @@ void CModel::Update(void)
 //******************************************************************************
 void CModel::Draw(void)
 {
-
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 	D3DXMATRIX mtxRot, mtxTrans;
 	D3DMATERIAL9 matDef;
@@ -142,10 +141,13 @@ void CModel::Draw(void)
 		pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 		pDevice->SetTexture(0, m_pTexture[nCntMat]);
 
+		// 色
 		pMat[nCntMat].MatD3D.Ambient = pMat[nCntMat].MatD3D.Diffuse;
 
+		// NULLでない場合
 		if (m_pMesh != NULL)
 		{
+
 			//モデルパーツの描画
 			m_pMesh->DrawSubset(nCntMat);
 		}

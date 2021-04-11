@@ -25,6 +25,7 @@
 #include "floor_block.h"
 #include "particle_emitter.h"
 #include "particle_effect.h"
+#include "bg.h"
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
@@ -86,6 +87,9 @@ HRESULT CGame::Init(void)
 
 	// プレイヤー生成
 	CPlayer::Create(PLAYER_POS, PLAYER_ROT, PLAYER_SIZE);
+
+	// 背景生成
+	CBg::Create();
 
 	//// ブロック
 	//CWood_Block::Create(TEST_POS2, TEST_ROT, TEST_SIZE);

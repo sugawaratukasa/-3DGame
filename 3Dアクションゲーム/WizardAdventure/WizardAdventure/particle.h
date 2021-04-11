@@ -14,7 +14,7 @@
 class CParticle : public CBillboard
 {
 public:
-	CParticle();
+	CParticle(int nPriority = OBJTYPE_PARTICLE);
 	~CParticle();
 	static CParticle *Create(D3DXVECTOR3 pos, const char *cText);
 	HRESULT Init(void);
@@ -33,7 +33,6 @@ private:
 	bool m_bSubColor;			// 色減算を行うか
 	bool m_bRotRandom;			// 向きランダム
 	bool m_bTexRandom;			// テクスチャランダム
-	D3DXVECTOR3 m_pos;			// 位置
 	D3DXVECTOR3 m_Random_pos;	// 位置ランダム
 	D3DXVECTOR3 m_size;			// サイズ
 	D3DXVECTOR3 m_move;			// 移動量

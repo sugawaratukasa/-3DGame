@@ -58,11 +58,13 @@ class CMotion
 public:
 	typedef enum {
 		MOTION_IDLE = 0,				// 待機モーション
+		MOTION_BLOCK_IDLE,				// ブロック移動待機モーション
 		MOTION_RUN,						// 走りモーション
 		MOTION_BACKRUN,					// 後ろ歩き
 		MOTION_BLOCK_RUN,				// ブロック移動
 		MOTION_JUMP,					// ジャンプモーション
-		MOTION_MOTION_LANDING,			// ジャンプモーション
+		MOTION_MOTION_LANDING,			// 着地
+		MOTION_MAGIC_ACTION,			// 魔法攻撃モーション
 		MOTION_MAX
 	}MOTIONSTATE;
 

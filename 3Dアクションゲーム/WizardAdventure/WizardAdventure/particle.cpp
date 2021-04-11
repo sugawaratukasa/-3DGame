@@ -27,7 +27,7 @@
 //******************************************************************************
 // コンストラクタ
 //******************************************************************************
-CParticle::CParticle()
+CParticle::CParticle(int nPriority) : CBillboard(nPriority)
 {
 	m_bAlpha_Blend		= false;
 	m_bLife				= false;
@@ -37,7 +37,6 @@ CParticle::CParticle()
 	m_bSubColor			= false;
 	m_bRotRandom		= false;
 	m_bTexRandom		= false;
-	m_pos				= INIT_D3DXVECTOR3;
 	m_Random_pos		= INIT_D3DXVECTOR3;
 	m_size				= INIT_D3DXVECTOR3;
 	m_move				= INIT_D3DXVECTOR3;
@@ -72,7 +71,7 @@ CParticle *CParticle::Create(D3DXVECTOR3 pos, const char *cText)
 	// メモリ確保
 	pParticle = new CParticle;
 
-	// 位置代入
+	//位置設定
 	pParticle->SetPosition(pos);
 
 	// テキスト読み込み
@@ -101,6 +100,9 @@ HRESULT CParticle::Init(void)
 
 	// 色設定
 	SetColor(m_color);
+
+	// セットアルファ
+	SetAlpha(m_nAlpha);
 
 	if (m_bTexRandom == false)
 	{
@@ -153,26 +155,29 @@ HRESULT CParticle::Init(void)
 	// trueの場合
 	if (m_bRandomPos == true)
 	{
-		// 向き取得
-		D3DXVECTOR3 pos = INIT_D3DXVECTOR3;
+		// 位置取得
+		D3DXVECTOR3 pos = GetPosition();
+
+		// 位置
+		D3DXVECTOR3 Random_pos = INIT_D3DXVECTOR3;
 
 		// 位置ランダム
-		pos.x = float(rand() % (int)m_pos.x *RANDOM_POS_MUT * MUT - (int)m_pos.x *RANDOM_POS_MUT / MUT);
+		Random_pos.x = float(rand() % (int)m_Random_pos.x *RANDOM_POS_MUT * MUT - (int)m_Random_pos.x *RANDOM_POS_MUT / MUT);
 
 		// 除算
-		pos.x = pos.x / RANDOM_POS_MUT;
+		Random_pos.x = Random_pos.x / RANDOM_POS_MUT;
 
 		// 位置ランダム
-		pos.y = float(rand() % (int)m_pos.y * RANDOM_POS_MUT);
+		Random_pos.y = float(rand() % (int)m_Random_pos.y * RANDOM_POS_MUT);
 
 		// 除算
-		pos.y = pos.y / RANDOM_POS_MUT;
+		Random_pos.y = Random_pos.y / RANDOM_POS_MUT;
 
 		// 位置ランダム
-		m_pos += pos;
+		pos += Random_pos;
 
 		// 位置設定
-		SetPosition(m_pos);
+		SetPosition(pos);
 	}
 
 	// 角度ランダム

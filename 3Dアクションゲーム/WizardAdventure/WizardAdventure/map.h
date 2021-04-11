@@ -23,6 +23,7 @@ public:
 	{
 		LOAD_TYPE_FLOOR = -1,
 		LOAD_TYPE_BLOCK,
+		LOAD_TYPE_BACK_OBJ,
 		LOAD_TYPE_MAX
 	}LOAD_TYPE;
 	// 種類
@@ -44,6 +45,16 @@ public:
 		OBJ_TYPE_MAX			// 最大
 	}OBJ_TYPE;
 
+	// 背景オブジェクトの種類
+	enum BACK_OBJ_TYPE
+	{
+		BACK_OBJ_NONE = 0,	// 最小
+		BACK_OBJ_TREE,		// 木
+		BACK_OBJ_STONE_0,	// 石大
+		BACK_OBJ_STONE_1,	// 石中
+		BACK_OBJ_STONE_2,	// 石小
+		BACK_OBJ_MAX		// 最大
+	};
 	CMap(int nPriority = OBJTYPE_FLOOR);
 	~CMap();
 	static CMap *Create(void);
@@ -58,11 +69,14 @@ private:
 	void FloorLoad(void);
 	void BlockCreate(void);
 	void BlockLoad(void);
+	void BackObjCreate(void);
+	void BackObjLoad(void);
 	void SetRowCol(LOAD_TYPE load_type);
 
-	FLOOR_TYPE **m_apFloorIndex;	// 行列
-	OBJ_TYPE **m_apBlockIndex;	// 行列
-	int m_nRow;						// 行
-	int m_nCol;						// 列
+	FLOOR_TYPE **m_apFloorIndex;		// 行列
+	OBJ_TYPE **m_apBlockIndex;			// 行列
+	BACK_OBJ_TYPE **m_apBackObjIndex;	// 行列
+	int m_nRow;							// 行
+	int m_nCol;							// 列
 };
 #endif

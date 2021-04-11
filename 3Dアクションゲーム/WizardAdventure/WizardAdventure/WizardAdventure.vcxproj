@@ -146,6 +146,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="3d_polygon.cpp" />
+    <ClCompile Include="bg.cpp" />
+    <ClCompile Include="bg_black.cpp" />
+    <ClCompile Include="bg_cloud.cpp" />
+    <ClCompile Include="bg_sky.cpp" />
     <ClCompile Include="billboard.cpp" />
     <ClCompile Include="block.cpp" />
     <ClCompile Include="button.cpp" />
@@ -161,6 +166,7 @@
     <ClCompile Include="joystick.cpp" />
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="light.cpp" />
+    <ClCompile Include="magic.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="manager.cpp" />
     <ClCompile Include="map.cpp" />
@@ -179,11 +185,18 @@
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="scene2d.cpp" />
     <ClCompile Include="scene3d.cpp" />
+    <ClCompile Include="stone.cpp" />
     <ClCompile Include="stone_block.cpp" />
     <ClCompile Include="particle_texture.cpp" />
+    <ClCompile Include="tree.cpp" />
     <ClCompile Include="wood_block.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="3d_polygon.h" />
+    <ClInclude Include="bg.h" />
+    <ClInclude Include="bg_black.h" />
+    <ClInclude Include="bg_cloud.h" />
+    <ClInclude Include="bg_sky.h" />
     <ClInclude Include="billboard.h" />
     <ClInclude Include="block.h" />
     <ClInclude Include="button.h" />
@@ -199,6 +212,7 @@
     <ClInclude Include="joystick.h" />
     <ClInclude Include="keyboard.h" />
     <ClInclude Include="light.h" />
+    <ClInclude Include="magic.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="manager.h" />
     <ClInclude Include="map.h" />
@@ -217,8 +231,10 @@
     <ClInclude Include="scene.h" />
     <ClInclude Include="scene2d.h" />
     <ClInclude Include="scene3d.h" />
+    <ClInclude Include="stone.h" />
     <ClInclude Include="stone_block.h" />
     <ClInclude Include="particle_texture.h" />
+    <ClInclude Include="tree.h" />
     <ClInclude Include="wood_block.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

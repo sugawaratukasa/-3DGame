@@ -61,9 +61,6 @@
     <Filter Include="ソース ファイル\3D\Model\Object">
       <UniqueIdentifier>{0519a8b3-ea21-4d80-8666-c44af8254ecc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\3D\Model\Object\Block">
-      <UniqueIdentifier>{e8b4f7cf-4c77-4a8b-830e-4ebd971258eb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\3D\Model\Object">
       <UniqueIdentifier>{3e736c9e-f601-49de-b1f8-d5c35a14d6bb}</UniqueIdentifier>
     </Filter>
@@ -85,13 +82,13 @@
     <Filter Include="ヘッダー ファイル\3D\3DPolygon\Particle\Particle_Effect">
       <UniqueIdentifier>{5b11357c-fe2a-4ff1-a55e-14614d8c4b54}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\3D\Model\Block">
+      <UniqueIdentifier>{e8b4f7cf-4c77-4a8b-830e-4ebd971258eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="scene2d.cpp">
       <Filter>ソース ファイル\2D</Filter>
-    </ClCompile>
-    <ClCompile Include="scene3d.cpp">
-      <Filter>ソース ファイル\3D</Filter>
     </ClCompile>
     <ClCompile Include="model.cpp">
       <Filter>ソース ファイル\3D\Model</Filter>
@@ -151,13 +148,13 @@
       <Filter>ソース ファイル\System</Filter>
     </ClCompile>
     <ClCompile Include="block.cpp">
-      <Filter>ソース ファイル\3D\Model\Object\Block</Filter>
+      <Filter>ソース ファイル\3D\Model\Block</Filter>
     </ClCompile>
     <ClCompile Include="stone_block.cpp">
-      <Filter>ソース ファイル\3D\Model\Object\Block</Filter>
+      <Filter>ソース ファイル\3D\Model\Block</Filter>
     </ClCompile>
     <ClCompile Include="wood_block.cpp">
-      <Filter>ソース ファイル\3D\Model\Object\Block</Filter>
+      <Filter>ソース ファイル\3D\Model\Block</Filter>
     </ClCompile>
     <ClCompile Include="floor.cpp">
       <Filter>ソース ファイル\3D\3DPolygon</Filter>
@@ -172,13 +169,13 @@
       <Filter>ソース ファイル\3D\Model\Object</Filter>
     </ClCompile>
     <ClCompile Include="floor_block.cpp">
-      <Filter>ソース ファイル\3D\Model\Object\Block</Filter>
+      <Filter>ソース ファイル\3D\Model\Block</Filter>
     </ClCompile>
     <ClCompile Include="particle_effect.cpp">
       <Filter>ソース ファイル\3D\3DPolygon\Particle\Particle_Effect</Filter>
     </ClCompile>
     <ClCompile Include="needle_block.cpp">
-      <Filter>ソース ファイル\3D\Model\Object\Block</Filter>
+      <Filter>ソース ファイル\3D\Model\Block</Filter>
     </ClCompile>
     <ClCompile Include="button.cpp">
       <Filter>ソース ファイル\3D\Model\Object</Filter>
@@ -195,13 +192,37 @@
     <ClCompile Include="particle_texture.cpp">
       <Filter>ソース ファイル\System</Filter>
     </ClCompile>
+    <ClCompile Include="scene3d.cpp">
+      <Filter>ソース ファイル\3D\3DPolygon</Filter>
+    </ClCompile>
+    <ClCompile Include="bg.cpp">
+      <Filter>ソース ファイル\3D\3DPolygon</Filter>
+    </ClCompile>
+    <ClCompile Include="bg_sky.cpp">
+      <Filter>ソース ファイル\3D\3DPolygon</Filter>
+    </ClCompile>
+    <ClCompile Include="bg_cloud.cpp">
+      <Filter>ソース ファイル\3D\3DPolygon</Filter>
+    </ClCompile>
+    <ClCompile Include="3d_polygon.cpp">
+      <Filter>ソース ファイル\3D\3DPolygon</Filter>
+    </ClCompile>
+    <ClCompile Include="tree.cpp">
+      <Filter>ソース ファイル\3D\Model\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="stone.cpp">
+      <Filter>ソース ファイル\3D\Model\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="magic.cpp">
+      <Filter>ソース ファイル\3D\3DPolygon\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="bg_black.cpp">
+      <Filter>ソース ファイル\3D\3DPolygon</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scene2d.h">
       <Filter>ヘッダー ファイル\2D</Filter>
-    </ClInclude>
-    <ClInclude Include="scene3d.h">
-      <Filter>ヘッダー ファイル\3D</Filter>
     </ClInclude>
     <ClInclude Include="billboard.h">
       <Filter>ヘッダー ファイル\3D</Filter>
@@ -304,6 +325,33 @@
     </ClInclude>
     <ClInclude Include="particle_texture.h">
       <Filter>ヘッダー ファイル\System</Filter>
+    </ClInclude>
+    <ClInclude Include="scene3d.h">
+      <Filter>ヘッダー ファイル\3D\3DPolygon</Filter>
+    </ClInclude>
+    <ClInclude Include="bg.h">
+      <Filter>ヘッダー ファイル\3D\3DPolygon</Filter>
+    </ClInclude>
+    <ClInclude Include="bg_sky.h">
+      <Filter>ヘッダー ファイル\3D\3DPolygon</Filter>
+    </ClInclude>
+    <ClInclude Include="bg_cloud.h">
+      <Filter>ヘッダー ファイル\3D\3DPolygon</Filter>
+    </ClInclude>
+    <ClInclude Include="3d_polygon.h">
+      <Filter>ヘッダー ファイル\3D\3DPolygon</Filter>
+    </ClInclude>
+    <ClInclude Include="tree.h">
+      <Filter>ヘッダー ファイル\3D\Model\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="stone.h">
+      <Filter>ヘッダー ファイル\3D\Model\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="magic.h">
+      <Filter>ヘッダー ファイル\3D\3DPolygon\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="bg_black.h">
+      <Filter>ヘッダー ファイル\3D\3DPolygon</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

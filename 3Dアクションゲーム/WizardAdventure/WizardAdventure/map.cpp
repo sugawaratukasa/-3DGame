@@ -6,6 +6,7 @@
 //******************************************************************************
 // インクルードファイル
 //******************************************************************************
+#include "3d_obj.h"
 #include "floor.h"
 #include "floor_block.h"
 #include "needle_block.h"
@@ -13,39 +14,51 @@
 #include "map.h"
 #include "gate.h"
 #include "gate_roof.h"
+#include "tree.h"
+#include "stone.h"
 //******************************************************************************
 //	マクロ定義
 //******************************************************************************
-#define FLOOR_TEXT		("data/Map/Text/Floor.csv")																							// マップ
-#define BLOCK_TEXT		("data/Map/Text/Block.csv")																							// 床
-#define FLOOR_SIZE		(D3DXVECTOR3(180.0f,0.0f,180.0f))																					// 床のサイズ
-#define FLOOR_POS		(D3DXVECTOR3(nCountCol * -FLOOR_SIZE.x + 1000.0f,-45.0f,nCountRow * FLOOR_SIZE.z - 400.0f))						// 床の位置
-#define FLOOR_ROT		(D3DXVECTOR3(0.0f,0.0f,0.0f))																						// 床の向き
-#define FLOOR_COL		(D3DXCOLOR(1.0f,1.0f,1.0f,1.0f))																					// 色
-#define BLOCK_SIZE		(D3DXVECTOR3(30.0f,30.0f,30.0f))																					// ブロックのサイズ
-#define BLOCK_POS		(D3DXVECTOR3(nCountCol * BLOCK_SIZE.x - 290.0f,nCountRow * -BLOCK_SIZE.y + 150.0f ,-200.0f))						// ブロックの位置
-#define BLOCK_ROT		(D3DXVECTOR3(0.0f,0.0f,0.0f))																						// ブロックの向き
-#define NEEDLE_SIZE		(D3DXVECTOR3(30.0f,15.0f,30.0f))																					// 針のサイズ
-#define NEEDLE_POS		(D3DXVECTOR3(nCountCol * NEEDLE_SIZE.x - 290.0f,nCountRow * -NEEDLE_SIZE.y * 2 + 150.0f ,-200.0f))					// ブロックの位置
-#define BUTTON_SIZE		(D3DXVECTOR3(30.0f,10.0f,30.0f))																					// ボタンサイズ
-#define BUTTON_POS		(D3DXVECTOR3(nCountCol * BUTTON_SIZE.x - 290.0f,nCountRow * -BLOCK_SIZE.y + BUTTON_SIZE.y * 1.5f + 150.0f ,-200.0f))// ボタンの位置
-#define BUTTON_ROT		(D3DXVECTOR3(0.0f,0.0f,0.0f))																						// 向き
-#define GATE_SIZE		(D3DXVECTOR3(30.0f,37.0f,10.0f))																					// 扉サイズ
-#define GATE_POS		(D3DXVECTOR3(nCountCol * GATE_SIZE.x - GATE_SIZE.x / 2 - 290.0f,nCountRow * -BLOCK_SIZE.y + GATE_SIZE.y + 150.0f ,-200.0f))			// 扉の位置
-#define GATE_ROT		(D3DXVECTOR3(0.0f,D3DXToRadian(90.0f),0.0f))																		// 扉向き
-#define GATE_ROOF_SIZE	(D3DXVECTOR3(30.0f,37.0f,20.0f))																					// 扉の屋根のサイズ
+#define FLOOR_TEXT		("data/Map/Text/Floor.csv")																									// マップ
+#define BLOCK_TEXT		("data/Map/Text/Block.csv")																									// 床
+#define BACK_OBJ_TEXT	("data/Map/Text/BackObj.csv")																								// 背景オブジェクト
+#define FLOOR_SIZE		(D3DXVECTOR3(180.0f,0.0f,180.0f))																							// 床のサイズ
+#define FLOOR_POS		(D3DXVECTOR3(nCountCol * FLOOR_SIZE.x - 1000.0f,-45.0f,nCountRow * FLOOR_SIZE.z - 400.0f))									// 床の位置
+#define FLOOR_ROT		(D3DXVECTOR3(0.0f,0.0f,0.0f))																								// 床の向き
+#define FLOOR_COL		(D3DXCOLOR(1.0f,1.0f,1.0f,1.0f))																							// 色
+#define BLOCK_SIZE		(D3DXVECTOR3(30.0f,30.0f,30.0f))																							// ブロックのサイズ
+#define BLOCK_POS		(D3DXVECTOR3(nCountCol * BLOCK_SIZE.x - 290.0f,nCountRow * -BLOCK_SIZE.y + 150.0f ,-200.0f))								// ブロックの位置
+#define BLOCK_ROT		(D3DXVECTOR3(0.0f,0.0f,0.0f))																								// ブロックの向き
+#define NEEDLE_SIZE		(D3DXVECTOR3(30.0f,15.0f,30.0f))																							// 針のサイズ
+#define NEEDLE_POS		(D3DXVECTOR3(nCountCol * NEEDLE_SIZE.x - 290.0f,nCountRow * -NEEDLE_SIZE.y * 2 + 150.0f ,-200.0f))							// ブロックの位置
+#define BUTTON_SIZE		(D3DXVECTOR3(30.0f,10.0f,30.0f))																							// ボタンサイズ
+#define BUTTON_POS		(D3DXVECTOR3(nCountCol * BUTTON_SIZE.x - 290.0f,nCountRow * -BLOCK_SIZE.y + BUTTON_SIZE.y * 1.5f + 150.0f ,-200.0f))		// ボタンの位置
+#define BUTTON_ROT		(D3DXVECTOR3(0.0f,0.0f,0.0f))																								// 向き
+#define GATE_SIZE		(D3DXVECTOR3(30.0f,37.0f,10.0f))																							// 扉サイズ
+#define GATE_POS		(D3DXVECTOR3(nCountCol * GATE_SIZE.x - GATE_SIZE.x / 2 - 290.0f,nCountRow * -BLOCK_SIZE.y + GATE_SIZE.y + 150.0f ,-200.0f))	// 扉の位置
+#define GATE_ROT		(D3DXVECTOR3(0.0f,D3DXToRadian(90.0f),0.0f))																				// 扉向き
+#define GATE_ROOF_SIZE	(D3DXVECTOR3(30.0f,37.0f,20.0f))																							// 扉の屋根のサイズ
 #define GATE_ROOF_POS	(D3DXVECTOR3(nCountCol * GATE_ROOF_SIZE.x - 290.0f,nCountRow * -BLOCK_SIZE.y + GATE_ROOF_SIZE.y + 150.0f ,-200.0f))			// 扉の屋根の位置
-#define GATE_ROOF_ROT	(D3DXVECTOR3(0.0f,D3DXToRadian(270.0f),0.0f))																		// 扉の屋根
-#define BYTE_NUM		(1024)																												// 最大バイト数
+#define GATE_ROOF_ROT	(D3DXVECTOR3(0.0f,D3DXToRadian(270.0f),0.0f))																				// 扉の屋根
+#define TREE_SIZE		(D3DXVECTOR3(180.0f,180.0f,180.0f))																							// 木のサイズ
+#define TREE_POS		(D3DXVECTOR3(nCountCol * TREE_SIZE.x - 1000.0f,-45.0f,nCountRow * TREE_SIZE.z - 400.0f))									// 木の位置
+#define STONE_0_SIZE	(D3DXVECTOR3(30.0f,30.0f,30.0f))																							// 石のサイズ
+#define STONE_0_POS		(D3DXVECTOR3(nCountCol * FLOOR_SIZE.x - 1000.0f,-45.0f,nCountRow * FLOOR_SIZE.z - 400.0f))									// 石の位置
+#define STONE_1_SIZE	(D3DXVECTOR3(60.0f,60.0f,30.0f))																							// 石のサイズ
+#define STONE_1_POS		(D3DXVECTOR3(nCountCol * FLOOR_SIZE.x - 1000.0f,-45.0f,nCountRow * FLOOR_SIZE.z - 400.0f))									// 石の位置
+#define STONE_2_SIZE	(D3DXVECTOR3(120.0f,100.0f,30.0f))																							// 石のサイズ
+#define STONE_2_POS		(D3DXVECTOR3(nCountCol * FLOOR_SIZE.x - 1000.0f,-45.0f,nCountRow * FLOOR_SIZE.z - 400.0f))									// 石の位置
+#define BYTE_NUM		(1024)																														// 最大バイト数
 //******************************************************************************
 // コンストラクタ
 //******************************************************************************
 CMap::CMap(int nPriority)
 {
-	m_apFloorIndex	= NULL;		// 行列
-	m_apBlockIndex	= NULL;		// 行列
-	m_nRow			= INIT_INT;	// 縦
-	m_nCol			= INIT_INT;	// 横
+	m_apFloorIndex		= NULL;		// 行列
+	m_apBlockIndex		= NULL;		// 行列
+	m_apBackObjIndex	= NULL;		// 行列
+	m_nRow				= INIT_INT;	// 縦
+	m_nCol				= INIT_INT;	// 横
 }
 //******************************************************************************
 // デストラクタ
@@ -117,6 +130,9 @@ void CMap::MapCreate(void)
 
 	// ブロック生成
 	BlockCreate();
+
+	// 背景オブジェクト生成
+	BackObjCreate();
 }
 //******************************************************************************
 // 床の生成
@@ -401,6 +417,143 @@ void CMap::BlockLoad(void)
 	}
 }
 //******************************************************************************
+// 背景オブジェクト生成
+//******************************************************************************
+void CMap::BackObjCreate(void)
+{
+	// 床のテキストの行列の数読み込み
+	SetRowCol(LOAD_TYPE_BACK_OBJ);
+
+	// 床の情報読み込み
+	BackObjLoad();
+
+	// NULLでない場合
+	if (m_apBackObjIndex != NULL)
+	{
+		// 行分回す
+		for (int nCountRow = INIT_INT; nCountRow < m_nRow; nCountRow++)
+		{
+			// 列分回す
+			for (int nCountCol = INIT_INT; nCountCol < m_nCol; nCountCol++)
+			{
+				switch (m_apBackObjIndex[nCountRow][nCountCol])
+				{
+					// 無し
+				case BACK_OBJ_NONE:
+					break;
+					// 木生成
+				case BACK_OBJ_TREE:
+					CTree::Create(TREE_POS, TREE_SIZE);
+					break;
+				case BACK_OBJ_STONE_0:
+					CStone::Create(STONE_0_POS, STONE_0_SIZE, C3D_Obj::TYPE_STONE_0);
+					break;
+				case BACK_OBJ_STONE_1:
+					CStone::Create(STONE_1_POS, STONE_1_SIZE, C3D_Obj::TYPE_STONE_1);
+					break;
+				case BACK_OBJ_STONE_2:
+					CStone::Create(STONE_2_POS, STONE_2_SIZE, C3D_Obj::TYPE_STONE_2);
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		// 行分回す
+		for (int nCntRow = INIT_INT; nCntRow < m_nRow; nCntRow++)
+		{
+			// メモリ破棄
+			delete[] m_apBackObjIndex[nCntRow];
+		}
+		// メモリ破棄
+		delete[] m_apBackObjIndex;
+	}
+}
+//******************************************************************************
+// 背景オブジェクト読み込み
+//******************************************************************************
+void CMap::BackObjLoad(void)
+{
+	// ファイル読み込み
+	FILE * pfile = fopen(BACK_OBJ_TEXT, "r");
+
+	// csv読み取り処理
+	char str[BYTE_NUM];
+
+	// 行
+	int nRowIndex = INIT_INT;
+
+	// 列
+	int nColIndex = INIT_INT;
+
+	// NULLでない場合
+	if (pfile != NULL)
+	{
+		if (m_apBackObjIndex == NULL)
+		{
+			// メモリ確保
+			m_apBackObjIndex = new BACK_OBJ_TYPE*[m_nRow];
+
+			// NULLでない場合
+			if (m_apBackObjIndex != NULL)
+			{
+				// 行分回す
+				for (int nCnt = INIT_INT; nCnt < m_nRow; nCnt++)
+				{
+					// 列分回す
+					m_apBackObjIndex[nCnt] = new BACK_OBJ_TYPE[m_nCol];
+				}
+				// 一行取得
+				while (fgets(str, BYTE_NUM, pfile) != NULL)
+				{
+					char * cTokStr;
+
+					cTokStr = strtok(str, ",");
+
+					// #が含まれていれば抜かす
+					char cSearchStr = '#';
+
+					// 対象文字
+					strchr(cTokStr, cSearchStr);
+
+					// NULLになるまで
+					while (cTokStr != NULL)
+					{
+						// #が含まれていれば抜かす
+						char cSearchStr = '#';
+
+						// 対象文字
+						strchr(cTokStr, cSearchStr);
+
+						// 含まれていなかったら出力
+						if (strchr(cTokStr, cSearchStr) == NULL)
+						{
+							// 行列にブロックのタイプを格納
+							m_apBackObjIndex[nRowIndex][nColIndex] = (BACK_OBJ_TYPE)atoi(cTokStr);
+
+							// 次の列へ
+							nColIndex++;
+						}
+						// NULLを入れる
+						cTokStr = strtok(NULL, ",");
+					}
+					// インクリメント
+					nRowIndex++;
+
+					// 0に
+					nColIndex = INIT_INT;
+				}
+			}
+		}
+		// ファイルを閉じる
+		fclose(pfile);
+	}
+	else
+	{
+		return;
+	}
+}
+//******************************************************************************
 // 行と列設定
 //******************************************************************************
 void CMap::SetRowCol(LOAD_TYPE load_type)
@@ -420,7 +573,11 @@ void CMap::SetRowCol(LOAD_TYPE load_type)
 		{
 			pfile = fopen(BLOCK_TEXT, "r");
 		}
-
+		// LOAD_TYPE_BACK_OBJの場合
+		if (load_type == LOAD_TYPE_BACK_OBJ)
+		{
+			pfile = fopen(BACK_OBJ_TEXT, "r");
+		}
 		// 行初期化
 		m_nRow = INIT_INT;
 

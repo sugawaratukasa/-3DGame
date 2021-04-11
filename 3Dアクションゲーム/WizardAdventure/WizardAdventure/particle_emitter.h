@@ -22,7 +22,8 @@ public:
 	typedef enum
 	{
 		TYPE_NONE = -1,
-		TYPE_BOAD,
+		TYPE_STAR_RIGHT,
+		TYPE_STAR_LEFT,
 		TYPE_MAX
 	}TYPE;
 	CParticle_Emitter();
@@ -33,8 +34,12 @@ public:
 	void Update(void);
 	void Draw(void);
 	void Release(void);
+	void SetPos(D3DXVECTOR3 pos);
 private:
+	void CreateParticle(void);
 	void Load(const char *cText);
+	void Right_Arm(void);
+	void Left_Arm(void);
 	D3DXVECTOR3 m_pos;			// 位置座標
 	int m_nCount;				// 間隔
 	int m_nCreateCount;			// 生成カウント
