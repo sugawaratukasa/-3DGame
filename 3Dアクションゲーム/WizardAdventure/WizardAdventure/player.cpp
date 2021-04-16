@@ -20,6 +20,8 @@
 #include "camera.h"
 #include "magic.h"
 #include "particle_emitter.h"
+#include "fireball_ui.h"
+#include "iceball_ui.h"
 #include "player.h"
 //******************************************************************************
 // マクロ定義
@@ -72,6 +74,7 @@
 #define EMITTER_POS_LEFT		(D3DXVECTOR3(m_pModel[PARTS_DOWN_ARM_R]->GetMtxWorld()._41,m_pModel[PARTS_DOWN_ARM_R]->GetMtxWorld()._42,m_pModel[PARTS_DOWN_ARM_R]->GetMtxWorld()._43))
 // 腰の位置
 #define POS						(D3DXVECTOR3(m_pModel[PARTS_UNDER_BODY]->GetMtxWorld()._41,m_pModel[PARTS_UNDER_BODY]->GetMtxWorld()._42,m_pModel[PARTS_UNDER_BODY]->GetMtxWorld()._43))
+#define MAGIC_UI_POS			(D3DXVECTOR3(m_pos.x, m_pos.y + 50.0f, m_pos.z - 50.0f))	// 魔法UIの位置
 //******************************************************************************
 // 静的メンバ変数
 //******************************************************************************
@@ -116,15 +119,18 @@ CPlayer::CPlayer(int nPriority) : CScene(nPriority)
 	m_nBlock_Select_Num		= INIT_INT;	
 	m_nMotion_Count			= INIT_INT;
 	m_bStick				= false;				
-	m_Rot_State				= ROT_STATE_RIGHT;		
+	m_Rot_State				= ROT_STATE_RIGHT;	
+	m_MagicType				= MAGIC_TYPE_FIREBALL;
+	m_Emitter_Type			= EMITTER_TYPE_NONE;
 	m_bJump					= false;				
 	m_bJumpValue			= false;
 	m_bBlock_Move			= false;
 	m_bMagic				= false;
 	m_bParticle_Emitter		= false;
 	m_bCollision			= false;
+	m_bChange_MagicType		= false;
 	memset(m_pModel, NULL, sizeof(m_pModel));
-	memset(m_pParticle_Emitter, NULL, sizeof(m_pParticle_Emitter));
+	memset(m_apParticle_Emitter, NULL, sizeof(m_apParticle_Emitter));
 }
 
 //******************************************************************************
@@ -677,18 +683,8 @@ void CPlayer::RightBlock(void)
 					// 移動する処理
 					m_pBlock->Create_Move();
 
-					// NULLの場合
-					if (m_pParticle_Emitter[PARTICLE_EMITTER_RIGHT] == NULL)
-					{
-						// パーティクルエミッター生成
-						m_pParticle_Emitter[PARTICLE_EMITTER_RIGHT] = CParticle_Emitter::Create(EMITTER_POS_RIGHT, CParticle_Emitter::TYPE_STAR_RIGHT);
-					}
-					// NULLの場合
-					if (m_pParticle_Emitter[PARTICLE_EMITTER_LEFT] == NULL)
-					{
-						// パーティクルエミッター生成
-						m_pParticle_Emitter[PARTICLE_EMITTER_LEFT] = CParticle_Emitter::Create(EMITTER_POS_LEFT, CParticle_Emitter::TYPE_STAR_LEFT);
-					}
+					// 放射体生成
+					Emitter_Create(EMITTER_TYPE_STAR);
 				}
 			}
 			// RTを押した場合
@@ -1288,18 +1284,8 @@ void CPlayer::LeftBlock(void)
 					// 移動する処理
 					m_pBlock->Create_Move();
 
-					// NULLの場合
-					if (m_pParticle_Emitter[PARTICLE_EMITTER_RIGHT] == NULL)
-					{
-						// パーティクルエミッター生成
-						m_pParticle_Emitter[PARTICLE_EMITTER_RIGHT] = CParticle_Emitter::Create(EMITTER_POS_RIGHT, CParticle_Emitter::TYPE_STAR_RIGHT);
-					}
-					// NULLの場合
-					if (m_pParticle_Emitter[PARTICLE_EMITTER_LEFT] == NULL)
-					{
-						// パーティクルエミッター生成
-						m_pParticle_Emitter[PARTICLE_EMITTER_LEFT] = CParticle_Emitter::Create(EMITTER_POS_LEFT, CParticle_Emitter::TYPE_STAR_LEFT);
-					}
+					// 放射体生成
+					Emitter_Create(EMITTER_TYPE_STAR);
 				}
 			}
 			// RTを押した場合
@@ -2244,6 +2230,72 @@ void CPlayer::Magic(void)
 			// 魔法攻撃モーション
 			m_pMotion->SetMotion(CMotion::MOTION_MAGIC_ACTION);
 		}
+		// ファイアーボールの場合
+		if (m_MagicType == MAGIC_TYPE_FIREBALL)
+		{
+			// falseの場合
+			if (m_bChange_MagicType == false)
+			{
+				// RBまたはLBが押された場合
+				if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_RB) || pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_LB))
+				{
+					// trueに
+					m_bChange_MagicType = true;
+
+					// アイスボールに
+					m_MagicType = MAGIC_TYPE_ICEBALL;
+
+					// 放射体生成
+					Emitter_Create(EMITTER_TYPE_ICE);
+
+					// UI生成
+					CIceBall_UI::Create(MAGIC_UI_POS);
+				}
+			}
+			// trueの場合
+			if (m_bChange_MagicType == true)
+			{
+				// RBまたはLBが離された場合
+				if (pInputJoystick->GetJoystickRelease(CInputJoystick::JS_RB) || pInputJoystick->GetJoystickRelease(CInputJoystick::JS_LB))
+				{
+					// falseに
+					m_bChange_MagicType = false;
+				}
+			}
+		}
+		// アイスボールの場合
+		if (m_MagicType == MAGIC_TYPE_ICEBALL)
+		{
+			// falseの場合
+			if (m_bChange_MagicType == false)
+			{
+				// RBまたはLBが押された場合
+				if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_RB) || pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_LB))
+				{
+					// trueに
+					m_bChange_MagicType = true;
+
+					// ファイアーボールに
+					m_MagicType = MAGIC_TYPE_FIREBALL;
+
+					// 放射体生成
+					Emitter_Create(EMITTER_TYPE_FIRE);
+
+					// UI生成
+					CFireBall_UI::Create(MAGIC_UI_POS);
+				}
+			}
+			// trueの場合
+			if (m_bChange_MagicType == true)
+			{
+				// RBまたはLBが離された場合
+				if (pInputJoystick->GetJoystickRelease(CInputJoystick::JS_RB) || pInputJoystick->GetJoystickRelease(CInputJoystick::JS_LB))
+				{
+					// falseに
+					m_bChange_MagicType = false;
+				}
+			}
+		}
 	}
 	// trueの場合
 	if (m_bMagic == true)
@@ -2260,17 +2312,129 @@ void CPlayer::Magic(void)
 			// 右向きの場合
 			if (m_Rot_State == ROT_STATE_RIGHT)
 			{
-				// ファイアーボール生成
-				CMagic::Create(MAGIC_POS, MAGIC_MOVE_RIGHT, CMagic::TYPE_FIRE_BALL);
+				// ファイアボールの場合
+				if (m_MagicType == MAGIC_TYPE_FIREBALL)
+				{
+					// ファイアーボール生成
+					CMagic::Create(MAGIC_POS, MAGIC_MOVE_RIGHT, CMagic::TYPE_FIRE_BALL);
+				}
+				// アイスボールの場合
+				if (m_MagicType == MAGIC_TYPE_ICEBALL)
+				{
+					// アイスボールの生成
+					CMagic::Create(MAGIC_POS, MAGIC_MOVE_RIGHT, CMagic::TYPE_ICE_BALL);
+				}
 			}
 			// 左向きの場合
 			if (m_Rot_State == ROT_STATE_LEFT)
 			{
-				// ファイアーボール生成
-				CMagic::Create(MAGIC_POS, MAGIC_MOVE_LEFT, CMagic::TYPE_FIRE_BALL);
+				// ファイアボールの場合
+				if (m_MagicType == MAGIC_TYPE_FIREBALL)
+				{
+					// ファイアーボール生成
+					CMagic::Create(MAGIC_POS, MAGIC_MOVE_LEFT, CMagic::TYPE_FIRE_BALL);
+				}
+				// アイスボールの場合
+				if (m_MagicType == MAGIC_TYPE_ICEBALL)
+				{
+					// アイスボールの生成
+					CMagic::Create(MAGIC_POS, MAGIC_MOVE_LEFT, CMagic::TYPE_ICE_BALL);
+				}
 			}
 			// 初期化
 			m_nMotion_Count = INIT_INT;
+		}
+	}
+}
+//******************************************************************************
+// 放射体生成関数
+//******************************************************************************
+void CPlayer::Emitter_Create(EMITTER_TYPE EmitterType)
+{
+	// NULLの場合
+	if (m_apParticle_Emitter[PARTICLE_EMITTER_RIGHT] == NULL && m_apParticle_Emitter[PARTICLE_EMITTER_LEFT] == NULL)
+	{
+		// 代入
+		m_Emitter_Type = EmitterType;
+
+		// 星の場合
+		if (m_Emitter_Type == EMITTER_TYPE_STAR)
+		{
+			// 右手
+			m_apParticle_Emitter[PARTICLE_EMITTER_RIGHT] = CParticle_Emitter::Create(EMITTER_POS_RIGHT, CParticle_Emitter::TYPE_STAR_RIGHT);
+
+			// 左手
+			m_apParticle_Emitter[PARTICLE_EMITTER_LEFT] = CParticle_Emitter::Create(EMITTER_POS_LEFT, CParticle_Emitter::TYPE_STAR_LEFT);
+		}
+		// 火の場合
+		if (m_Emitter_Type == EMITTER_TYPE_FIRE)
+		{
+			// 右手
+			m_apParticle_Emitter[PARTICLE_EMITTER_RIGHT] = CParticle_Emitter::Create(EMITTER_POS_RIGHT, CParticle_Emitter::TYPE_FIRE_RIGHT);
+
+			// 左手
+			m_apParticle_Emitter[PARTICLE_EMITTER_LEFT] = CParticle_Emitter::Create(EMITTER_POS_LEFT, CParticle_Emitter::TYPE_FIRE_LEFT);
+		}
+		// 氷の場合
+		if (m_Emitter_Type == EMITTER_TYPE_ICE)
+		{
+			// 右手
+			m_apParticle_Emitter[PARTICLE_EMITTER_RIGHT] = CParticle_Emitter::Create(EMITTER_POS_RIGHT, CParticle_Emitter::TYPE_ICE_RIGHT);
+
+			// 左手
+			m_apParticle_Emitter[PARTICLE_EMITTER_LEFT] = CParticle_Emitter::Create(EMITTER_POS_LEFT, CParticle_Emitter::TYPE_ICE_LEFT);
+		}
+	}
+	// NULLでない場合
+	if (m_apParticle_Emitter[PARTICLE_EMITTER_RIGHT] != NULL && m_apParticle_Emitter[PARTICLE_EMITTER_LEFT] != NULL)
+	{
+		// 同じ種類でない場合
+		if (m_Emitter_Type != EmitterType)
+		{
+			// 代入
+			m_Emitter_Type = EmitterType;
+
+			// 2回繰り返す
+			for (int nCnt = INIT_INT; nCnt < PARTICLE_EMITTER_MAX; nCnt++)
+			{
+				// 破棄
+				m_apParticle_Emitter[nCnt]->Release();
+
+				// NULLに
+				m_apParticle_Emitter[nCnt] = NULL;
+			}
+
+			// NULLの場合
+			if (m_apParticle_Emitter[PARTICLE_EMITTER_RIGHT] == NULL && m_apParticle_Emitter[PARTICLE_EMITTER_LEFT] == NULL)
+			{
+				// 星の場合
+				if (m_Emitter_Type == EMITTER_TYPE_STAR)
+				{
+					// 右手
+					m_apParticle_Emitter[PARTICLE_EMITTER_RIGHT] = CParticle_Emitter::Create(EMITTER_POS_RIGHT, CParticle_Emitter::TYPE_STAR_RIGHT);
+
+					// 左手
+					m_apParticle_Emitter[PARTICLE_EMITTER_LEFT] = CParticle_Emitter::Create(EMITTER_POS_LEFT, CParticle_Emitter::TYPE_STAR_LEFT);
+				}
+				// 火の場合
+				if (m_Emitter_Type == EMITTER_TYPE_FIRE)
+				{
+					// 右手
+					m_apParticle_Emitter[PARTICLE_EMITTER_RIGHT] = CParticle_Emitter::Create(EMITTER_POS_RIGHT, CParticle_Emitter::TYPE_FIRE_RIGHT);
+
+					// 左手
+					m_apParticle_Emitter[PARTICLE_EMITTER_LEFT] = CParticle_Emitter::Create(EMITTER_POS_LEFT, CParticle_Emitter::TYPE_FIRE_LEFT);
+				}
+				// 氷の場合
+				if (m_Emitter_Type == EMITTER_TYPE_ICE)
+				{
+					// 右手
+					m_apParticle_Emitter[PARTICLE_EMITTER_RIGHT] = CParticle_Emitter::Create(EMITTER_POS_RIGHT, CParticle_Emitter::TYPE_ICE_RIGHT);
+
+					// 左手
+					m_apParticle_Emitter[PARTICLE_EMITTER_LEFT] = CParticle_Emitter::Create(EMITTER_POS_LEFT, CParticle_Emitter::TYPE_ICE_LEFT);
+				}
+			}
 		}
 	}
 }

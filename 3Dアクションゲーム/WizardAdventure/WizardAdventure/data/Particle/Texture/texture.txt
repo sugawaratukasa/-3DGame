@@ -6,7 +6,7 @@ SCRIPT
 #**********************************************************************************
 # テクスチャファイル数
 #**********************************************************************************
-TEXTURE_NUM = 8
+TEXTURE_NUM = 9
 #**********************************************************************************
 # テクスチャファイル名
 #**********************************************************************************
@@ -18,4 +18,5 @@ TEXTURE_FILENAME = data/Particle/Texture/particle005.png		# [5]
 TEXTURE_FILENAME = data/Particle/Texture/particle006.png		# [6]
 TEXTURE_FILENAME = data/Particle/Texture/effect_texture001.png	# [7]
 TEXTURE_FILENAME = data/Particle/Texture/Star.png				# [8]
+TEXTURE_FILENAME = data/Particle/Texture/particle010.png		# [9]
 END_SCRIPT

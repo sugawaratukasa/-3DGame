@@ -26,6 +26,7 @@
 #include "3d_obj.h"
 #include "particle_texture.h"
 #include "3d_polygon.h"
+#include "billboard_ui.h"
 //******************************************************************************
 // 静的メンバ変数
 //******************************************************************************
@@ -265,6 +266,9 @@ void CManager::LoadAll(void)
 
 	// 3dポリゴン
 	C3D_Polygon::Load();
+
+	// ビルボードUI
+	CBillboard_UI::Load();
 }
 
 //******************************************************************************
@@ -272,6 +276,9 @@ void CManager::LoadAll(void)
 //******************************************************************************
 void CManager::UnloadAll(void)
 {
+	// ビルボードUI
+	CBillboard_UI::Unload();
+
 	// 3dポリゴン
 	C3D_Polygon::Unload();
 

@@ -87,6 +87,24 @@ public:
 		PARTICLE_EMITTER_MAX			// 最大
 	};
 
+	// 放射体の種類
+	enum EMITTER_TYPE
+	{
+		EMITTER_TYPE_NONE = -1,
+		EMITTER_TYPE_STAR,
+		EMITTER_TYPE_FIRE,
+		EMITTER_TYPE_ICE,
+		EMITTER_TYPE_MAX
+	};
+
+	// 魔法の種類
+	enum MAGIC_TYPE
+	{
+		MAGIC_TYPE_FIREBALL = 0,
+		MAGIC_TYPE_ICEBALL,
+		MAGIC_TYPE_MAX
+	};
+
 	CPlayer(int nPriority = CScene::OBJTYPE_PLAYER);
 	~CPlayer();
 	static CPlayer *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size);
@@ -117,38 +135,42 @@ private:
 	void Collision(void);
 	void Move(void);
 	void Magic(void);
+	void Emitter_Create(EMITTER_TYPE EmitterType);
 
-	static LPD3DXMESH m_pMesh[PARTS_MAX];						 // メッシュ情報のポインタ
-	static LPD3DXBUFFER m_pBuffMat[PARTS_MAX];					 // マテリアル情報のポインタ
-	static DWORD m_nNumMat[PARTS_MAX];							 // マテリアル情報の数
-	static D3DXMATRIX m_mtxWorld[PARTS_MAX];					 // 行列計算用
-	static int m_nldxModelParent[PARTS_MAX];					 // 親モデルのインデックス
-	static char* m_apFileName[PARTS_MAX];						 // ファイルの名前
-	static char* m_apTextureFileName[PARTS_MAX];				 // テクスチャのファイルの名前
-	D3DXVECTOR3 m_pos;											 // 位置
-	D3DXVECTOR3 m_posOld;										 // 古い位置
-	D3DXVECTOR3 m_rot;											 // 角度
-	D3DXVECTOR3 m_size;											 // 大きさ
-	D3DXVECTOR3 m_move;											 // 移動量
-	bool m_bAllMotion;											 // 全モーションの判定
-	CMotion *m_pMotion;											 // モーションクラスのポインタ
-	CModel *m_pModel[PARTS_MAX];								 // モデルクラスのポインタ
-	CBlock *m_pBlock;											 // 箱のポインタ
-	CStone_Block *m_pStoneBlock;								 // 石の箱のポインタ
-	CParticle_Emitter *m_pParticle_Emitter[PARTICLE_EMITTER_MAX];// パーティクルエミッターのポインタ
-	BLOCK_ACTIVE m_Blcok_Active;								 // 箱を用いての移動
-	ROT_STATE m_Rot_State;										 // 向きの状態
-	int m_nBlockNum;											 // 箱の数
-	int m_nBlock_Select_Num;									 // 箱の選択する
-	int m_nSelect_Save_Num;										 // 箱の数を保存する
-	int m_nMotion_Count;										 // モーションカウント
-	bool m_bStick;												 // スティック判定
-	bool m_bRot;												 // 向き
-	bool m_bJump;												 // ジャンプ判定
-	bool m_bJumpValue;											 // ジャンプ量判定
-	bool m_bBlock_Move;											 // ブロックの移動判定
-	bool m_bMagic;												 // モーション判定
-	bool m_bParticle_Emitter;									 // エミッターの使用判定
-	bool m_bCollision;											 // オブジェタイプに当たっているか
+	static LPD3DXMESH m_pMesh[PARTS_MAX];							// メッシュ情報のポインタ
+	static LPD3DXBUFFER m_pBuffMat[PARTS_MAX];						// マテリアル情報のポインタ
+	static DWORD m_nNumMat[PARTS_MAX];								// マテリアル情報の数
+	static D3DXMATRIX m_mtxWorld[PARTS_MAX];						// 行列計算用
+	static int m_nldxModelParent[PARTS_MAX];						// 親モデルのインデックス
+	static char* m_apFileName[PARTS_MAX];							// ファイルの名前
+	static char* m_apTextureFileName[PARTS_MAX];					// テクスチャのファイルの名前
+	D3DXVECTOR3 m_pos;												// 位置
+	D3DXVECTOR3 m_posOld;											// 古い位置
+	D3DXVECTOR3 m_rot;												// 角度
+	D3DXVECTOR3 m_size;												// 大きさ
+	D3DXVECTOR3 m_move;												// 移動量
+	bool m_bAllMotion;												// 全モーションの判定
+	CMotion *m_pMotion;												// モーションクラスのポインタ
+	CModel *m_pModel[PARTS_MAX];									// モデルクラスのポインタ
+	CBlock *m_pBlock;												// 箱のポインタ
+	CStone_Block *m_pStoneBlock;									// 石の箱のポインタ
+	CParticle_Emitter *m_apParticle_Emitter[PARTICLE_EMITTER_MAX];	// パーティクルエミッターのポインタ
+	BLOCK_ACTIVE m_Blcok_Active;									// 箱を用いての移動
+	ROT_STATE m_Rot_State;											// 向きの状態
+	MAGIC_TYPE m_MagicType;											// 魔法の種類
+	EMITTER_TYPE m_Emitter_Type;									// 放射体の種類
+	int m_nBlockNum;												// 箱の数
+	int m_nBlock_Select_Num;										// 箱の選択する
+	int m_nSelect_Save_Num;											// 箱の数を保存する
+	int m_nMotion_Count;											// モーションカウント
+	bool m_bStick;													// スティック判定
+	bool m_bRot;													// 向き
+	bool m_bJump;													// ジャンプ判定
+	bool m_bJumpValue;												// ジャンプ量判定
+	bool m_bBlock_Move;												// ブロックの移動判定
+	bool m_bMagic;													// モーション判定
+	bool m_bParticle_Emitter;										// エミッターの使用判定
+	bool m_bCollision;												// オブジェタイプに当たっているか
+	bool m_bChange_MagicType;										// 魔法のタイプ変更判定
 };
 #endif

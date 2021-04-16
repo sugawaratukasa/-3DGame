@@ -85,6 +85,12 @@
     <Filter Include="ソース ファイル\3D\Model\Block">
       <UniqueIdentifier>{e8b4f7cf-4c77-4a8b-830e-4ebd971258eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\3D\3DPolygon\Billboard_UI">
+      <UniqueIdentifier>{27eeed07-8516-419a-a600-dc6892a59be0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\3D\3DPolygon\Billboard_UI">
+      <UniqueIdentifier>{269833ce-3f41-4449-92ae-b4f152ead65b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="scene2d.cpp">
@@ -219,13 +225,25 @@
     <ClCompile Include="bg_black.cpp">
       <Filter>ソース ファイル\3D\3DPolygon</Filter>
     </ClCompile>
+    <ClCompile Include="billboard_ui.cpp">
+      <Filter>ソース ファイル\3D\3DPolygon\Billboard_UI</Filter>
+    </ClCompile>
+    <ClCompile Include="fireball_ui.cpp">
+      <Filter>ソース ファイル\3D\3DPolygon\Billboard_UI</Filter>
+    </ClCompile>
+    <ClCompile Include="iceball_ui.cpp">
+      <Filter>ソース ファイル\3D\3DPolygon\Billboard_UI</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy.cpp">
+      <Filter>ソース ファイル\3D\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="ghost.cpp">
+      <Filter>ソース ファイル\3D\Model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scene2d.h">
       <Filter>ヘッダー ファイル\2D</Filter>
-    </ClInclude>
-    <ClInclude Include="billboard.h">
-      <Filter>ヘッダー ファイル\3D</Filter>
     </ClInclude>
     <ClInclude Include="model.h">
       <Filter>ヘッダー ファイル\3D\Model</Filter>
@@ -352,6 +370,24 @@
     </ClInclude>
     <ClInclude Include="bg_black.h">
       <Filter>ヘッダー ファイル\3D\3DPolygon</Filter>
+    </ClInclude>
+    <ClInclude Include="billboard.h">
+      <Filter>ヘッダー ファイル\3D\3DPolygon</Filter>
+    </ClInclude>
+    <ClInclude Include="billboard_ui.h">
+      <Filter>ヘッダー ファイル\3D\3DPolygon\Billboard_UI</Filter>
+    </ClInclude>
+    <ClInclude Include="fireball_ui.h">
+      <Filter>ヘッダー ファイル\3D\3DPolygon\Billboard_UI</Filter>
+    </ClInclude>
+    <ClInclude Include="iceball_ui.h">
+      <Filter>ヘッダー ファイル\3D\3DPolygon\Billboard_UI</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy.h">
+      <Filter>ヘッダー ファイル\3D\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="ghost.h">
+      <Filter>ヘッダー ファイル\3D\Model</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

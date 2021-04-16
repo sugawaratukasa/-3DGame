@@ -15,6 +15,8 @@
 //******************************************************************************
 #define MAX_TEXT			(1024)									// テキストの最大数
 #define STAR_EMITTER_TEXT	("data/Effect/StarEmitter01_Data.txt")	// テキスト
+#define FIRE_EMITTER_TEXT	("data/Effect/FireEmitter_Data.txt")	// テキスト
+#define ICE_EMITTER_TEXT	("data/Effect/IceEmitter_Data.txt")		// テキスト
 #define REMAINDER			(0)										// 余り0
 //******************************************************************************
 // コンストラクタ
@@ -70,6 +72,22 @@ HRESULT CParticle_Emitter::Init(void)
 		// テキストファイル読み込み
 		sprintf(m_cText, STAR_EMITTER_TEXT);
 		break;
+	case TYPE_FIRE_RIGHT:
+		// テキストファイル読み込み
+		sprintf(m_cText, FIRE_EMITTER_TEXT);
+		break;
+	case TYPE_FIRE_LEFT:
+		// テキストファイル読み込み
+		sprintf(m_cText, FIRE_EMITTER_TEXT);
+		break;
+	case TYPE_ICE_RIGHT:
+		// テキストファイル読み込み
+		sprintf(m_cText, ICE_EMITTER_TEXT);
+		break;
+	case TYPE_ICE_LEFT:
+		// テキストファイル読み込み
+		sprintf(m_cText, ICE_EMITTER_TEXT);
+		break;
 	}
 
 	// 読み込み
@@ -82,7 +100,7 @@ HRESULT CParticle_Emitter::Init(void)
 void CParticle_Emitter::Uninit(void)
 {
 	// 破棄
-	Release();
+	CScene::Release();
 }
 //******************************************************************************
 // 更新関数
@@ -93,13 +111,13 @@ void CParticle_Emitter::Update(void)
 	CreateParticle();
 
 	// タイプが星右の場合
-	if (m_Type == TYPE_STAR_RIGHT)
+	if (m_Type == TYPE_STAR_RIGHT || m_Type == TYPE_FIRE_RIGHT || m_Type == TYPE_ICE_RIGHT)
 	{
 		// 星の処理
 		Right_Arm();
 	}
 	// タイプが星左の場合
-	if (m_Type == TYPE_STAR_LEFT)
+	if (m_Type == TYPE_STAR_LEFT || m_Type == TYPE_FIRE_LEFT || m_Type == TYPE_ICE_LEFT)
 	{
 		// 星の処理
 		Left_Arm();

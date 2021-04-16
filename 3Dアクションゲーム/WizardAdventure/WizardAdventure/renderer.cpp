@@ -17,9 +17,9 @@
 //******************************************************************************
 CRenderer::CRenderer()
 {
-	m_pD3D = NULL;		// Direct3Dオブジェクト
-	m_pD3Decvice = NULL;	// Deviceオブジェクト(描画に必要)
-	m_pFont = NULL;		// フォントへのポインタ
+	m_pD3D			= NULL;		// Direct3Dオブジェクト
+	m_pD3Decvice	= NULL;	// Deviceオブジェクト(描画に必要)
+	m_pFont			= NULL;		// フォントへのポインタ
 }
 //******************************************************************************
 // デストラクタ
@@ -49,21 +49,21 @@ HRESULT CRenderer::Init(HWND hWnd, bool bWindow)
 	}
 
 	// デバイスのプレゼンテーションパラメータの設定
-	ZeroMemory(&d3dpp, sizeof(d3dpp));								// ワークをゼロクリア
-	d3dpp.BackBufferCount = 1;							// バックバッファの数
-	d3dpp.BackBufferWidth = SCREEN_WIDTH;				// ゲーム画面サイズ(幅)
-	d3dpp.BackBufferHeight = SCREEN_HEIGHT;				// ゲーム画面サイズ(高さ)
-	d3dpp.BackBufferFormat = d3ddm.Format;				// カラーモードの指定
-	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;		// 映像信号に同期してフリップする
+	ZeroMemory(&d3dpp, sizeof(d3dpp));							// ワークをゼロクリア
+	d3dpp.BackBufferCount = 1;									// バックバッファの数
+	d3dpp.BackBufferWidth = SCREEN_WIDTH;						// ゲーム画面サイズ(幅)
+	d3dpp.BackBufferHeight = SCREEN_HEIGHT;						// ゲーム画面サイズ(高さ)
+	d3dpp.BackBufferFormat = d3ddm.Format;						// カラーモードの指定
+	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;					// 映像信号に同期してフリップする
 	d3dpp.EnableAutoDepthStencil = TRUE;						// デプスバッファ（Ｚバッファ）とステンシルバッファを作成
-	d3dpp.AutoDepthStencilFormat = D3DFMT_D16;					// デプスバッファとして16bitを使う
-	d3dpp.Windowed = bWindow;						// ウィンドウモード
-	d3dpp.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;		// リフレッシュレート
+	d3dpp.AutoDepthStencilFormat = D3DFMT_D16;				// デプスバッファとして16bitを使う
+	d3dpp.Windowed = bWindow;									// ウィンドウモード
+	d3dpp.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;	// リフレッシュレート
 	d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;	// インターバル
 
-																// デバイスの生成
-																// ディスプレイアダプタを表すためのデバイスを作成
-																// 描画と頂点処理をハードウェアで行なう
+	// デバイスの生成
+	// ディスプレイアダプタを表すためのデバイスを作成
+	// 描画と頂点処理をハードウェアで行なう
 	if (FAILED(m_pD3D->CreateDevice(D3DADAPTER_DEFAULT,
 		D3DDEVTYPE_HAL,
 		hWnd,
