@@ -292,7 +292,25 @@ void CScene::UpdateAll(void)
 	else
 	{
 		// pScene‚Ém_pTop‚ð‘ã“ü
-		CScene *pScene = m_pTop[OBJTYPE_FADE];
+		CScene *pScene = m_pTop[OBJTYPE_NOSTOP_UI];
+
+		// pScene‚ªNULL‚É‚È‚é‚Ü‚ÅŒJ‚è•Ô‚·
+		while (pScene != NULL)
+		{
+			// pScene‚Ìm_pNext‚ð•Û‘¶
+			CScene *pSave = pScene->m_pNext;
+
+			// Ž€–Sƒtƒ‰ƒO‚ªfalse‚Ìê‡
+			if (pScene->m_bDeath == false)
+			{
+				//XVˆ—
+				pScene->Update();
+			}
+			// •Û‘¶‚µ‚Ä‚¢‚½‚à‚Ì‚ð‘ã“ü
+			pScene = pSave;
+		}
+		// pScene‚Ém_pTop‚ð‘ã“ü
+		pScene = m_pTop[OBJTYPE_FADE];
 
 		// pScene‚ªNULL‚É‚È‚é‚Ü‚ÅŒJ‚è•Ô‚·
 		while (pScene != NULL)

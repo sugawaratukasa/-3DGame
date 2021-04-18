@@ -13,13 +13,14 @@
 //******************************************************************************
 // マクロ定義
 //******************************************************************************
-#define TEX_X_1		(0.0f)		// UV値
-#define TEX_X_2		(1.0f)		// UV値
-#define TEX_Y_1		(0.0f)		// UV値
-#define TEX_Y_2		(1.0f)		// UV値
-#define MAX_TEX_1	(-1.0f)		// UV最大値
-#define MAX_TEX_2	(-2.0f)		// UV最大値
-#define ADDTEX		(-0.0005f)	// UV加算値
+#define POS	(D3DXVECTOR3(PlayerPos.x + 200.0f, PlayerPos.y, PlayerPos.z))	// 位置
+#define TEX_X_1		(0.0f)													// UV値
+#define TEX_X_2		(1.0f)													// UV値
+#define TEX_Y_1		(0.0f)													// UV値
+#define TEX_Y_2		(1.0f)													// UV値
+#define MAX_TEX_1	(-1.0f)													// UV最大値
+#define MAX_TEX_2	(-2.0f)													// UV最大値
+#define ADDTEX		(-0.0005f)												// UV加算値
 #define COL	(D3DXCOLOR(0.0f,0.0f,0.0f,1.0f))
 //******************************************************************************
 // 静的メンバ変数初期化
@@ -64,7 +65,6 @@ CBg_Cloud * CBg_Cloud::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size)
 			pCloud->Init();
 		}
 	}
-
 	// ポインタを返す
 	return pCloud;
 }
@@ -128,23 +128,23 @@ void CBg_Cloud::Update(void)
 		if (pScene != NULL)
 		{
 			// オブジェクトタイプ取得
-			OBJTYPE objtype = GetObjType();
+			OBJTYPE objtype = pScene->GetObjType();
 
 			// オブジェタイププレイヤーの場合
 			if (objtype = OBJTYPE_PLAYER)
 			{
 				// プレイヤーの位置取得
 				PlayerPos = ((CPlayer*)pScene)->GetPos();
+
+				// 位置代入
+				pos.x = POS.x;
+
+				// 位置設定
+				SetPosition(pos);
 			}
 		}
 		// NULLになるまで
 	} while (pScene != NULL);
-
-	// 位置代入
-	pos.x = PlayerPos.x;
-
-	// 位置設定
-	SetPosition(pos);
 }
 //******************************************************************************
 // 描画関数

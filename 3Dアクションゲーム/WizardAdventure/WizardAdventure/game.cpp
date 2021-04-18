@@ -8,6 +8,7 @@
 //*****************************************************************************
 #include "manager.h"
 #include "keyboard.h"
+#include "joystick.h"
 #include "renderer.h"
 #include "time.h"
 #include "mode.h"
@@ -26,27 +27,32 @@
 #include "particle_emitter.h"
 #include "particle_effect.h"
 #include "bg.h"
+#include "ghost.h"
+#include "life_gage.h"
+#include "pause.h"
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define PLAYER_POS	(D3DXVECTOR3(100.0f, 0.0f, -200.0f))
-#define PLAYER_ROT	(D3DXVECTOR3(0.0f,D3DXToRadian(90.0f),0.0f))
-#define PLAYER_SIZE	(D3DXVECTOR3(30.0f,15.0f,30.0f))
-#define TEST_POS	(D3DXVECTOR3(-150.0f, -70.0f, -200.0f))
-#define TEST_ROT	(D3DXVECTOR3(0.0f,0.0,0.0))
-#define TEST_SIZE	(D3DXVECTOR3(30.0f,30.0f, 30.0f))
-#define TEST_COLOR	(D3DXCOLOR(1.0f,1.0f,1.0f,1.0f))
-#define TEST_POS2	(D3DXVECTOR3(-50.0f, -50.0f, -200.0f))
-#define TEST_ROT2	(D3DXVECTOR3(0.0f,0.0,0.0f))
-#define TEST_SIZE2	(D3DXVECTOR3(30.0f, 30.0f, 30.0f))
-#define TEST_POS3	(D3DXVECTOR3(-100.0f, -50.0f, -200.0f))
-#define TEST_ROT3	(D3DXVECTOR3(0.0f,0.0,0.0f))
-#define TEST_SIZE3	(D3DXVECTOR3(30.0f, 30.0f, 30.0f))
-#define TEST_COLOR2	(D3DXCOLOR(1.0f,1.0f,1.0f,1.0f))
-#define POS			(D3DXVECTOR3(-30.0f, 0.0f, -200.0f))
-#define ROT			(D3DXVECTOR3(0.0f,90.0f,0.0f))
-#define SIZE		(D3DXVECTOR3(30.0f, 30.0f, 30.0f))
-#define COLOR		(D3DXCOLOR(1.0f,0.0f,0.0f,1.0f))
+#define PLAYER_POS		(D3DXVECTOR3(100.0f, 0.0f, -200.0f))
+#define PLAYER_ROT		(D3DXVECTOR3(0.0f,D3DXToRadian(90.0f),0.0f))
+#define PLAYER_SIZE		(D3DXVECTOR3(30.0f,15.0f,30.0f))
+#define ENEMY_POS		(D3DXVECTOR3(-100.0f,-45.0f,-200.0f))
+#define ENEMY_POS2		(D3DXVECTOR3(0.0f,-45.0f,-200.0f))
+#define TEST_POS		(D3DXVECTOR3(-150.0f, -70.0f, -200.0f))
+#define TEST_ROT		(D3DXVECTOR3(0.0f,0.0,0.0))
+#define TEST_SIZE		(D3DXVECTOR3(30.0f,30.0f, 30.0f))
+#define TEST_COLOR		(D3DXCOLOR(1.0f,1.0f,1.0f,1.0f))
+#define TEST_POS2		(D3DXVECTOR3(-50.0f, -50.0f, -200.0f))
+#define TEST_ROT2		(D3DXVECTOR3(0.0f,0.0,0.0f))
+#define TEST_SIZE2		(D3DXVECTOR3(30.0f, 30.0f, 30.0f))
+#define TEST_POS3		(D3DXVECTOR3(-100.0f, -50.0f, -200.0f))
+#define TEST_ROT3		(D3DXVECTOR3(0.0f,0.0,0.0f))
+#define TEST_SIZE3		(D3DXVECTOR3(30.0f, 30.0f, 30.0f))
+#define TEST_COLOR2		(D3DXCOLOR(1.0f,1.0f,1.0f,1.0f))
+#define POS				(D3DXVECTOR3(-30.0f, 0.0f, -200.0f))
+#define ROT				(D3DXVECTOR3(0.0f,90.0f,0.0f))
+#define SIZE			(D3DXVECTOR3(30.0f, 30.0f, 30.0f))
+#define COLOR			(D3DXCOLOR(1.0f,0.0f,0.0f,1.0f))
 #define CREATE_COUNT	(60)
 //*****************************************************************************
 // 静的メンバ変数
@@ -79,29 +85,20 @@ HRESULT CGame::Init(void)
 	// デバッグプロシージャ
 	CDebugProc::Print("%s%d", "座標:", 500);
 
-	// 球のパーティクル生成
-	//CSphere_Particle_Emitter::Create(D3DXVECTOR3(-90.0f, 0.0f, -150.0f));
-
 	// マップ生成
 	CMap::Create();
 
 	// プレイヤー生成
 	CPlayer::Create(PLAYER_POS, PLAYER_ROT, PLAYER_SIZE);
 
+	// プレイヤー生成
+	CGhost::Create(ENEMY_POS, PLAYER_SIZE, CGhost::TYPE_FIRE);
+
+	// プレイヤー生成
+	CGhost::Create(ENEMY_POS2, PLAYER_SIZE, CGhost::TYPE_ICE);
+
 	// 背景生成
 	CBg::Create();
-
-	//// ブロック
-	//CWood_Block::Create(TEST_POS2, TEST_ROT, TEST_SIZE);
-
-	//// ブロック
-	//CWood_Block::Create(TEST_POS3, TEST_ROT, TEST_SIZE);
-
-	//// ブロック
-	//CWood_Block::Create(TEST_POS, TEST_ROT, TEST_SIZE);
-
-	// パーティクル生成
-	//CParticle_Emitter::Create(PLAYER_POS);
 
 	return S_OK;
 }
@@ -119,8 +116,28 @@ void CGame::Uninit(void)
 //*****************************************************************************
 void CGame::Update(void)
 {
-	// インクリメント
-	m_nCount++;
+	// コントローラー取得
+	DIJOYSTATE js;
+	js.lY = INIT_INT;
+	js.lX = INIT_INT;
+	CInputJoystick * pInputJoystick = CManager::GetInputJoystick();
+	LPDIRECTINPUTDEVICE8 g_lpDIDevice = CInputJoystick::GetDevice();
+	// NULLでない場合
+	if (g_lpDIDevice != NULL)
+	{
+		g_lpDIDevice->Poll();
+		g_lpDIDevice->GetDeviceState(sizeof(DIJOYSTATE), &js);
+	}
+	// NULLでない場合
+	if (g_lpDIDevice != NULL)
+	{
+		// STARTボタンを押した場合
+		if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_START))
+		{
+			// ポーズ生成
+			CPause::Create();
+		}
+	}
 }
 
 //*****************************************************************************

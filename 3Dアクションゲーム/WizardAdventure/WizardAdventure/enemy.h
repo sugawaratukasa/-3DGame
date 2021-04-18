@@ -24,6 +24,12 @@ class CModel;
 class CEnemy :public CScene
 {
 public:
+	// 状態
+	enum STATE
+	{
+		STATE_NORMAL = 0,
+		STATE_DEAD,
+	};
 
 	CEnemy(int nPriority = OBJTYPE_ENEMY);
 	~CEnemy();
@@ -36,14 +42,16 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
+	void Hit(int nDamage);
 
 	//***************************************
 	// セッター
 	//***************************************
-	void SetModel(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size);
+	void SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size, int nLife);
 	void SetPos(D3DXVECTOR3 pos);
 	void SetRot(D3DXVECTOR3 rot);
 	void SetSize(D3DXVECTOR3 size);
+	void SetLife(int nLife);
 
 	//***************************************
 	// ゲッター
@@ -51,7 +59,8 @@ public:
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
 	D3DXVECTOR3 GetSize(void) { return m_size; }
-
+	int GetLife(void) { return m_nLife; }
+	STATE GetState(void) { return m_State; }
 private:
 	static LPD3DXMESH m_pMesh;									// メッシュ情報のポインタ
 	static LPD3DXBUFFER m_pBuffMat;								// マテリアル情報のポインタ
@@ -63,6 +72,8 @@ private:
 	D3DXVECTOR3 m_rot;											// 角度
 	D3DXVECTOR3 m_size;											// 大きさ
 	CModel *m_pModel;											// モデルクラスのポインタ
+	STATE m_State;												// STATE
+	int m_nLife;												// 体力
 	bool m_bDraw;												// 描画判定
 };
 

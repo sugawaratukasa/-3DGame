@@ -24,6 +24,8 @@ public:
 		TYPE_NONE = -1,
 		TYPE_FIRE_BALL,
 		TYPE_ICE_BALL,
+		TYPE_ENEMY_FIRE_BALL,
+		TYPE_ENEMY_ICE_BALL,
 		TYPE_MAX
 	}TYPE;
 	CMagic();
@@ -34,6 +36,7 @@ public:
 	void Update(void);
 	void Draw(void);
 private:
+	void Collision(void);
 	void Load(const char *cText);
 	D3DXVECTOR3 m_pos;				// à íuç¿ïW
 	D3DXVECTOR3 m_move;				// à⁄ìÆó 

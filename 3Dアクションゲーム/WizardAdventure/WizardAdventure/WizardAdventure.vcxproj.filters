@@ -85,11 +85,35 @@
     <Filter Include="ソース ファイル\3D\Model\Block">
       <UniqueIdentifier>{e8b4f7cf-4c77-4a8b-830e-4ebd971258eb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\3D\3DPolygon\Billboard_UI">
+    <Filter Include="ソース ファイル\3D\3DPolygon\Gage">
+      <UniqueIdentifier>{f536a908-ba2d-4f6f-97c1-46496d13c189}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\3D\3DPolygon\BG">
+      <UniqueIdentifier>{1e2cd23a-ee00-4fd3-9c05-2de8dbd70bbc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\3D\3DPolygon\Billboard">
       <UniqueIdentifier>{27eeed07-8516-419a-a600-dc6892a59be0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\3D\3DPolygon\Billboard_UI">
+    <Filter Include="ヘッダー ファイル\3D\3DPolygon\Billboard">
       <UniqueIdentifier>{269833ce-3f41-4449-92ae-b4f152ead65b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\3D\3DPolygon\Gage">
+      <UniqueIdentifier>{ade15238-a6e6-46b0-8c6d-5e6d96616fff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\3D\3DPolygon\BG">
+      <UniqueIdentifier>{3131fe98-b0a3-4764-859d-fbd3a614bbbd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\3D\Model\Enemy">
+      <UniqueIdentifier>{aafb9cc8-8009-4e20-9f5a-cbda1c16fcb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\3D\Model\Enemy">
+      <UniqueIdentifier>{5f9935dc-4b0e-4403-8e82-5931b8682ec4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\2D\Gage">
+      <UniqueIdentifier>{88113221-76ac-4f5f-ba4e-c3ebbd3d2050}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\2D\Gage">
+      <UniqueIdentifier>{786560e8-f84c-498b-8fdb-270d6ce31de6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -192,22 +216,10 @@
     <ClCompile Include="gate_roof.cpp">
       <Filter>ソース ファイル\3D\Model\Object</Filter>
     </ClCompile>
-    <ClCompile Include="billboard.cpp">
-      <Filter>ソース ファイル\3D\3DPolygon</Filter>
-    </ClCompile>
     <ClCompile Include="particle_texture.cpp">
       <Filter>ソース ファイル\System</Filter>
     </ClCompile>
     <ClCompile Include="scene3d.cpp">
-      <Filter>ソース ファイル\3D\3DPolygon</Filter>
-    </ClCompile>
-    <ClCompile Include="bg.cpp">
-      <Filter>ソース ファイル\3D\3DPolygon</Filter>
-    </ClCompile>
-    <ClCompile Include="bg_sky.cpp">
-      <Filter>ソース ファイル\3D\3DPolygon</Filter>
-    </ClCompile>
-    <ClCompile Include="bg_cloud.cpp">
       <Filter>ソース ファイル\3D\3DPolygon</Filter>
     </ClCompile>
     <ClCompile Include="3d_polygon.cpp">
@@ -222,23 +234,62 @@
     <ClCompile Include="magic.cpp">
       <Filter>ソース ファイル\3D\3DPolygon\Particle</Filter>
     </ClCompile>
-    <ClCompile Include="bg_black.cpp">
-      <Filter>ソース ファイル\3D\3DPolygon</Filter>
-    </ClCompile>
     <ClCompile Include="billboard_ui.cpp">
-      <Filter>ソース ファイル\3D\3DPolygon\Billboard_UI</Filter>
+      <Filter>ソース ファイル\3D\3DPolygon\Billboard</Filter>
     </ClCompile>
     <ClCompile Include="fireball_ui.cpp">
-      <Filter>ソース ファイル\3D\3DPolygon\Billboard_UI</Filter>
+      <Filter>ソース ファイル\3D\3DPolygon\Billboard</Filter>
     </ClCompile>
     <ClCompile Include="iceball_ui.cpp">
-      <Filter>ソース ファイル\3D\3DPolygon\Billboard_UI</Filter>
+      <Filter>ソース ファイル\3D\3DPolygon\Billboard</Filter>
+    </ClCompile>
+    <ClCompile Include="3d_gage.cpp">
+      <Filter>ソース ファイル\3D\3DPolygon\Gage</Filter>
+    </ClCompile>
+    <ClCompile Include="bg.cpp">
+      <Filter>ソース ファイル\3D\3DPolygon\BG</Filter>
+    </ClCompile>
+    <ClCompile Include="bg_black.cpp">
+      <Filter>ソース ファイル\3D\3DPolygon\BG</Filter>
+    </ClCompile>
+    <ClCompile Include="bg_cloud.cpp">
+      <Filter>ソース ファイル\3D\3DPolygon\BG</Filter>
+    </ClCompile>
+    <ClCompile Include="bg_sky.cpp">
+      <Filter>ソース ファイル\3D\3DPolygon\BG</Filter>
+    </ClCompile>
+    <ClCompile Include="billboard.cpp">
+      <Filter>ソース ファイル\3D\3DPolygon\Billboard</Filter>
     </ClCompile>
     <ClCompile Include="enemy.cpp">
-      <Filter>ソース ファイル\3D\Model</Filter>
+      <Filter>ソース ファイル\3D\Model\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="ghost.cpp">
-      <Filter>ソース ファイル\3D\Model</Filter>
+      <Filter>ソース ファイル\3D\Model\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_life_gage.cpp">
+      <Filter>ソース ファイル\3D\3DPolygon\Gage</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_texture.cpp">
+      <Filter>ソース ファイル\System</Filter>
+    </ClCompile>
+    <ClCompile Include="2d_polygon.cpp">
+      <Filter>ソース ファイル\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="pause.cpp">
+      <Filter>ソース ファイル\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="title.cpp">
+      <Filter>ソース ファイル\Mode</Filter>
+    </ClCompile>
+    <ClCompile Include="fade.cpp">
+      <Filter>ソース ファイル\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="life_gage.cpp">
+      <Filter>ソース ファイル\2D\Gage</Filter>
+    </ClCompile>
+    <ClCompile Include="gage.cpp">
+      <Filter>ソース ファイル\2D\Gage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -347,15 +398,6 @@
     <ClInclude Include="scene3d.h">
       <Filter>ヘッダー ファイル\3D\3DPolygon</Filter>
     </ClInclude>
-    <ClInclude Include="bg.h">
-      <Filter>ヘッダー ファイル\3D\3DPolygon</Filter>
-    </ClInclude>
-    <ClInclude Include="bg_sky.h">
-      <Filter>ヘッダー ファイル\3D\3DPolygon</Filter>
-    </ClInclude>
-    <ClInclude Include="bg_cloud.h">
-      <Filter>ヘッダー ファイル\3D\3DPolygon</Filter>
-    </ClInclude>
     <ClInclude Include="3d_polygon.h">
       <Filter>ヘッダー ファイル\3D\3DPolygon</Filter>
     </ClInclude>
@@ -368,26 +410,62 @@
     <ClInclude Include="magic.h">
       <Filter>ヘッダー ファイル\3D\3DPolygon\Particle</Filter>
     </ClInclude>
-    <ClInclude Include="bg_black.h">
-      <Filter>ヘッダー ファイル\3D\3DPolygon</Filter>
-    </ClInclude>
-    <ClInclude Include="billboard.h">
-      <Filter>ヘッダー ファイル\3D\3DPolygon</Filter>
-    </ClInclude>
     <ClInclude Include="billboard_ui.h">
-      <Filter>ヘッダー ファイル\3D\3DPolygon\Billboard_UI</Filter>
+      <Filter>ヘッダー ファイル\3D\3DPolygon\Billboard</Filter>
     </ClInclude>
     <ClInclude Include="fireball_ui.h">
-      <Filter>ヘッダー ファイル\3D\3DPolygon\Billboard_UI</Filter>
+      <Filter>ヘッダー ファイル\3D\3DPolygon\Billboard</Filter>
     </ClInclude>
     <ClInclude Include="iceball_ui.h">
-      <Filter>ヘッダー ファイル\3D\3DPolygon\Billboard_UI</Filter>
+      <Filter>ヘッダー ファイル\3D\3DPolygon\Billboard</Filter>
+    </ClInclude>
+    <ClInclude Include="billboard.h">
+      <Filter>ヘッダー ファイル\3D\3DPolygon\Billboard</Filter>
+    </ClInclude>
+    <ClInclude Include="3d_gage.h">
+      <Filter>ヘッダー ファイル\3D\3DPolygon\Gage</Filter>
+    </ClInclude>
+    <ClInclude Include="bg.h">
+      <Filter>ヘッダー ファイル\3D\3DPolygon\BG</Filter>
+    </ClInclude>
+    <ClInclude Include="bg_black.h">
+      <Filter>ヘッダー ファイル\3D\3DPolygon\BG</Filter>
+    </ClInclude>
+    <ClInclude Include="bg_cloud.h">
+      <Filter>ヘッダー ファイル\3D\3DPolygon\BG</Filter>
+    </ClInclude>
+    <ClInclude Include="bg_sky.h">
+      <Filter>ヘッダー ファイル\3D\3DPolygon\BG</Filter>
     </ClInclude>
     <ClInclude Include="enemy.h">
-      <Filter>ヘッダー ファイル\3D\Model</Filter>
+      <Filter>ヘッダー ファイル\3D\Model\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="ghost.h">
-      <Filter>ヘッダー ファイル\3D\Model</Filter>
+      <Filter>ヘッダー ファイル\3D\Model\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_life_gage.h">
+      <Filter>ヘッダー ファイル\3D\3DPolygon\Gage</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_texture.h">
+      <Filter>ヘッダー ファイル\System</Filter>
+    </ClInclude>
+    <ClInclude Include="2d_polygon.h">
+      <Filter>ヘッダー ファイル\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="pause.h">
+      <Filter>ヘッダー ファイル\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="title.h">
+      <Filter>ヘッダー ファイル\Mode</Filter>
+    </ClInclude>
+    <ClInclude Include="fade.h">
+      <Filter>ヘッダー ファイル\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="gage.h">
+      <Filter>ヘッダー ファイル\2D\Gage</Filter>
+    </ClInclude>
+    <ClInclude Include="life_gage.h">
+      <Filter>ヘッダー ファイル\2D\Gage</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

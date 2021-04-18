@@ -7,18 +7,31 @@
 // インクルードファイル
 //******************************************************************************
 #include "particle.h"
+#include "enemy.h"
+#include "ghost.h"
+#include "player.h"
+#include "3d_obj.h"
+#include "block.h"
+#include "collision.h"
 #include "magic.h"
 
 //******************************************************************************
 // マクロ定義
 //******************************************************************************
-#define MAX_TEXT		(1024)									// テキストの最大数
-#define FIRE_BALL_TEXT	("data/Effect/FireBall_Data.txt")		// テキスト
-#define ICE_BALL_TEXT	("data/Effect/IceBall_Data.txt")		// テキスト
-#define REMAINDER		(0)										// 余り0
-#define MAX_LIFE		(150)									// ライフの最大数
-#define MIN_LIFE		(0)										// ライフの最小数
-#define MOVE_VALUE		(2.5f)									// 移動量
+#define MAX_TEXT			 (1024)										// テキストの最大数
+#define FIRE_BALL_TEXT		 ("data/Effect/FireBall_Data.txt")			// テキスト
+#define ICE_BALL_TEXT		 ("data/Effect/IceBall_Data.txt")			// テキスト
+#define ENEMY_FIRE_BALL_TEXT ("data/Effect/Enemy_FireBall_Data.txt")	// テキスト
+#define ENEMY_ICE_BALL_TEXT	 ("data/Effect/Enemy_IceBall_Data.txt")		// テキスト
+#define REMAINDER			 (0)										// 余り0
+#define MAX_LIFE			 (150)										// ライフの最大数
+#define MIN_LIFE			 (0)										// ライフの最小数
+#define MOVE_VALUE			 (2.5f)										// 移動量
+#define SIZE				 (20.0f)									// サイズ
+#define DAMAGE				 (20)										// ダメージ
+#define WEAK_DAMAGE			 (100)										// 弱点ダメージ
+#define DEVIDE				 (10)										// 割る数
+#define SIZE_XYZ			 (D3DXVECTOR3(20.0f,20.0f,20.0f))			// サイズ
 //******************************************************************************
 // コンストラクタ
 //******************************************************************************
@@ -76,13 +89,29 @@ HRESULT CMagic::Init(void)
 	case TYPE_FIRE_BALL:
 		// テキストファイル読み込み
 		sprintf(m_cText, FIRE_BALL_TEXT);
+		//オブジェクトタイプ設定
+		SetObjType(OBJTYPE_MAGIC);
 		break;
 		// 氷玉
 	case TYPE_ICE_BALL:
 		// テキストファイル読み込み
 		sprintf(m_cText, ICE_BALL_TEXT);
+		//オブジェクトタイプ設定
+		SetObjType(OBJTYPE_MAGIC);
 		break;
-
+		// 敵の火玉
+	case TYPE_ENEMY_FIRE_BALL:
+		// テキストファイル読み込み
+		sprintf(m_cText, ENEMY_FIRE_BALL_TEXT);
+		//オブジェクトタイプ設定
+		SetObjType(OBJTYPE_ENEMY_MAGIC);
+		break;
+	case TYPE_ENEMY_ICE_BALL:
+		// テキストファイル読み込み
+		sprintf(m_cText, ENEMY_ICE_BALL_TEXT);
+		//オブジェクトタイプ設定
+		SetObjType(OBJTYPE_ENEMY_MAGIC);
+		break;
 	}
 
 	// 読み込み
@@ -123,12 +152,186 @@ void CMagic::Update(void)
 
 	// 移動
 	m_pos += m_move;
+
+	// 当たり判定
+	Collision();
 }
 //******************************************************************************
 // 描画関数
 //******************************************************************************
 void CMagic::Draw(void)
 {
+}
+//******************************************************************************
+// 当たり判定関数
+//******************************************************************************
+void CMagic::Collision(void)
+{
+	// CSceneのポインタ
+	CScene *pScene = NULL;
+
+	// 火球と氷球の場合
+	if (m_Type == TYPE_FIRE_BALL || m_Type == TYPE_ICE_BALL)
+	{
+		do
+		{
+			// シーン取得
+			pScene = GetScene(OBJTYPE_ENEMY);
+			// NULLでない場合
+			if (pScene != NULL)
+			{
+				// オブジェクトタイプ取得
+				OBJTYPE objtype = pScene->GetObjType();
+
+				// OBJTYPE_ENEMYの場合
+				if (objtype == OBJTYPE_ENEMY)
+				{
+					// 位置取得
+					D3DXVECTOR3 EnemyPos = ((CEnemy*)pScene)->GetPos();
+					D3DXVECTOR3 EnemySize = ((CEnemy*)pScene)->GetSize();
+					int nType = ((CGhost*)pScene)->GetType();
+					// 円形の当たり判定
+					if (CCollision::SphereCollision(m_pos, SIZE, EnemyPos, EnemySize.x) == true)
+					{
+						// 火球で敵が火の場合
+						if (m_Type == TYPE_FIRE_BALL && nType == CGhost::TYPE_FIRE)
+						{
+							// ダメージ
+							((CEnemy*)pScene)->Hit(DAMAGE);
+							Uninit();
+							return;
+						}
+						// 火球で敵が氷の場合
+						if (m_Type == TYPE_FIRE_BALL && nType == CGhost::TYPE_ICE)
+						{
+							// ダメージ
+							((CEnemy*)pScene)->Hit(WEAK_DAMAGE);
+							Uninit();
+							return;
+						}
+						// 氷球で敵が氷の場合
+						if (m_Type == TYPE_ICE_BALL && nType == CGhost::TYPE_ICE)
+						{
+							// ダメージ
+							((CEnemy*)pScene)->Hit(DAMAGE);
+							Uninit();
+							return;
+						}
+						// 氷球で敵が火の場合
+						if (m_Type == TYPE_ICE_BALL && nType == CGhost::TYPE_FIRE)
+						{
+							// ダメージ
+							((CEnemy*)pScene)->Hit(WEAK_DAMAGE);
+							Uninit();
+							return;
+						}
+					}
+				}
+			}
+		} while (pScene != NULL);
+	}
+	// 敵の火球と氷球の場合
+	if (m_Type == TYPE_ENEMY_FIRE_BALL || m_Type == TYPE_ENEMY_ICE_BALL)
+	{
+		do
+		{
+			// シーン取得
+			pScene = GetScene(OBJTYPE_PLAYER);
+			// NULLでない場合
+			if (pScene != NULL)
+			{
+				// オブジェクトタイプ取得
+				OBJTYPE objtype = pScene->GetObjType();
+
+				// OBJTYPE_ENEMYの場合
+				if (objtype == OBJTYPE_PLAYER)
+				{
+					// 位置
+					D3DXVECTOR3 PlayerPos;
+
+					// 位置取得
+					PlayerPos.x = ((CPlayer*)pScene)->GetMtxWorld(CPlayer::PARTS_UNDER_BODY)._41;
+					PlayerPos.y = ((CPlayer*)pScene)->GetMtxWorld(CPlayer::PARTS_UNDER_BODY)._42;
+					PlayerPos.z = ((CPlayer*)pScene)->GetMtxWorld(CPlayer::PARTS_UNDER_BODY)._43;
+
+					// サイズ取得
+					D3DXVECTOR3 PlayerSize = ((CPlayer*)pScene)->GetSize();
+
+					// 円形の当たり判定
+					if (CCollision::SphereCollision(m_pos, SIZE, PlayerPos, PlayerSize.x / DEVIDE) == true)
+					{
+						// ヒット
+						((CPlayer*)pScene)->Hit(DAMAGE);
+
+						// 終了
+						Uninit();
+						return;
+					}
+				}
+			}
+			// NULLになるまで繰り返す
+		} while (pScene != NULL);
+	}
+	do
+	{
+		// シーン取得
+		pScene = GetScene(OBJTYPE_MAP_OBJ);
+		// NULLでない場合
+		if (pScene != NULL)
+		{
+			// オブジェクトタイプ取得
+			OBJTYPE objtype = pScene->GetObjType();
+
+			// OBJTYPE_ENEMYの場合
+			if (objtype == OBJTYPE_MAP_OBJ)
+			{
+				// 位置取得
+				D3DXVECTOR3 ObjPos = ((C3D_Obj*)pScene)->GetPos();
+
+				// サイズ取得
+				D3DXVECTOR3 ObjSize = ((C3D_Obj*)pScene)->GetSize();
+
+				// 円形の当たり判定
+				if (CCollision::RectangleCollision(m_pos, SIZE_XYZ, ObjPos, ObjSize) == true)
+				{
+					// 終了
+					Uninit();
+					return;
+				}
+			}
+		}
+		// NULLになるまで繰り返す
+	} while (pScene != NULL);
+	do
+	{
+		// シーン取得
+		pScene = GetScene(OBJTYPE_BLOCK);
+		// NULLでない場合
+		if (pScene != NULL)
+		{
+			// オブジェクトタイプ取得
+			OBJTYPE objtype = pScene->GetObjType();
+
+			// OBJTYPE_ENEMYの場合
+			if (objtype == OBJTYPE_BLOCK)
+			{
+				// 位置取得
+				D3DXVECTOR3 BlockPos = ((CBlock*)pScene)->GetPos();
+
+				// サイズ取得
+				D3DXVECTOR3 BlockSize = ((CBlock*)pScene)->GetSize();
+
+				// 円形の当たり判定
+				if (CCollision::RectangleCollision(m_pos, SIZE_XYZ, BlockPos, BlockSize) == true)
+				{
+					// 終了
+					Uninit();
+					return;
+				}
+			}
+		}
+		// NULLになるまで繰り返す
+	} while (pScene != NULL);
 }
 //******************************************************************************
 // 読み込み関数

@@ -393,13 +393,11 @@ void CBlock::Collision(D3DXVECTOR3 posOld, D3DXVECTOR3 size)
 				//下
 				if (CCollision::RectangleCollisionMove(pos, posOld, size, BlockPos, BlockSize) == CCollision::SURFACE_DOWN)
 				{
-
 					// 移動量0
 					m_move.y = MIN_MOVE_VALUE;
 
 					// 位置
 					pos.y = (size.y / DEVIDE_VALUE) - (BlockPos.y + BlockSize.y / DEVIDE_VALUE);
-
 				}
 				// 上
 				else if (CCollision::RectangleCollisionMove(pos, posOld, size, BlockPos, BlockSize) == CCollision::SURFACE_UP)
@@ -409,7 +407,6 @@ void CBlock::Collision(D3DXVECTOR3 posOld, D3DXVECTOR3 size)
 
 					// 位置
 					pos.y = (-size.y / DEVIDE_VALUE) + (BlockPos.y + BlockSize.y / DEVIDE_VALUE);
-
 				}
 				// 右
 				else if (CCollision::RectangleCollisionMove(pos, posOld, size, BlockPos, BlockSize) == CCollision::SURFACE_RIGHT)
@@ -419,7 +416,6 @@ void CBlock::Collision(D3DXVECTOR3 posOld, D3DXVECTOR3 size)
 
 					// 位置
 					pos.x = (size.x / DEVIDE_VALUE) + (BlockPos.x + BlockSize.x / DEVIDE_VALUE);
-
 				}
 				// 左
 				else if (CCollision::RectangleCollisionMove(pos, posOld, size, BlockPos, BlockSize) == CCollision::SURFACE_LEFT)
@@ -489,7 +485,40 @@ void CBlock::Collision(D3DXVECTOR3 posOld, D3DXVECTOR3 size)
 
 					// 位置
 					pos.x = (size.x / DEVIDE_VALUE) + (ObjPos.x + ObjSize.x / DEVIDE_VALUE);
+				}
+			}
+		}
+	} while (pScene != NULL);
 
+	// プレイヤーの当たり判定
+	do
+	{
+		// オブジェタイプがブロックの場合
+		pScene = GetScene(OBJTYPE_PLAYER);
+
+		// NULLチェック
+		if (pScene != NULL)
+		{
+			// オブジェタイプ取得
+			OBJTYPE objType = pScene->GetObjType();
+
+			// オブジェクトタイプがプレイヤー
+			if (objType == OBJTYPE_PLAYER)
+			{
+				D3DXVECTOR3 PlayerPos;
+				// 座標とサイズ取得
+				PlayerPos.x = ((CPlayer*)pScene)->GetMtxWorld(CPlayer::PARTS_UNDER_BODY)._41;
+				PlayerPos.y = ((CPlayer*)pScene)->GetMtxWorld(CPlayer::PARTS_UNDER_BODY)._42;
+				PlayerPos.z = ((CPlayer*)pScene)->GetMtxWorld(CPlayer::PARTS_UNDER_BODY)._43;
+				D3DXVECTOR3 PlayerSize = ((CPlayer*)pScene)->GetSize();
+				// 上
+				if (CCollision::RectangleCollisionMove(pos, posOld, size, PlayerPos, PlayerSize) == CCollision::SURFACE_UP)
+				{
+					// 移動量0
+					m_move.y = MIN_MOVE_VALUE;
+
+					// 位置
+					pos.y = (-size.y / DEVIDE_VALUE) + (PlayerPos.y + PlayerSize.y / DEVIDE_VALUE);
 				}
 			}
 		}

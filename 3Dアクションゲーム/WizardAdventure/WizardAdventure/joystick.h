@@ -32,6 +32,10 @@ public:
 		JS_RB,
 		JS_LT,
 		JS_RT,
+		JS_STICK_L,
+		JS_STICK_R,
+		JS_BACK,
+		JS_START,
 		JS_MAX
 	}JS;
 

@@ -16,23 +16,24 @@
 #define NOR				(D3DXVECTOR3(1, 1, -1))	// 法線
 #define SCALE_VALUE		(1.0f)					// 拡大率
 #define DEVIDE_VALUE	(2)						// 割る数
+#define DEFAULT_TEX		(1.0f)					// UV値
 //******************************************************************************
 // コンストラクタ
 //******************************************************************************
 CBillboard::CBillboard(int nPriority) : CScene(nPriority)
 {
-	m_pTexture = NULL;
-	m_pVtxBuff = NULL;
-	m_pos = INIT_D3DXVECTOR3;
-	m_rot = INIT_D3DXVECTOR3;
-	m_size = INIT_D3DXVECTOR3;
-	m_col = INIT_COLOR;
-	m_fScale = INIT_FLOAT;
-	m_fTexX = INIT_FLOAT;
-	m_fTexX2 = 1.0f;
-	m_fTexY = INIT_FLOAT;
-	m_fTexY2 = 1.0f;
-	m_nAlpha = INIT_INT;
+	m_pTexture	= NULL;
+	m_pVtxBuff	= NULL;
+	m_pos		= INIT_D3DXVECTOR3;
+	m_rot		= INIT_D3DXVECTOR3;
+	m_size		= INIT_D3DXVECTOR3;
+	m_col		= INIT_COLOR;
+	m_fScale	= INIT_FLOAT;
+	m_fTexX		= INIT_FLOAT;
+	m_fTexX2	= INIT_FLOAT;
+	m_fTexY		= INIT_FLOAT;
+	m_fTexY2	= INIT_FLOAT;
+	m_nAlpha	= INIT_INT;
 	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
 }
 //******************************************************************************
@@ -46,16 +47,20 @@ CBillboard::~CBillboard()
 //******************************************************************************
 HRESULT CBillboard::Init(void)
 {
+	// UV値
+	m_fTexX2 = DEFAULT_TEX;
+	m_fTexY2 = DEFAULT_TEX;
+
 	// レンダラー取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	// 頂点バッファの生成
 	if (FAILED(pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * NUM_VERTEX,	// 頂点データ用に確保するバッファサイズ(バイト単位)
-		D3DUSAGE_WRITEONLY,			// 頂点バッファの使用法　
-		FVF_VERTEX_3D,				// 使用する頂点フォーマット
-		D3DPOOL_MANAGED,			// リソースのバッファを保持するメモリクラスを指定
-		&m_pVtxBuff,				// 頂点バッファへのポインタ
-		NULL)))						// NULLに設定
+		D3DUSAGE_WRITEONLY,													// 頂点バッファの使用法　
+		FVF_VERTEX_3D,														// 使用する頂点フォーマット
+		D3DPOOL_MANAGED,													// リソースのバッファを保持するメモリクラスを指定
+		&m_pVtxBuff,														// 頂点バッファへのポインタ
+		NULL)))																// NULLに設定
 	{
 		return E_FAIL;
 	}

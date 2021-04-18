@@ -14,6 +14,10 @@
 //******************************************************************************
 #define MAX_TEXT	(1024)
 //******************************************************************************
+// 前方宣言
+//******************************************************************************
+class CParticle_Emitter;
+//******************************************************************************
 // クラス
 //******************************************************************************
 class CParticle_Emitter : public CScene
@@ -28,6 +32,8 @@ public:
 		TYPE_FIRE_LEFT,
 		TYPE_ICE_RIGHT,
 		TYPE_ICE_LEFT,
+		TYPE_FIRE_GHOST,
+		TYPE_ICE_GHOST,
 		TYPE_MAX
 	}TYPE;
 	CParticle_Emitter();
@@ -44,10 +50,10 @@ private:
 	void Load(const char *cText);
 	void Right_Arm(void);
 	void Left_Arm(void);
-	D3DXVECTOR3 m_pos;			// 位置座標
-	int m_nCount;				// 間隔
-	int m_nCreateCount;			// 生成カウント
-	char m_cText[MAX_TEXT];		// テキスト
-	TYPE m_Type;				// タイプ
+	D3DXVECTOR3 m_pos;		// 位置座標
+	int m_nCount;			// 間隔
+	int m_nCreateCount;		// 生成カウント
+	char m_cText[MAX_TEXT];	// テキスト
+	TYPE m_Type;			// タイプ
 };
 #endif

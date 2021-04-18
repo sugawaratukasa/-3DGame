@@ -22,6 +22,7 @@
 #include "particle_emitter.h"
 #include "fireball_ui.h"
 #include "iceball_ui.h"
+#include "life_gage.h"
 #include "player.h"
 //******************************************************************************
 // マクロ定義
@@ -50,6 +51,7 @@
 #define MOVE_VALUE				(D3DXVECTOR3(2.0f,2.0f,2.0f))						// 移動量
 #define RIGHT_ROT				(D3DXVECTOR3(0.0f,D3DXToRadian(270.0f),0.0f))		// 向き
 #define LEFT_ROT				(D3DXVECTOR3(0.0f,D3DXToRadian(90.0f),0.0f))		// 向き
+#define GAGE_POS				(D3DXVECTOR3(300.0f,50.0f,0.0f))					// ゲージの位置
 #define MIN_BLOCK_NUM			(0)													// ブロックの最小数
 #define ARRAY_FIRST_NUM			(0)													// 配列の先頭
 #define ARRAY_MOVE_NUMBER		(1)													// 配列の移動
@@ -65,6 +67,7 @@
 #define JUMP_VALUE_2			(0.01f)												// ジャンプ量
 #define DEAD_ZONE_MIN			(0)													// スティックのデッドゾーン最小値
 #define MAGIC_MOTION_COUNT		(30)												// 魔法のモーションカウント
+#define MAX_LIFE				(100)												// ライフの最大値
 // 魔法の位置
 #define MAGIC_POS				(D3DXVECTOR3(m_pModel[PARTS_DOWN_ARM_L]->GetMtxWorld()._41,m_pModel[PARTS_DOWN_ARM_L]->GetMtxWorld()._42,m_pModel[PARTS_DOWN_ARM_L]->GetMtxWorld()._43))
 #define MAGIC_MOVE_RIGHT		(D3DXVECTOR3(2.5f,0.0f,0.0f))						// 魔法の移動量
@@ -74,7 +77,7 @@
 #define EMITTER_POS_LEFT		(D3DXVECTOR3(m_pModel[PARTS_DOWN_ARM_R]->GetMtxWorld()._41,m_pModel[PARTS_DOWN_ARM_R]->GetMtxWorld()._42,m_pModel[PARTS_DOWN_ARM_R]->GetMtxWorld()._43))
 // 腰の位置
 #define POS						(D3DXVECTOR3(m_pModel[PARTS_UNDER_BODY]->GetMtxWorld()._41,m_pModel[PARTS_UNDER_BODY]->GetMtxWorld()._42,m_pModel[PARTS_UNDER_BODY]->GetMtxWorld()._43))
-#define MAGIC_UI_POS			(D3DXVECTOR3(m_pos.x, m_pos.y + 50.0f, m_pos.z - 50.0f))	// 魔法UIの位置
+#define MAGIC_UI_POS			(D3DXVECTOR3(m_pos.x, m_pos.y + 50.0f, m_pos.z - 20.0f))	// 魔法UIの位置
 //******************************************************************************
 // 静的メンバ変数
 //******************************************************************************
@@ -118,6 +121,7 @@ CPlayer::CPlayer(int nPriority) : CScene(nPriority)
 	m_nBlockNum				= INIT_INT;				
 	m_nBlock_Select_Num		= INIT_INT;	
 	m_nMotion_Count			= INIT_INT;
+	m_nLife					= INIT_INT;
 	m_bStick				= false;				
 	m_Rot_State				= ROT_STATE_RIGHT;	
 	m_MagicType				= MAGIC_TYPE_FIREBALL;
@@ -157,6 +161,9 @@ CPlayer * CPlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size)
 
 	// 初期化
 	pPlayer->Init();
+
+	// ライフゲージ生成
+	CLife_Gage::Create(GAGE_POS, pPlayer);
 
 	// ポインタを返す
 	return pPlayer;
@@ -220,6 +227,9 @@ void CPlayer::Unload(void)
 //******************************************************************************
 HRESULT CPlayer::Init(void)
 {
+	// ライフ代入
+	m_nLife = MAX_LIFE;
+
 	// モーションの生成
 	m_pMotion = CMotion::Create();
 
@@ -375,7 +385,7 @@ void CPlayer::Update(void)
 	if (g_lpDIDevice != NULL && pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_X))
 	{
 		// ブロック生成
-		Block_Crate();
+		Block_Create();
 	}
 	// ブロック選択中でない場合
 	if (m_Blcok_Active != BLOCK_ACTIVE_SELECT)
@@ -434,6 +444,14 @@ void CPlayer::Draw(void)
 		// モデルクラスの描画処理
 		m_pModel[nCount]->Draw();
 	}
+}
+//******************************************************************************
+// ヒット
+//******************************************************************************
+void CPlayer::Hit(int nLife)
+{
+	// ライフ減算
+	m_nLife -= nLife;
 }
 //******************************************************************************
 // 情報設定
@@ -1659,7 +1677,7 @@ void CPlayer::LeftSelectionBlock(void)
 //******************************************************************************
 // ブロック生成関数
 //******************************************************************************
-void CPlayer::Block_Crate(void)
+void CPlayer::Block_Create(void)
 {
 	// 生成状態に
 	m_Blcok_Active = BLOCK_ACTIVE_CREATE;

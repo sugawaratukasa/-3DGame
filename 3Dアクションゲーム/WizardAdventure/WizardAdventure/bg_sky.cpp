@@ -14,6 +14,7 @@
 //******************************************************************************
 // マクロ定義
 //******************************************************************************
+#define POS	(D3DXVECTOR3(PlayerPos.x + 200.0f, PlayerPos.y, PlayerPos.z))
 #define COL	(D3DXCOLOR(0.0f,0.0f,0.0f,1.0f))
 //******************************************************************************
 // 静的メンバ変数初期化
@@ -86,18 +87,6 @@ void CBg_Sky::Update(void)
 {
 	// 更新
 	C3D_Polygon::Update();
-	// コントローラー取得
-	DIJOYSTATE js;
-	js.lY = INIT_INT;
-	js.lX = INIT_INT;
-	CInputJoystick * pInputJoystick = CManager::GetInputJoystick();
-	LPDIRECTINPUTDEVICE8 g_lpDIDevice = CInputJoystick::GetDevice();
-
-	if (g_lpDIDevice != NULL)
-	{
-		g_lpDIDevice->Poll();
-		g_lpDIDevice->GetDeviceState(sizeof(DIJOYSTATE), &js);
-	}
 
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
@@ -111,27 +100,28 @@ void CBg_Sky::Update(void)
 	{
 		// シーン取得
 		pScene = GetScene(OBJTYPE_PLAYER);
+
 		// NULLでない場合
 		if(pScene != NULL)
 		{
 			// オブジェクトタイプ取得
-			OBJTYPE objtype = GetObjType();
+			OBJTYPE objtype = pScene->GetObjType();
 
 			// オブジェタイププレイヤーの場合
 			if (objtype = OBJTYPE_PLAYER)
 			{
 				// プレイヤーの位置取得
 				PlayerPos = ((CPlayer*)pScene)->GetPos();
+
+				// 位置代入
+				pos.x = POS.x;
+
+				// 位置設定
+				SetPosition(pos);
 			}
 		}
 		// NULLになるまで
 	} while (pScene != NULL);
-
-	// 位置代入
-	pos.x = PlayerPos.x;
-
-	// 位置設定
-	SetPosition(pos);
 }
 //******************************************************************************
 // 描画関数

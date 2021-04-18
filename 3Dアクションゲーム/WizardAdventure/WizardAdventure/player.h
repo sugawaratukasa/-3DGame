@@ -114,6 +114,7 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
+	void Hit(int nLife);
 	void SetPlayer(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size);
 
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
@@ -122,6 +123,7 @@ public:
 	D3DXVECTOR3 GetSize(void) { return m_size; }
 	BLOCK_ACTIVE GetBlockActive(void) { return m_Blcok_Active; }
 	D3DXMATRIX GetMtxWorld(PLAYER_PARTS Parts);
+	int GetLife(void) { return m_nLife; }
 private:
 	void RightSelectBlock(void);
 	void RightBlock(void);
@@ -131,7 +133,7 @@ private:
 	void LeftBlock(void);
 	void LeftSelectionBlock(void);
 
-	void Block_Crate(void);
+	void Block_Create(void);
 	void Collision(void);
 	void Move(void);
 	void Magic(void);
@@ -163,6 +165,7 @@ private:
 	int m_nBlock_Select_Num;										// 箱の選択する
 	int m_nSelect_Save_Num;											// 箱の数を保存する
 	int m_nMotion_Count;											// モーションカウント
+	int m_nLife;													// 体力
 	bool m_bStick;													// スティック判定
 	bool m_bRot;													// 向き
 	bool m_bJump;													// ジャンプ判定

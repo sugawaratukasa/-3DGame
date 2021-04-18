@@ -2,6 +2,7 @@
 // 2D [scene2d.cpp]
 // Author : 管原司
 //******************************************************************************
+
 //******************************************************************************
 //インクルードファイル
 //******************************************************************************
@@ -10,20 +11,23 @@
 #include "renderer.h"
 #include "scene.h"
 #include "scene2d.h"
-
+//******************************************************************************
+// マクロ定義
+//******************************************************************************
+#define DEFAULLT_COL	(D3DXCOLOR(1.0f,1.0f,1.0f,1.0f))	// 標準の色
 //******************************************************************************
 //コンストラクタ
 //******************************************************************************
 CScene2D::CScene2D(int nPriority) :CScene(nPriority)
 {
-	m_pTexture = NULL;
-	m_pVtxBuff = NULL;
-	m_pos = INIT_D3DXVECTOR3;
-	m_size = INIT_D3DXVECTOR3;
-	m_rot = INIT_D3DXVECTOR3;
-	m_color = INIT_COLOR;
-	m_fAngle = INIT_FLOAT;
-	m_fLength = INIT_FLOAT;
+	m_pTexture	= NULL;
+	m_pVtxBuff	= NULL;
+	m_pos		= INIT_D3DXVECTOR3;
+	m_size		= INIT_D3DXVECTOR3;
+	m_rot		= INIT_D3DXVECTOR3;
+	m_color		= INIT_COLOR;
+	m_fAngle	= INIT_FLOAT;
+	m_fLength	= INIT_FLOAT;
 }
 
 //******************************************************************************
@@ -39,8 +43,6 @@ CScene2D::~CScene2D()
 //******************************************************************************
 HRESULT CScene2D::Init(void)
 {
-	m_color = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-
 	LPDIRECT3DDEVICE9 pDevice;
 	pDevice = CManager::GetRenderer()->GetDevice();
 
@@ -179,15 +181,9 @@ void CScene2D::Update(void)
 //******************************************************************************
 void CScene2D::Draw(void)
 {
+	// デバイス取得
 	LPDIRECT3DDEVICE9 pDevice;
 	pDevice = CManager::GetRenderer()->GetDevice();
-
-	//アルファテストを有効化
-	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-	//アルファテスト基準値の設定
-	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
-	//アルファテストの比較方法の設定（GREATERは基準値より大きい場合)
-	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
 
 	// 頂点バッファをデータストリームに設定
 	pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_2D));
@@ -200,9 +196,6 @@ void CScene2D::Draw(void)
 
 	// ポリゴンの描画
 	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, NUM_POLYGON);
-
-	//アルファテストを無効化
-	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 }
 
 //******************************************************************************
@@ -227,6 +220,16 @@ void CScene2D::SetColor(D3DXCOLOR color)
 void CScene2D::SetRotation(D3DXVECTOR3 rot)
 {
 	m_rot = rot;
+}
+//******************************************************************************
+// 情報設定
+//******************************************************************************
+void CScene2D::SetPolygon(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size, D3DXCOLOR color)
+{
+	m_pos = pos;
+	m_rot = rot;
+	m_size = size;
+	m_color = color;
 }
 //******************************************************************************
 // 位置座標設定

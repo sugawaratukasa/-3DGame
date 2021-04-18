@@ -87,18 +87,6 @@ void CBg_Black::Update(void)
 {
 	// 更新
 	C3D_Polygon::Update();
-	// コントローラー取得
-	DIJOYSTATE js;
-	js.lY = INIT_INT;
-	js.lX = INIT_INT;
-	CInputJoystick * pInputJoystick = CManager::GetInputJoystick();
-	LPDIRECTINPUTDEVICE8 g_lpDIDevice = CInputJoystick::GetDevice();
-
-	if (g_lpDIDevice != NULL)
-	{
-		g_lpDIDevice->Poll();
-		g_lpDIDevice->GetDeviceState(sizeof(DIJOYSTATE), &js);
-	}
 
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();

@@ -17,6 +17,7 @@
 #include "joystick.h"
 #include "debug_proc.h"
 #include "mode.h"
+#include "title.h"
 #include "game.h"
 #include "particle.h"
 #include "player.h"
@@ -27,6 +28,8 @@
 #include "particle_texture.h"
 #include "3d_polygon.h"
 #include "billboard_ui.h"
+#include "enemy.h"
+#include "ui_texture.h"
 //******************************************************************************
 // 静的メンバ変数
 //******************************************************************************
@@ -38,6 +41,8 @@ CInputJoystick *CManager::m_pJoystick = NULL;
 CDebugProc *CManager::m_pDebugProc = NULL;
 CMode *CManager::m_pMode = NULL;
 CParticle_Texture *CManager::m_pParticle_Texture = NULL;
+CUI_Texture *CManager::m_pUI_Texture = NULL;
+CManager::MODE CManager::m_Mode = MODE_NONE;
 //******************************************************************************
 //コンストラクタ
 //******************************************************************************
@@ -116,11 +121,25 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindouw)
 			m_pParticle_Texture->Init();
 		}
 	}
+	// テクスチャ
+	if (m_pUI_Texture == NULL)
+	{
+		// メモリ確保
+		m_pUI_Texture = new CUI_Texture;
+
+		// NULLでない場合
+		if (m_pUI_Texture != NULL)
+		{
+			// 初期化
+			m_pUI_Texture->Init();
+		}
+	}
+	
 	//テクスチャの読み込み
 	LoadAll();
 
 	// モード設定
-	SetMode(MODE_GAME);
+	SetMode(MODE_TITLE);
 	return S_OK;
 }
 
@@ -135,6 +154,18 @@ void CManager::Uninit(void)
 	//テクスチャの破棄
 	UnloadAll();
 
+	// テクスチャの終了
+	if (m_pUI_Texture != NULL)
+	{
+		// 終了
+		m_pUI_Texture->Uninit();
+
+		// メモリ開放
+		delete m_pUI_Texture;
+
+		// NULLに
+		m_pUI_Texture = NULL;
+	}
 	// テクスチャの終了
 	if (m_pParticle_Texture != NULL)
 	{
@@ -269,6 +300,9 @@ void CManager::LoadAll(void)
 
 	// ビルボードUI
 	CBillboard_UI::Load();
+
+	// 敵
+	CEnemy::Load();
 }
 
 //******************************************************************************
@@ -276,6 +310,10 @@ void CManager::LoadAll(void)
 //******************************************************************************
 void CManager::UnloadAll(void)
 {
+
+	// 敵
+	CEnemy::Unload();
+
 	// ビルボードUI
 	CBillboard_UI::Unload();
 
@@ -350,13 +388,23 @@ void CManager::SetMode(MODE mode)
 
 		switch (m_Mode)
 		{
+			// タイトル
+		case MODE_TITLE:
+
+			// ツールの生成
+			m_pMode = new CTitle;
+
+			// ツールの初期化処理
+			m_pMode->Init();
+			break;
+			// ゲーム
 		case MODE_GAME:
+
 			// ツールの生成
 			m_pMode = new CGame;
 
 			// ツールの初期化処理
 			m_pMode->Init();
-
 			break;
 
 		default:

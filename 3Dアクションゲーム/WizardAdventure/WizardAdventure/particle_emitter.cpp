@@ -13,19 +13,21 @@
 //******************************************************************************
 // マクロ定義
 //******************************************************************************
-#define MAX_TEXT			(1024)									// テキストの最大数
-#define STAR_EMITTER_TEXT	("data/Effect/StarEmitter01_Data.txt")	// テキスト
-#define FIRE_EMITTER_TEXT	("data/Effect/FireEmitter_Data.txt")	// テキスト
-#define ICE_EMITTER_TEXT	("data/Effect/IceEmitter_Data.txt")		// テキスト
-#define REMAINDER			(0)										// 余り0
+#define MAX_TEXT			(1024)										// テキストの最大数
+#define STAR_EMITTER_TEXT	("data/Effect/StarEmitter01_Data.txt")		// テキストのパス
+#define FIRE_EMITTER_TEXT	("data/Effect/FireEmitter_Data.txt")		// テキストのパス
+#define ICE_EMITTER_TEXT	("data/Effect/IceEmitter_Data.txt")			// テキストのパス
+#define FIREGHOST_TEXT		("data/Effect/FireGhostEmitter_Data.txt")	// テキストのパス
+#define ICEGHOST_TEXT		("data/Effect/IceGhostEmitter_Data.txt")	// テキストのパス
+#define REMAINDER			(0)											// 余り0
 //******************************************************************************
 // コンストラクタ
 //******************************************************************************
 CParticle_Emitter::CParticle_Emitter()
 {
-	m_pos			= INIT_D3DXVECTOR3;
-	m_nCount		= INIT_INT;
-	m_nCreateCount	= INIT_INT;
+	m_pos				= INIT_D3DXVECTOR3;
+	m_nCount			= INIT_INT;
+	m_nCreateCount		= INIT_INT;
 }
 //******************************************************************************
 // デストラクタ
@@ -88,6 +90,14 @@ HRESULT CParticle_Emitter::Init(void)
 		// テキストファイル読み込み
 		sprintf(m_cText, ICE_EMITTER_TEXT);
 		break;
+	case TYPE_FIRE_GHOST:
+		// テキストファイル読み込み
+		sprintf(m_cText, FIREGHOST_TEXT);
+		break;
+	case TYPE_ICE_GHOST:
+		// テキストファイル読み込み
+		sprintf(m_cText, ICEGHOST_TEXT);
+		break;
 	}
 
 	// 読み込み
@@ -110,13 +120,13 @@ void CParticle_Emitter::Update(void)
 	// 生成処理
 	CreateParticle();
 
-	// タイプが星右の場合
+	// タイプが右の場合
 	if (m_Type == TYPE_STAR_RIGHT || m_Type == TYPE_FIRE_RIGHT || m_Type == TYPE_ICE_RIGHT)
 	{
 		// 星の処理
 		Right_Arm();
 	}
-	// タイプが星左の場合
+	// タイプが左の場合
 	if (m_Type == TYPE_STAR_LEFT || m_Type == TYPE_FIRE_LEFT || m_Type == TYPE_ICE_LEFT)
 	{
 		// 星の処理

@@ -16,24 +16,15 @@
 //******************************************************************************
 // マクロ定義
 //******************************************************************************
-#define FLOOR_BLOCK		("data/Model/Object/floor_01.x")	// 床
-#define NEEDLE_BLOCK	("data/Model/Object/Needle.x")		// 針
-#define BLOCK_WOOD		("data/Model/Object/box.x")			// 木箱
-#define BLOCK_STOON		("data/Model/Object/box_2.x")		// 石の箱
-#define BUTTON			("data/Model/Object/Button.x")		// ボタン
-#define GATE			("data/Model/Object/Gate_2.x")		// 扉
-#define GATEROOF		("data/Model/Object/GateRoof.x")	// 扉屋根
-#define TREE			("data/Model/Object/Tree.x")		// 木
-#define STONE_0			("data/Model/Object/stone000.x")	// 石
-#define STONE_1			("data/Model/Object/stone001.x")	// 石
-#define STONE_2			("data/Model/Object/stone002.x")	// 石
+#define GHOST_TEXT	("data/Model/Enemy/Ghost.x")	// パス
+#define MIN_LIFE	(0)								// ライフの最小値
 //******************************************************************************
 //静的メンバ変数
 //******************************************************************************
 LPD3DXMESH CEnemy::m_pMesh = NULL;
 LPD3DXBUFFER CEnemy::m_pBuffMat = NULL;
 DWORD CEnemy::m_nNumMat = NULL;
-char* CEnemy::m_apFileName = { };
+char* CEnemy::m_apFileName = { GHOST_TEXT };
 LPDIRECT3DTEXTURE9 CEnemy::m_apTexture[MAX_MATERIAL] = {};
 //******************************************************************************
 // コンストラクタ
@@ -44,6 +35,8 @@ CEnemy::CEnemy(int nPriority) :CScene(nPriority)
 	m_rot		= INIT_D3DXVECTOR3;
 	m_size		= INIT_D3DXVECTOR3;
 	m_pModel	= NULL;
+	m_State		= STATE_NORMAL;
+	m_nLife		= INIT_INT;
 	m_bDraw		= true;
 	memset(m_mtxWorld, NULL, sizeof(m_mtxWorld));
 }
@@ -139,19 +132,19 @@ HRESULT CEnemy::LoadTexture(void)
 //******************************************************************************
 void CEnemy::UnloadTexture(void)
 {
-		for (int nCntMat = INIT_INT; nCntMat < (signed)m_nNumMat; nCntMat++)
+	for (int nCntMat = INIT_INT; nCntMat < (signed)m_nNumMat; nCntMat++)
+	{
+		// NULLでない場合
+		if (m_apTexture[nCntMat] != NULL)
 		{
-			// NULLでない場合
-			if (m_apTexture[nCntMat] != NULL)
-			{
-				// テクスチャRelease
-				m_apTexture[nCntMat]->Release();
+			// テクスチャRelease
+			m_apTexture[nCntMat]->Release();
 
-				// m_pTextureをNULLに
-				m_apTexture[nCntMat] = NULL;
+			// m_pTextureをNULLに
+			m_apTexture[nCntMat] = NULL;
 
-			}
 		}
+	}
 }
 
 //******************************************************************************
@@ -227,6 +220,16 @@ void CEnemy::Update(void)
 			m_bDraw = true;
 		}
 	}
+	// ライフが最小値以下になったら
+	if (m_nLife <= MIN_LIFE)
+	{
+		// 状態を死亡状態に
+		m_State = STATE_DEAD;
+
+		// 終了
+		Uninit();
+		return;
+	}
 }
 
 //******************************************************************************
@@ -260,14 +263,22 @@ void CEnemy::Draw(void)
 	}
 }
 //******************************************************************************
+// ヒット
+//******************************************************************************
+void CEnemy::Hit(int nDamage)
+{
+	// 減算
+	m_nLife -= nDamage;
+}
+//******************************************************************************
 // 情報設定
 //******************************************************************************
-void CEnemy::SetModel(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size)
+void CEnemy::SetEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size, int nLife)
 {
-	m_pos = pos;
-	m_rot = rot;
-	m_size = size;
-
+	m_pos	= pos;
+	m_rot	= rot;
+	m_size	= size;
+	m_nLife = nLife;
 	// オブジェクトタイプ設定
 	SetObjType(OBJTYPE_ENEMY);
 }
@@ -291,4 +302,11 @@ void CEnemy::SetRot(D3DXVECTOR3 rot)
 void CEnemy::SetSize(D3DXVECTOR3 size)
 {
 	m_size = size;
+}
+//******************************************************************************
+// 体力設定
+//******************************************************************************
+void CEnemy::SetLife(int nLife)
+{
+	m_nLife = nLife;
 }

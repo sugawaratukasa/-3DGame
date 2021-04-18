@@ -10,6 +10,7 @@
 //******************************************************************************
 // マクロ定義
 //******************************************************************************
+#define POS				(D3DXVECTOR3(PlayerPos.x,PlayerPos.y + 55.0f,PlayerPos.z - 10.0f))
 #define SIZE			(D3DXVECTOR3(10.0f,10.0f,0.0f))				// サイズ
 #define COL				(D3DXCOLOR(1.0f,1.0f,1.0f,1.0f))			// 色
 #define SUBCOLOR		(-0.05f)									// α値減算
@@ -85,9 +86,6 @@ void CFireBall_UI::Update(void)
 	// 位置取得
 	D3DXVECTOR3 pos = GetPosition();
 
-	// プレイヤーの位置
-	D3DXVECTOR3 PlayerPos;
-
 	// 色取得
 	D3DXCOLOR col = GetColor();
 
@@ -96,6 +94,9 @@ void CFireBall_UI::Update(void)
 
 	// CSceneのポインタ
 	CScene *pScene = NULL;
+
+	// プレイヤーの位置
+	D3DXVECTOR3 PlayerPos;
 
 	// プレイヤーの位置取得
 	do 
@@ -113,22 +114,22 @@ void CFireBall_UI::Update(void)
 			if (objtype == OBJTYPE_PLAYER)
 			{
 				// 位置取得
-				PlayerPos.x = ((CPlayer*)pScene)->GetMtxWorld(CPlayer::PARTS_HEAD)._41;
-				PlayerPos.y = ((CPlayer*)pScene)->GetMtxWorld(CPlayer::PARTS_HEAD)._42 + PLAYER_POS_Y;
-				PlayerPos.z = ((CPlayer*)pScene)->GetMtxWorld(CPlayer::PARTS_HEAD)._43 + PLAYER_POS_Z;
+				PlayerPos = ((CPlayer*)pScene)->GetPos();
+
+				// 代入
+				pos = POS;
+
+				// 位置設定
+				SetPosition(pos);
 			}
 		}
 		// NULLになるまで繰り返す
 	} while (pScene != NULL);
 
-	// 代入
-	pos = PlayerPos;
-
 	// 色設定
 	SetColor(col);
 
-	// 位置設定
-	SetPosition(pos);
+	
 
 	// 0.0f以下の場合
 	if (col.a <= MIN_COLOR)
