@@ -28,8 +28,9 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
-
+	void SetPause(bool bPause);
 private:
-	int m_nCount;	// カウント
+	int m_nCount;			// カウント
+	bool m_bPause;			// Pause
 };
 #endif

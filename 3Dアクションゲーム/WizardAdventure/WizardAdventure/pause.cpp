@@ -10,6 +10,9 @@
 #include "manager.h"
 #include "joystick.h"
 #include "2d_polygon.h"
+#include "fade.h"
+#include "mode.h"
+#include "game.h"
 #include "pause.h"
 //******************************************************************************
 // マクロ定義
@@ -123,6 +126,7 @@ void CPause::Select(void)
 	CInputJoystick * pInputJoystick = CManager::GetInputJoystick();
 	LPDIRECTINPUTDEVICE8 g_lpDIDevice = CInputJoystick::GetDevice();
 
+
 	if (g_lpDIDevice != NULL)
 	{
 		g_lpDIDevice->Poll();
@@ -136,6 +140,9 @@ void CPause::Select(void)
 			// 左スティックを上に倒す場合
 			if (js.lY >= STICK_REACTION)
 			{
+				// trueに
+				m_bStick = true;
+
 				// EXITの場合
 				if (m_nCount == TYPE_EXIT)
 				{
@@ -148,8 +155,6 @@ void CPause::Select(void)
 					// デクリメント
 					m_nCount++;
 				}
-				// trueに
-				m_bStick = true;
 			}
 			// 左スティックを下に倒す場合
 			if (js.lY <= -STICK_REACTION)
@@ -224,6 +229,9 @@ void CPause::Select(void)
 				// 更新開始
 				SetUpdateStop(false);
 
+				// フェード生成
+				CFade::Create(CManager::MODE_TITLE);
+
 				// 破棄
 				CPause::Release();
 			}
@@ -235,6 +243,10 @@ void CPause::Select(void)
 //******************************************************************************
 void CPause::Release(void)
 {
+	CMode *pMode = CManager::GetMode();
+
+	((CGame*)pMode)->SetPause(false);
+
 	// 破棄
 	m_apPolygon[TYPE_BLACK]->Uninit();
 	m_apPolygon[TYPE_RESUME]->Uninit();

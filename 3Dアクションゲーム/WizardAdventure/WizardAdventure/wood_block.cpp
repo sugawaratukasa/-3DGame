@@ -24,17 +24,23 @@ CWood_Block::~CWood_Block()
 CWood_Block * CWood_Block::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size)
 {
 	// ポインタ
-	CWood_Block *pWoodBlock;
+	CWood_Block *pWoodBlock = NULL;
+	// NULLの場合
+	if (pWoodBlock == NULL)
+	{
+		// メモリ確保
+		pWoodBlock = new CWood_Block;
 
-	// メモリ確保
-	pWoodBlock = new CWood_Block;
+		// NULLでない場合
+		if (pWoodBlock != NULL)
+		{
+			// 情報設定
+			pWoodBlock->SetBlock(pos, rot, size, C3D_Obj::TYPE_WOOD_BLOCK, pWoodBlock);
 
-	// 情報設定
-	pWoodBlock->SetBlock(pos, rot, size, C3D_Obj::TYPE_WOOD, pWoodBlock);
-
-	// 初期化
-	pWoodBlock->Init();
-
+			// 初期化
+			pWoodBlock->Init();
+		}
+	}
 	// ポインタを返す
 	return pWoodBlock;
 }

@@ -30,7 +30,7 @@ CStone_Block * CStone_Block::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR
 	pStone_Block = new CStone_Block;
 
 	// î•ñÝ’è
-	pStone_Block->SetBlock(pos, rot, size, C3D_Obj::TYPE_STONE, pStone_Block);
+	pStone_Block->SetBlock(pos, rot, size, C3D_Obj::TYPE_STONE_BLOCK, pStone_Block);
 
 	// ‰Šú‰»
 	pStone_Block->Init();

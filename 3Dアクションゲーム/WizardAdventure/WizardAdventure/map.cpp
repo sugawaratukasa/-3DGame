@@ -11,11 +11,13 @@
 #include "floor_block.h"
 #include "needle_block.h"
 #include "button.h"
-#include "map.h"
 #include "gate.h"
 #include "gate_roof.h"
 #include "tree.h"
 #include "stone.h"
+#include "wood_block.h"
+#include "wood.h"
+#include "map.h"
 //******************************************************************************
 //	マクロ定義
 //******************************************************************************
@@ -49,6 +51,8 @@
 #define STONE_2_SIZE	(D3DXVECTOR3(120.0f,100.0f,30.0f))																							// 石のサイズ
 #define STONE_2_POS		(D3DXVECTOR3(nCountCol * FLOOR_SIZE.x - 1000.0f,-45.0f,nCountRow * FLOOR_SIZE.z - 400.0f))									// 石の位置
 #define BYTE_NUM		(1024)																														// 最大バイト数
+#define WOOD_SIZE		(D3DXVECTOR3(100.0f,200.0f,200.0f))																							// 木のサイズ
+#define WOOD_POS		(D3DXVECTOR3(nCountCol * BLOCK_SIZE.x - 290.0f,nCountRow * -BLOCK_SIZE.y + 150.0f,- 200.0f))									// 木の位置
 //******************************************************************************
 // コンストラクタ
 //******************************************************************************
@@ -286,37 +290,55 @@ void CMap::BlockCreate(void)
 					// 無し
 				case OBJ_TYPE_NONE:
 					break;
-
 					// 床
 				case OBJ_TYPE_NORMAL_BLOCK:
 					// 床生成
-					CFloor_Block::Create(BLOCK_POS, BLOCK_ROT, BLOCK_SIZE);
+					CFloor_Block::Create(BLOCK_POS, BLOCK_ROT, BLOCK_SIZE, CFloor_Block::TYPE_NORMAL);
 					break;
-
 					// 針
 				case OBJ_TYPE_NEEDLE:
 					// 針生成
 					CNeedle_Block::Create(NEEDLE_POS, BLOCK_ROT, NEEDLE_SIZE);
 					break;
-
 					// ボタン
 				case OBJ_TYPE_BUTTON:
 					// 床生成
-					CFloor_Block::Create(BLOCK_POS, BLOCK_ROT, BLOCK_SIZE);
+					CFloor_Block::Create(BLOCK_POS, BLOCK_ROT, BLOCK_SIZE, CFloor_Block::TYPE_NORMAL);
 					// ボタン生成
 					CButton::Create(BUTTON_POS, BUTTON_ROT, BUTTON_SIZE);
 					break;
-
 					// ボタン
 				case OBJ_TYPE_GATE:
 					// 床生成
-					CFloor_Block::Create(BLOCK_POS, BLOCK_ROT, BLOCK_SIZE);
+					CFloor_Block::Create(BLOCK_POS, BLOCK_ROT, BLOCK_SIZE, CFloor_Block::TYPE_NORMAL);
 					// 扉生成
 					CGate::Create(GATE_POS, GATE_ROT, GATE_SIZE);
 					// 扉生成
 					CGate_Roof::Create(GATE_ROOF_POS, GATE_ROOF_ROT, GATE_ROOF_SIZE);
 					break;
-
+					// チェックポイント
+				case OBJ_TYPE_CHECK_POINT:
+					// 床生成
+					CFloor_Block::Create(BLOCK_POS, BLOCK_ROT, BLOCK_SIZE, CFloor_Block::TYPE_CHECK_POINT);
+					break;
+					// チェックポイント
+				case OBJ_TYPE_END:
+					// 床生成
+					CFloor_Block::Create(BLOCK_POS, BLOCK_ROT, BLOCK_SIZE, CFloor_Block::TYPE_END);
+					break;
+					// 木箱
+				case OBJ_TYPE_WOOD_BOX:
+					// 木箱生成
+					CWood_Block::Create(BLOCK_POS, BLOCK_ROT, BLOCK_SIZE);
+					break;
+				case OBJ_TYPE_WOOD:
+					// 木生成
+					CWood::Create(WOOD_POS, WOOD_SIZE);
+					break;
+				case OBJ_TYPE_ENEMY_CREATE:
+					// 床生成
+					CFloor_Block::Create(BLOCK_POS, BLOCK_ROT, BLOCK_SIZE, CFloor_Block::TYPE_ENEMY_CREATE);
+					break;
 				default:
 					break;
 				}

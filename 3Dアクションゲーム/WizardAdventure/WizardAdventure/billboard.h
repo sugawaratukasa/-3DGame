@@ -54,5 +54,6 @@ private:
 	D3DXMATRIX m_mtxWorld;					// マトリックス
 	float m_fScale;							// 拡大
 	int m_nAlpha;							// 透過値
+	bool m_bDraw;							// 描画判定
 };
 #endif

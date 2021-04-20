@@ -310,7 +310,6 @@ void CManager::LoadAll(void)
 //******************************************************************************
 void CManager::UnloadAll(void)
 {
-
 	// 敵
 	CEnemy::Unload();
 
@@ -400,6 +399,18 @@ void CManager::SetMode(MODE mode)
 			// ゲーム
 		case MODE_GAME:
 
+			// NULLでない場合
+			if (m_pCamera != NULL)
+			{
+				// 終了
+				m_pCamera->Uninit();
+
+				// 破棄
+				delete m_pCamera;
+
+				// NULLに
+				m_pCamera = NULL;
+			}
 			// ツールの生成
 			m_pMode = new CGame;
 

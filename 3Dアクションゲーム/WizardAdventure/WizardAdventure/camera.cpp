@@ -87,7 +87,7 @@ void CCamera::Update(void)
 	D3DXVECTOR3 PlayerPos;
 	do
 	{
-		// オブジェタイプがブロックの場合
+		// オブジェタイプがPLAYERの場合
 		pScene = CScene::GetScene(CScene::OBJTYPE_PLAYER);
 
 		// NULLチェック

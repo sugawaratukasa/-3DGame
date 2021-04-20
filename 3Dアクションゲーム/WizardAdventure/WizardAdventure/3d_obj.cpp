@@ -33,13 +33,14 @@
 #define STONE_0			("data/Model/Object/stone000.x")	// 石
 #define STONE_1			("data/Model/Object/stone001.x")	// 石
 #define STONE_2			("data/Model/Object/stone002.x")	// 石
+#define WOOD			("data/Model/Object/wood.x")		// 木
 //******************************************************************************
 //静的メンバ変数
 //******************************************************************************
 LPD3DXMESH C3D_Obj::m_pMesh[TYPE_MAX] = {};
 LPD3DXBUFFER C3D_Obj::m_pBuffMat[TYPE_MAX] = {};
 DWORD C3D_Obj::m_nNumMat[TYPE_MAX] = {};
-char* C3D_Obj::m_apFileName[TYPE_MAX] = { FLOOR_BLOCK,NEEDLE_BLOCK,BLOCK_WOOD, BLOCK_STOON ,BUTTON, GATE, GATEROOF, TREE,STONE_0, STONE_1, STONE_2 };
+char* C3D_Obj::m_apFileName[TYPE_MAX] = { FLOOR_BLOCK,NEEDLE_BLOCK,BLOCK_WOOD, BLOCK_STOON ,BUTTON, GATE, GATEROOF, TREE,STONE_0, STONE_1, STONE_2, WOOD };
 LPDIRECT3DTEXTURE9 C3D_Obj::m_apTexture[TYPE_MAX][MAX_MATERIAL] = {};
 //******************************************************************************
 // コンストラクタ

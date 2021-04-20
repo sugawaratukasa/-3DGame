@@ -14,7 +14,7 @@
 class C3D_Gage :public CScene
 {
 public:
-	C3D_Gage();
+	C3D_Gage(int nPriority = OBJTYPE_BILLBOARD_UI);
 	~C3D_Gage();
 	HRESULT Init(void);
 	void Uninit(void);

@@ -33,7 +33,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define PLAYER_POS		(D3DXVECTOR3(100.0f, 0.0f, -200.0f))
+#define PLAYER_POS		(D3DXVECTOR3(100.0f, -50.0f, -200.0f))
 #define PLAYER_ROT		(D3DXVECTOR3(0.0f,D3DXToRadian(90.0f),0.0f))
 #define PLAYER_SIZE		(D3DXVECTOR3(30.0f,15.0f,30.0f))
 #define ENEMY_POS		(D3DXVECTOR3(-100.0f,-45.0f,-200.0f))
@@ -57,13 +57,13 @@
 //*****************************************************************************
 // 静的メンバ変数
 //*****************************************************************************
-
 //*****************************************************************************
 //コンストラクタ
 //*****************************************************************************
 CGame::CGame()
 {
 	m_nCount = INIT_INT;
+	m_bPause = false;
 }
 //*****************************************************************************
 //デストラクタ
@@ -82,9 +82,6 @@ HRESULT CGame::Init(void)
 	// ライト
 	CManager::CreateLight();
 
-	// デバッグプロシージャ
-	CDebugProc::Print("%s%d", "座標:", 500);
-
 	// マップ生成
 	CMap::Create();
 
@@ -92,10 +89,10 @@ HRESULT CGame::Init(void)
 	CPlayer::Create(PLAYER_POS, PLAYER_ROT, PLAYER_SIZE);
 
 	// プレイヤー生成
-	CGhost::Create(ENEMY_POS, PLAYER_SIZE, CGhost::TYPE_FIRE);
+	//CGhost::Create(ENEMY_POS, PLAYER_SIZE, CGhost::TYPE_FIRE);
 
 	// プレイヤー生成
-	CGhost::Create(ENEMY_POS2, PLAYER_SIZE, CGhost::TYPE_ICE);
+	//CGhost::Create(ENEMY_POS2, PLAYER_SIZE, CGhost::TYPE_ICE);
 
 	// 背景生成
 	CBg::Create();
@@ -131,11 +128,18 @@ void CGame::Update(void)
 	// NULLでない場合
 	if (g_lpDIDevice != NULL)
 	{
-		// STARTボタンを押した場合
-		if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_START))
+		// falseの場合
+		if (m_bPause == false)
 		{
-			// ポーズ生成
-			CPause::Create();
+			// STARTボタンを押した場合
+			if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_START))
+			{
+				// ポーズ生成
+				CPause::Create();
+
+				// trueに
+				m_bPause = true;
+			}
 		}
 	}
 }
@@ -146,4 +150,11 @@ void CGame::Update(void)
 void CGame::Draw(void)
 {
 
+}
+//*****************************************************************************
+// ポーズ設定
+//*****************************************************************************
+void CGame::SetPause(bool bPause)
+{
+	m_bPause = bPause;
 }

@@ -8,20 +8,24 @@
 #include "manager.h"
 #include "ui_texture.h"
 #include "enemy.h"
+#include "3d_gage_back.h"
 #include "enemy_life_gage.h"
 //******************************************************************************
 // マクロ定義
 //******************************************************************************
 #define POS			(D3DXVECTOR3(EnemyPos.x,EnemyPos.y + 40.0f, EnemyPos.z - 10.0f))	// 位置
 #define SIZE		(D3DXVECTOR3(30.0f,2.5f,0.0f))										// サイズ
+#define SIZE_BACK	(D3DXVECTOR3(SIZE.x * 1.01f, SIZE.y * 1.15f, SIZE.z))				// ゲージの背景サイズ
 #define ROT			(D3DXVECTOR3(0.0f,0.0f,0.0f))										// 向き
 #define COL			(D3DXCOLOR(1.0f,0.0f,0.0f,1.0f))									// 色
 #define MIN_LIFE	(0)																	// ライフの最小値
 //******************************************************************************
 // コンストラクタ
 //******************************************************************************
-CEnemy_Life_Gage::CEnemy_Life_Gage()
+CEnemy_Life_Gage::CEnemy_Life_Gage(int nPriority) : C3D_Gage(nPriority)
 {
+	m_pEnemy		= NULL;
+	m_p3D_Gage_Back = NULL;
 }
 //******************************************************************************
 // デストラクタ
@@ -55,9 +59,6 @@ CEnemy_Life_Gage * CEnemy_Life_Gage::Create(D3DXVECTOR3 pos, CEnemy *pEnemy)
 			// 情報設定
 			pEnemy_Life_Gage->SetGage(pos, ROT, SIZE, COL, nLife);
 
-			// テクスチャ受け渡し
-			//pEnemy_Life_Gage->BindTexture(CManager::GetUI_Texture()->GetTexture(CUI_Texture::TEX_TYPE_LIFE_GAGE));
-
 			// 初期化
 			pEnemy_Life_Gage->Init();
 		}
@@ -73,6 +74,11 @@ HRESULT CEnemy_Life_Gage::Init(void)
 	// 初期化
 	C3D_Gage::Init();
 
+	// 位置取得
+	D3DXVECTOR3 pos = GetPosition();
+
+	// ゲージ背景生成
+	m_p3D_Gage_Back = C3D_Gage_Back::Create(pos, SIZE_BACK);
 	return S_OK;
 }
 //******************************************************************************
@@ -106,12 +112,18 @@ void CEnemy_Life_Gage::Update(void)
 	// 位置代入
 	pos = POS;
 
+	// 位置
+	m_p3D_Gage_Back->SetPosition(pos);
+
 	// 位置設定
 	SetPosition(pos);
 
 	// ライフが0以下になった場合
 	if (nLife <= MIN_LIFE)
 	{
+		// 破棄
+		m_p3D_Gage_Back->Uninit();
+
 		// 終了
 		Uninit();
 		return;

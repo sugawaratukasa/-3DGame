@@ -13,6 +13,8 @@
 #include "3d_obj.h"
 #include "block.h"
 #include "collision.h"
+#include "particle_effect.h"
+#include "wood.h"
 #include "magic.h"
 
 //******************************************************************************
@@ -263,6 +265,21 @@ void CMagic::Collision(void)
 						// ヒット
 						((CPlayer*)pScene)->Hit(DAMAGE);
 
+						// 火の場合
+						if (m_Type == TYPE_ENEMY_FIRE_BALL)
+						{
+							// エフェクト生成
+							CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_ENEMY_FIRE_EXPLOSION);
+							CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_ENEMY_FIRE_EXPLOSION_2);
+						}
+						// 氷の場合
+						if (m_Type == TYPE_ENEMY_ICE_BALL)
+						{
+							// エフェクト生成
+							CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_ICE_EXPLOSION);
+							CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_ICE_EXPLOSION_2);
+						}
+
 						// 終了
 						Uninit();
 						return;
@@ -294,6 +311,47 @@ void CMagic::Collision(void)
 				// 円形の当たり判定
 				if (CCollision::RectangleCollision(m_pos, SIZE_XYZ, ObjPos, ObjSize) == true)
 				{
+					// 火の場合
+					if (m_Type == TYPE_FIRE_BALL)
+					{
+						// エフェクト生成
+						CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_FIRE_EXPLOSION);
+						CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_FIRE_EXPLOSION_2);
+
+						// タイプ取得
+						int n3D_ObjType = ((C3D_Obj*)pScene)->GetType();
+
+						// タイプが床ブロックの場合
+						if (n3D_ObjType == C3D_Obj::TYPE_WOOD)
+						{
+							// エフェクト生成
+							CParticle_Effect::Create(ObjPos, CParticle_Effect::TYPE_WOOD_EFFECT);
+							CParticle_Effect::Create(ObjPos, CParticle_Effect::TYPE_WOOD_EFFECT_2);
+							// 終了
+							((C3D_Obj*)pScene)->Uninit();
+						}
+					}
+					// 氷の場合
+					if (m_Type == TYPE_ICE_BALL)
+					{
+						// エフェクト生成
+						CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_ICE_EXPLOSION);
+						CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_ICE_EXPLOSION_2);
+					}
+					// 火の場合
+					if (m_Type == TYPE_ENEMY_FIRE_BALL)
+					{
+						// エフェクト生成
+						CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_ENEMY_FIRE_EXPLOSION);
+						CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_ENEMY_FIRE_EXPLOSION_2);
+					}
+					// 氷の場合
+					if (m_Type == TYPE_ENEMY_ICE_BALL)
+					{
+						// エフェクト生成
+						CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_ICE_EXPLOSION);
+						CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_ICE_EXPLOSION_2);
+					}
 					// 終了
 					Uninit();
 					return;

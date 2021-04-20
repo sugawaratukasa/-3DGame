@@ -9,6 +9,7 @@
 #include "manager.h"
 #include "renderer.h"
 #include "scene.h"
+#include "camera.h"
 #include "billboard.h"
 //******************************************************************************
 // マクロ定義
@@ -34,6 +35,7 @@ CBillboard::CBillboard(int nPriority) : CScene(nPriority)
 	m_fTexY		= INIT_FLOAT;
 	m_fTexY2	= INIT_FLOAT;
 	m_nAlpha	= INIT_INT;
+	m_bDraw		= true;
 	memset(m_mtxWorld, 0, sizeof(m_mtxWorld));
 }
 //******************************************************************************
@@ -156,61 +158,90 @@ void CBillboard::Update(void)
 
 	// 頂点バッファのアンロック
 	m_pVtxBuff->Unlock();
+
+	// カメラの位置取得
+	D3DXVECTOR3 CameraPos = CManager::GetCamera()->GetPos();
+
+	// 描画判定
+	// 範囲外の場合
+	if (m_pos.x > CameraPos.x + SCREEN_WIDTH / CAMERA_POS_DEVIDE2 || m_pos.x < CameraPos.x - SCREEN_WIDTH / CAMERA_POS_DEVIDE2)
+	{
+		// trueの場合
+		if (m_bDraw == true)
+		{
+			// falseに
+			m_bDraw = false;
+		}
+	}
+	// 範囲内の場合
+	if (m_pos.x < CameraPos.x + SCREEN_WIDTH / CAMERA_POS_DEVIDE2 && m_pos.x > CameraPos.x - SCREEN_WIDTH / CAMERA_POS_DEVIDE2)
+	{
+		// falseの場合
+		if (m_bDraw == false)
+		{
+			// trueに
+			m_bDraw = true;
+		}
+	}
 }
 //******************************************************************************
 //　描画
 //******************************************************************************
 void CBillboard::Draw(void)
 {
-	// レンダラー取得
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
-	D3DXMATRIX mtxRot, mtxTrans; //行列計算用のマトリクス
+	// trueの場合
+	if (m_bDraw == true)
+	{
+		// レンダラー取得
+		LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
+		D3DXMATRIX mtxRot, mtxTrans; //行列計算用のマトリクス
 
-	//ライト無効
-	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+		//ライト無効
+		pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 
-	// アルファテスト
-	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-	pDevice->SetRenderState(D3DRS_ALPHAREF, m_nAlpha);
-	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+		// アルファテスト
+		pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+		pDevice->SetRenderState(D3DRS_ALPHAREF, m_nAlpha);
+		pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
 
-	// セットテクスチャ
-	pDevice->SetTexture(0, m_pTexture);
+		// セットテクスチャ
+		pDevice->SetTexture(0, m_pTexture);
 
-	// 頂点バッファをデバイスのデータストリームに設定
-	pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_3D));
+		// 頂点バッファをデバイスのデータストリームに設定
+		pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_3D));
 
-	// 頂点フォーマットの設定
-	pDevice->SetFVF(FVF_VERTEX_3D);
+		// 頂点フォーマットの設定
+		pDevice->SetFVF(FVF_VERTEX_3D);
 
-	// ワールドマトリクスの初期化
-	D3DXMatrixIdentity(&m_mtxWorld);
+		// ワールドマトリクスの初期化
+		D3DXMatrixIdentity(&m_mtxWorld);
 
-	// 回転の逆行列
-	pDevice->GetTransform(D3DTS_VIEW, &mtxRot);
-	D3DXMatrixInverse(&m_mtxWorld, NULL, &mtxRot);
-	m_mtxWorld._41 = 0;
-	m_mtxWorld._42 = 0;
-	m_mtxWorld._43 = 0;
+		// 回転の逆行列
+		pDevice->GetTransform(D3DTS_VIEW, &mtxRot);
+		D3DXMatrixInverse(&m_mtxWorld, NULL, &mtxRot);
+		m_mtxWorld._41 = 0;
+		m_mtxWorld._42 = 0;
+		m_mtxWorld._43 = 0;
 
-	// 向き反映
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
-	// 位置を反映
-	D3DXMatrixTranslation(&mtxTrans, m_pos.x,m_pos.y, m_pos.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld,&mtxTrans);
+		// 向き反映
+		D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
+		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+		// 位置を反映
+		D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 
-	// ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+		// ワールドマトリックスの設定
+		pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 
-	// ポリゴン描画
-	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+		// ポリゴン描画
+		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
 
-	// アルファテスト無効化
-	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+		// アルファテスト無効化
+		pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 
-	// ライト有効
-	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
+		// ライト有効
+		pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
+	}
 }
 //******************************************************************************
 //　位置座標設定

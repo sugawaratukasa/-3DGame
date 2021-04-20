@@ -42,6 +42,11 @@ public:
 		OBJ_TYPE_NEEDLE,		// 針ブロック
 		OBJ_TYPE_BUTTON,		// ボタン
 		OBJ_TYPE_GATE,			// 扉
+		OBJ_TYPE_CHECK_POINT,	// チェックポイント
+		OBJ_TYPE_END,			// クリア
+		OBJ_TYPE_WOOD_BOX,		// 木箱
+		OBJ_TYPE_WOOD,			// 木
+		OBJ_TYPE_ENEMY_CREATE,	// 敵生成
 		OBJ_TYPE_MAX			// 最大
 	}OBJ_TYPE;
 

@@ -13,7 +13,6 @@
 //******************************************************************************
 // マクロ定義
 //******************************************************************************
-#define MAX_TEXT			(1024)										// テキストの最大数
 #define STAR_EMITTER_TEXT	("data/Effect/StarEmitter01_Data.txt")		// テキストのパス
 #define FIRE_EMITTER_TEXT	("data/Effect/FireEmitter_Data.txt")		// テキストのパス
 #define ICE_EMITTER_TEXT	("data/Effect/IceEmitter_Data.txt")			// テキストのパス
@@ -28,6 +27,7 @@ CParticle_Emitter::CParticle_Emitter()
 	m_pos				= INIT_D3DXVECTOR3;
 	m_nCount			= INIT_INT;
 	m_nCreateCount		= INIT_INT;
+	memset(m_cText, NULL, sizeof(m_cText));
 }
 //******************************************************************************
 // デストラクタ

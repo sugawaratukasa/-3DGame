@@ -11,9 +11,15 @@
 //******************************************************************************
 // マクロ定義
 //******************************************************************************
-#define MAX_TEXT	(1024)								// テキストの最大数
-#define DATA_TEXT	("data/Effect/Explosion_Data.txt")	// テキスト
-#define REMAINDER	(0)									// 余り0
+#define FIRE_EXPLOSION			("data/Effect/Fire_Explosion_Data.txt")			// 火の爆発パス
+#define ICE_EXPLOSION			("data/Effect/Ice_Explosion_Data.txt")			// 氷の爆発パス
+#define FIRE_EXPLOSION_2		("data/Effect/Fire_Explosion2_Data.txt")		// 火の爆発パス
+#define ICE_EXPLOSION_2			("data/Effect/Ice_Explosion2_Data.txt")			// 氷の爆発パス
+#define ENEMY_FIRE_EXPLOSION	("data/Effect/Enemy_Fire_Explosion_Data.txt")	// 敵火の爆発パス
+#define ENEMY_FIRE_EXPLOSION_2	("data/Effect/Enemy_Fire_Explosion2_Data.txt")	// 敵火の爆発パス
+#define WOOD_EFFECT				("data/Effect/wood_effect_Data.txt")			// 木のエフェクト
+#define WOOD_EFFECT_2			("data/Effect/wood_effect_2_Data.txt")			// 木のエフェクト
+#define REMAINDER				(0)												// 余り0
 //******************************************************************************
 // コンストラクタ
 //******************************************************************************
@@ -21,6 +27,7 @@ CParticle_Effect::CParticle_Effect()
 {
 	m_pos				 = INIT_D3DXVECTOR3;
 	m_nCreate_TotalCount = INIT_INT;
+	memset(m_cText, NULL, sizeof(m_cText));
 }
 //******************************************************************************
 // デストラクタ
@@ -31,23 +38,30 @@ CParticle_Effect::~CParticle_Effect()
 //******************************************************************************
 // 生成関数
 //******************************************************************************
-CParticle_Effect * CParticle_Effect::Create(D3DXVECTOR3 pos)
+CParticle_Effect * CParticle_Effect::Create(D3DXVECTOR3 pos, TYPE type)
 {
 	// CParticle_Effectのポインタ
-	CParticle_Effect *pParticle_Effect;
+	CParticle_Effect *pParticle_Effect = NULL;
 
-	// メモリ確保
-	pParticle_Effect = new CParticle_Effect;
+	// NULLの場合
+	if (pParticle_Effect == NULL)
+	{
+		// メモリ確保
+		pParticle_Effect = new CParticle_Effect;
 
-	// 位置代入
-	pParticle_Effect->m_pos = pos;
+		// NULLでない場合
+		if (pParticle_Effect != NULL)
+		{
+			// 位置代入
+			pParticle_Effect->m_pos = pos;
 
-	// テキストファイル読み込み
-	pParticle_Effect->Load(DATA_TEXT);
+			// タイプ代入
+			pParticle_Effect->m_Type = type;
 
-	// 初期化
-	pParticle_Effect->Init();
-
+			// 初期化
+			pParticle_Effect->Init();
+		}
+	}
 	// ポインタを返す
 	return pParticle_Effect;
 }
@@ -56,8 +70,53 @@ CParticle_Effect * CParticle_Effect::Create(D3DXVECTOR3 pos)
 //******************************************************************************
 HRESULT CParticle_Effect::Init(void)
 {
+	// 種類
+	switch (m_Type)
+	{
+	case TYPE_FIRE_EXPLOSION:
+		// テキスト読み込み
+		sprintf(m_cText, FIRE_EXPLOSION);
+		break;
+	case TYPE_ICE_EXPLOSION:
+		// テキスト読み込み
+		sprintf(m_cText, ICE_EXPLOSION);
+		break;
+	case TYPE_FIRE_EXPLOSION_2:
+		// テキスト読み込み
+		sprintf(m_cText, FIRE_EXPLOSION_2);
+		break;
+	case TYPE_ICE_EXPLOSION_2:
+		// テキスト読み込み
+		sprintf(m_cText, ICE_EXPLOSION_2);
+		break;
+	case TYPE_ENEMY_FIRE_EXPLOSION:
+		// テキスト読み込み
+		sprintf(m_cText,ENEMY_FIRE_EXPLOSION);
+		break;
+	case TYPE_ENEMY_FIRE_EXPLOSION_2:
+		// テキスト読み込み
+		sprintf(m_cText, ENEMY_FIRE_EXPLOSION_2);
+		break;
+	case TYPE_WOOD_EFFECT:
+		// テキスト読み込み
+		sprintf(m_cText, WOOD_EFFECT);
+		break;
+	case TYPE_WOOD_EFFECT_2:
+		// テキスト読み込み
+		sprintf(m_cText, WOOD_EFFECT_2);
+		break;
+		// 例外
+	default:
+		break;
+	}
+	// 読み込み
+	Load(m_cText);
+
 	// 生成
-	CParticle::CreateEffect(m_pos, m_nCreate_TotalCount, DATA_TEXT);
+	CParticle::CreateEffect(m_pos, m_nCreate_TotalCount, m_cText);
+
+	// 破棄
+	Uninit();
 
 	return S_OK;
 }

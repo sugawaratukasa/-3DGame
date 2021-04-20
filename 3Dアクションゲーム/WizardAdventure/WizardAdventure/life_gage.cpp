@@ -8,20 +8,22 @@
 #include "manager.h"
 #include "ui_texture.h"
 #include "player.h"
+#include "gage_back.h"
 #include "life_gage.h"
 //******************************************************************************
 // マクロ定義
 //******************************************************************************
-#define SIZE	(D3DXVECTOR3(500.0f, 30.0f, 0.0f))	// サイズ
-#define COL		(D3DXCOLOR(0.0f,1.0f,0.0f,1.0f))	// 色
-#define GAGE	(1000)
+#define SIZE		(D3DXVECTOR3(500.0f, 30.0f, 0.0f))					// サイズ
+#define SIZE_BACK	(D3DXVECTOR3(500.0f * 1.01f, 30.0f * 1.15f, 0.0f))	// ゲージの背景サイズ
+#define COL			(D3DXCOLOR(0.0f,1.0f,0.0f,1.0f))					// 色
 //******************************************************************************
 // コンストラクタ
 //******************************************************************************
 CLife_Gage::CLife_Gage()
 {
-	m_pPlayer	= NULL;
-	m_nGageNum	= INIT_INT;
+	m_pPlayer		= NULL;
+	m_nGageNum		= INIT_INT;
+	m_pGage_Back	= NULL;
 }
 //******************************************************************************
 // デストラクタ
@@ -55,9 +57,6 @@ CLife_Gage * CLife_Gage::Create(D3DXVECTOR3 pos, CPlayer *pPlayer)
 			// 初期化
 			pLife_Gage->SetGage(pos, SIZE, COL, pLife_Gage->m_nGageNum);
 
-			// テクスチャ受け渡し
-			//pLife_Gage->BindTexture(CManager::GetUI_Texture()->GetTexture(CUI_Texture::TEX_TYPE_LIFE_GAGE));
-
 			// 初期化
 			pLife_Gage->Init();
 		}
@@ -72,6 +71,11 @@ HRESULT CLife_Gage::Init(void)
 {
 	// 初期化
 	CGage::Init();
+
+	// 位置取得
+	D3DXVECTOR3 pos = GetPosition();
+	
+	m_pGage_Back = CGage_Back::Create(pos, SIZE_BACK);
 
 	return S_OK;
 }

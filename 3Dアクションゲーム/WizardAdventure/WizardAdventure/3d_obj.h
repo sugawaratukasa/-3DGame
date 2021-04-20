@@ -29,8 +29,8 @@ public:
 		TYPE_NONE = -1,
 		TYPE_FLOOR_01,
 		TYPE_NEEDLE,
-		TYPE_WOOD,
-		TYPE_STONE,
+		TYPE_WOOD_BLOCK,
+		TYPE_STONE_BLOCK,
 		TYPE_BUTTON,
 		TYPE_GATE,
 		TYPE_GATE_ROOF,
@@ -38,6 +38,7 @@ public:
 		TYPE_STONE_0,
 		TYPE_STONE_1,
 		TYPE_STONE_2,
+		TYPE_WOOD,
 		TYPE_MAX
 	}TYPE;
 
@@ -52,7 +53,7 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
-
+	
 	//***************************************
 	// セッター
 	//***************************************
@@ -67,7 +68,7 @@ public:
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
 	D3DXVECTOR3 GetSize(void) { return m_size; }
-
+	TYPE GetType(void) { return m_Type; }
 private:
 	static LPD3DXMESH m_pMesh[TYPE_MAX];									// メッシュ情報のポインタ
 	static LPD3DXBUFFER m_pBuffMat[TYPE_MAX];								// マテリアル情報のポインタ

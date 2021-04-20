@@ -291,6 +291,15 @@
     <ClCompile Include="gage.cpp">
       <Filter>ソース ファイル\2D\Gage</Filter>
     </ClCompile>
+    <ClCompile Include="gage_back.cpp">
+      <Filter>ソース ファイル\2D\Gage</Filter>
+    </ClCompile>
+    <ClCompile Include="3d_gage_back.cpp">
+      <Filter>ソース ファイル\3D\3DPolygon\Gage</Filter>
+    </ClCompile>
+    <ClCompile Include="wood.cpp">
+      <Filter>ソース ファイル\3D\Model\Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scene2d.h">
@@ -466,6 +475,15 @@
     </ClInclude>
     <ClInclude Include="life_gage.h">
       <Filter>ヘッダー ファイル\2D\Gage</Filter>
+    </ClInclude>
+    <ClInclude Include="gage_back.h">
+      <Filter>ヘッダー ファイル\2D\Gage</Filter>
+    </ClInclude>
+    <ClInclude Include="3d_gage_back.h">
+      <Filter>ヘッダー ファイル\3D\3DPolygon\Gage</Filter>
+    </ClInclude>
+    <ClInclude Include="wood.h">
+      <Filter>ヘッダー ファイル\3D\Model\Object</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

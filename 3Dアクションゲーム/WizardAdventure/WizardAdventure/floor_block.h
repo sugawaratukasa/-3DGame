@@ -23,15 +23,25 @@ class CModel;
 class CFloor_Block :public C3D_Obj
 {
 public:
+	// Ží—Þ
+	enum TYPE
+	{
+		TYPE_NORMAL,
+		TYPE_CHECK_POINT,
+		TYPE_ENEMY_CREATE,
+		TYPE_END
+	};
 	CFloor_Block(int nPriority = OBJTYPE_MAP_OBJ);
 	~CFloor_Block();
 
-	static CFloor_Block *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size);
+	static CFloor_Block *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size, TYPE type);
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
+	TYPE GetType(void) { return m_Type; }
 private:
+	TYPE m_Type;	// ƒ^ƒCƒv
 };
 
 #endif

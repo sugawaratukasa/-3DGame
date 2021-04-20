@@ -51,6 +51,7 @@ public:
 	static CInputJoystick *GetInputJoystick(void) { return m_pJoystick; }
 	static CParticle_Texture *GetParticle_Texture(void) { return m_pParticle_Texture; }
 	static CUI_Texture *GetUI_Texture(void) { return m_pUI_Texture; }
+	static CMode *GetMode(void) { return m_pMode; }
 private:
 	static CRenderer *m_pRenderer;							//ƒŒƒ“ƒ_ƒ‰[
 	static CCamera *m_pCamera;								//ƒJƒƒ‰

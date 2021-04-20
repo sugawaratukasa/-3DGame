@@ -23,6 +23,7 @@
 #include "fireball_ui.h"
 #include "iceball_ui.h"
 #include "life_gage.h"
+#include "floor_block.h"
 #include "player.h"
 //******************************************************************************
 // マクロ定義
@@ -63,7 +64,7 @@
 #define POW_VALUE				(2.0f)												// 二乗
 #define MIN_MOVE_VALUE			(0.0f)												// 移動量の最小値
 #define GRAVITY_VALUE			(-1.3f)												// 重力
-#define JUMP_VALUE				(18.0f)												// ジャンプ量
+#define JUMP_VALUE				(17.0f)												// ジャンプ量
 #define JUMP_VALUE_2			(0.01f)												// ジャンプ量
 #define DEAD_ZONE_MIN			(0)													// スティックのデッドゾーン最小値
 #define MAGIC_MOTION_COUNT		(30)												// 魔法のモーションカウント
@@ -109,7 +110,8 @@ char* CPlayer::m_apFileName[PARTS_MAX] = {
 CPlayer::CPlayer(int nPriority) : CScene(nPriority)
 {
 	m_pos					= INIT_D3DXVECTOR3;		
-	m_posOld				= INIT_D3DXVECTOR3;		
+	m_posOld				= INIT_D3DXVECTOR3;
+	m_RespawnPos			= INIT_D3DXVECTOR3;
 	m_rot					= INIT_D3DXVECTOR3;		
 	m_size					= INIT_D3DXVECTOR3;		
 	m_move					= INIT_D3DXVECTOR3;		
@@ -151,20 +153,27 @@ CPlayer::~CPlayer()
 CPlayer * CPlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size)
 {
 	// CPlayerのポインタ
-	CPlayer *pPlayer;
+	CPlayer *pPlayer = NULL;
 
-	// メモリ確保
-	pPlayer = new CPlayer;
+	// NULLの場合
+	if (pPlayer == NULL)
+	{
+		// メモリ確保
+		pPlayer = new CPlayer;
 
-	// 情報設定
-	pPlayer->SetPlayer(pos, rot, size);
+		// NULLでない場合
+		if (pPlayer != NULL)
+		{
+			// 情報設定
+			pPlayer->SetPlayer(pos, rot, size);
 
-	// 初期化
-	pPlayer->Init();
+			// 初期化
+			pPlayer->Init();
 
-	// ライフゲージ生成
-	CLife_Gage::Create(GAGE_POS, pPlayer);
-
+			// ライフゲージ生成
+			CLife_Gage::Create(GAGE_POS, pPlayer);
+		}
+	}
 	// ポインタを返す
 	return pPlayer;
 }
@@ -390,16 +399,11 @@ void CPlayer::Update(void)
 	// ブロック選択中でない場合
 	if (m_Blcok_Active != BLOCK_ACTIVE_SELECT)
 	{
-		// falseの場合
-		if (m_bMagic == false)
-		{
-			// 移動処理
-			Move();
-		}
-
 		// 魔法
 		Magic();
-	} 
+	}
+	// 移動処理
+	Move();
 	// パーツ数分回す
 	for (int nCount = INIT_INT; nCount < PARTS_MAX; nCount++)
 	{
@@ -458,9 +462,10 @@ void CPlayer::Hit(int nLife)
 //******************************************************************************
 void CPlayer::SetPlayer(D3DXVECTOR3 pos, D3DXVECTOR3 rot ,D3DXVECTOR3 size)
 {
-	m_pos = pos;
-	m_rot = rot;
-	m_size = size;
+	m_pos			= pos;
+	m_RespawnPos	= pos;
+	m_rot			= rot;
+	m_size			= size;
 
 	// オブジェクトタイプ設定
 	SetObjType(OBJTYPE_PLAYER);
@@ -1861,6 +1866,34 @@ void CPlayer::Collision(void)
 				// 上
 				else if (CCollision::RectangleCollisionMove(m_pos, m_posOld, m_size, ObjPos, ObjSize) == CCollision::SURFACE_UP)
 				{
+					// タイプ取得
+					int n3D_ObjType = ((C3D_Obj*)pScene)->GetType();
+
+					// タイプが床ブロックの場合
+					if (n3D_ObjType == C3D_Obj::TYPE_FLOOR_01)
+					{
+						// 床ブロックのタイプ取得
+						int nType = ((CFloor_Block*)pScene)->GetType();
+
+						// チェックポイントの場合
+						if (nType == CFloor_Block::TYPE_CHECK_POINT)
+						{
+							// 位置保存
+							m_RespawnPos.x = ((CFloor_Block*)pScene)->GetPos().x;
+						}
+						// 敵生成の場合
+						if (nType == CFloor_Block::TYPE_ENEMY_CREATE)
+						{
+							// 位置保存
+							m_RespawnPos.x = ((CFloor_Block*)pScene)->GetPos().x;
+						}
+					}
+					// タイプが針の場合
+					if (n3D_ObjType == C3D_Obj::TYPE_NEEDLE)
+					{
+						// リスポーン位置に移動
+						m_pos = m_RespawnPos;
+					}
 					// 移動量0
 					m_move.y = MIN_MOVE_VALUE;
 
@@ -1954,244 +1987,258 @@ void CPlayer::Move(void)
 
 	if (g_lpDIDevice != NULL)
 	{
-		// 左
-		if (js.lX <= -STICK_REACTION)
+		// ブロック選択中でない場合
+		if (m_Blcok_Active != BLOCK_ACTIVE_SELECT)
 		{
-			// trueに
-			m_bBlock_Move = true;
-
 			// falseの場合
-			if (m_bCollision == false)
+			if (m_bMagic == false)
 			{
-				// カメラの位置より低い場合
-				if (m_pos.x < CameraPos.x - SCREEN_WIDTH / CAMERA_POS_DEVIDE)
+				// 左
+				if (js.lX <= -STICK_REACTION)
 				{
-					pCamera->Move(-MOVE_VALUE.x);
-				}
-			}
-			// NULLでない場合
-			if (m_pBlock != NULL)
-			{
-				// Rトリガーが押されている場合
-				if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
-				{
-					// 右向きの場合
-					if (m_Rot_State == ROT_STATE_LEFT)
+					// trueに
+					m_bBlock_Move = true;
+
+					// falseの場合
+					if (m_bCollision == false)
 					{
-						// 移動モーション
-						m_pMotion->SetMotion(CMotion::MOTION_BLOCK_RUN);
+						// カメラの位置より低い場合
+						if (m_pos.x < CameraPos.x - SCREEN_WIDTH / CAMERA_POS_DEVIDE)
+						{
+							pCamera->Move(-MOVE_VALUE.x);
+						}
+					}
+					// NULLでない場合
+					if (m_pBlock != NULL)
+					{
+						// Rトリガーが押されている場合
+						if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
+						{
+							// 右向きの場合
+							if (m_Rot_State == ROT_STATE_LEFT)
+							{
+								// 移動モーション
+								m_pMotion->SetMotion(CMotion::MOTION_BLOCK_RUN);
+
+								// 後ろ
+								m_move.x = -MOVE_VALUE.x;
+							}
+							// 左向きの場合
+							if (m_Rot_State == ROT_STATE_RIGHT)
+							{
+								// 移動モーション
+								m_pMotion->SetMotion(CMotion::MOTION_BACKRUN);
+
+								// 後ろ
+								m_move.x = -MOVE_VALUE.x / MOVE_DEVIDE;
+							}
+						}
+					}
+					// NULLの場合
+					if (m_pBlock == NULL)
+					{
+						// Rトリガーが押されている場合
+						if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
+						{
+							// 左向きの状態
+							m_Rot_State = ROT_STATE_LEFT;
+
+							// 生成時でない場合
+							if (m_Blcok_Active != BLOCK_ACTIVE_CREATE)
+							{
+								// 移動モーション
+								m_pMotion->SetMotion(CMotion::MOTION_RUN);
+							}
+
+							// 後ろ
+							m_move.x = -MOVE_VALUE.x;
+						}
+					}
+					// RTが押されていない場合
+					if (!pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
+					{
+						// 左向きの状態
+						m_Rot_State = ROT_STATE_LEFT;
+
+						// 生成時の場合
+						if (m_Blcok_Active == BLOCK_ACTIVE_CREATE)
+						{
+							// ブロック移動モーション
+							m_pMotion->SetMotion(CMotion::MOTION_BLOCK_RUN);
+						}
+						// 生成時でない場合
+						if (m_Blcok_Active != BLOCK_ACTIVE_CREATE)
+						{
+							// 移動モーション
+							m_pMotion->SetMotion(CMotion::MOTION_RUN);
+						}
 
 						// 後ろ
 						m_move.x = -MOVE_VALUE.x;
 					}
-					// 左向きの場合
-					if (m_Rot_State == ROT_STATE_RIGHT)
-					{
-						// 移動モーション
-						m_pMotion->SetMotion(CMotion::MOTION_BACKRUN);
+				}
+				// 右
+				if (js.lX >= STICK_REACTION)
+				{
+					// trueに
+					m_bBlock_Move = true;
 
-						// 後ろ
-						m_move.x = -MOVE_VALUE.x / MOVE_DEVIDE;
+					// falseの場合
+					if (m_bCollision == false)
+					{
+						// カメラの位置より引く場合
+						if (m_pos.x > CameraPos.x + SCREEN_WIDTH / CAMERA_POS_DEVIDE)
+						{
+							pCamera->Move(MOVE_VALUE.x);
+						}
 					}
-				}
-			}
-			// NULLの場合
-			if (m_pBlock == NULL)
-			{
-				// Rトリガーが押されている場合
-				if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
-				{
-					// 左向きの状態
-					m_Rot_State = ROT_STATE_LEFT;
-
-					// 生成時でない場合
-					if (m_Blcok_Active != BLOCK_ACTIVE_CREATE)
+					// NULLでない場合
+					if (m_pBlock != NULL)
 					{
-						// 移動モーション
-						m_pMotion->SetMotion(CMotion::MOTION_RUN);
+						// Rトリガーが押されている場合
+						if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
+						{
+							// 左向きの場合
+							if (m_Rot_State == ROT_STATE_RIGHT)
+							{
+								// 移動モーション
+								m_pMotion->SetMotion(CMotion::MOTION_BLOCK_RUN);
+
+								// 後ろ
+								m_move.x = MOVE_VALUE.x;
+							}
+							// 右向きの場合
+							if (m_Rot_State == ROT_STATE_LEFT)
+							{
+								// 移動モーション
+								m_pMotion->SetMotion(CMotion::MOTION_BACKRUN);
+
+								// 後ろ
+								m_move.x = MOVE_VALUE.x / MOVE_DEVIDE;
+							}
+						}
 					}
-
-					// 後ろ
-					m_move.x = -MOVE_VALUE.x;
-				}
-			}
-			// RTが押されていない場合
-			if (!pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
-			{
-				// 左向きの状態
-				m_Rot_State = ROT_STATE_LEFT;
-
-				// 生成時の場合
-				if (m_Blcok_Active == BLOCK_ACTIVE_CREATE)
-				{
-					// ブロック移動モーション
-					m_pMotion->SetMotion(CMotion::MOTION_BLOCK_RUN);
-				}
-				// 生成時でない場合
-				if (m_Blcok_Active != BLOCK_ACTIVE_CREATE)
-				{
-					// 移動モーション
-					m_pMotion->SetMotion(CMotion::MOTION_RUN);
-				}
-
-				// 後ろ
-				m_move.x = -MOVE_VALUE.x;
-			}
-		}
-		// 右
-		if (js.lX >= STICK_REACTION)
-		{
-			// trueに
-			m_bBlock_Move = true;
-
-			// falseの場合
-			if (m_bCollision == false)
-			{
-				// カメラの位置より引く場合
-				if (m_pos.x > CameraPos.x + SCREEN_WIDTH / CAMERA_POS_DEVIDE)
-				{
-					pCamera->Move(MOVE_VALUE.x);
-				}
-			}
-			// NULLでない場合
-			if (m_pBlock != NULL)
-			{
-				// Rトリガーが押されている場合
-				if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
-				{
-					// 左向きの場合
-					if (m_Rot_State == ROT_STATE_RIGHT)
+					// NULLの場合
+					if (m_pBlock == NULL)
 					{
-						// 移動モーション
-						m_pMotion->SetMotion(CMotion::MOTION_BLOCK_RUN);
+						// Rトリガーが押されている場合
+						if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
+						{
+							// 左向きの状態
+							m_Rot_State = ROT_STATE_RIGHT;
 
-						// 後ろ
+							// 生成時でない場合
+							if (m_Blcok_Active != BLOCK_ACTIVE_CREATE)
+							{
+								// 移動モーション
+								m_pMotion->SetMotion(CMotion::MOTION_RUN);
+							}
+
+							// 後ろ
+							m_move.x = MOVE_VALUE.x;
+						}
+					}
+					// RTが押されていない場合
+					if (!pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
+					{
+						// 右向きの状態
+						m_Rot_State = ROT_STATE_RIGHT;
+
+						// 生成時の場合
+						if (m_Blcok_Active == BLOCK_ACTIVE_CREATE)
+						{
+							// ブロック移動モーション
+							m_pMotion->SetMotion(CMotion::MOTION_BLOCK_RUN);
+						}
+						// 生成時でない場合
+						if (m_Blcok_Active != BLOCK_ACTIVE_CREATE)
+						{
+							// 移動モーション
+							m_pMotion->SetMotion(CMotion::MOTION_RUN);
+						}
+
+						// 前に進む
 						m_move.x = MOVE_VALUE.x;
 					}
-					// 右向きの場合
-					if (m_Rot_State == ROT_STATE_LEFT)
-					{
-						// 移動モーション
-						m_pMotion->SetMotion(CMotion::MOTION_BACKRUN);
+				}
+				// スティックの範囲外の場合
+				if (js.lX > -STICK_REACTION && js.lX < STICK_REACTION)
+				{
+					// trueに
+					m_bBlock_Move = false;
 
-						// 後ろ
-						m_move.x = MOVE_VALUE.x / MOVE_DEVIDE;
+					// 移動量0
+					m_move.x = MIN_MOVE_VALUE;
+
+					// NULLでない場合
+					if (m_pBlock != NULL)
+					{
+						// Rトリガーが押されている場合
+						if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
+						{
+
+							// ブロックのニュートラルモーション
+							m_pMotion->SetMotion(CMotion::MOTION_BLOCK_IDLE);
+						}
+					}
+					// NULLの場合
+					if (m_pBlock == NULL)
+					{
+						// Rトリガーが押されている場合
+						if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
+						{
+
+							// ブロックのニュートラルモーション
+							m_pMotion->SetMotion(CMotion::MOTION_IDLE);
+						}
+					}
+					// RTが押されていない場合
+					if (!pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
+					{
+						// 生成時の場合
+						if (m_Blcok_Active == BLOCK_ACTIVE_CREATE)
+						{
+							// ブロック移動モーション
+							m_pMotion->SetMotion(CMotion::MOTION_BLOCK_IDLE);
+						}
+						// 生成時でない場合
+						if (m_Blcok_Active != BLOCK_ACTIVE_CREATE)
+						{
+							// ニュートラルモーション
+							m_pMotion->SetMotion(CMotion::MOTION_IDLE);
+						}
+					}
+				}
+				// ジャンプ
+				if (m_bJump == false)
+				{
+					// Aボタンを押した場合
+					if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_A))
+					{
+						// trueに
+						m_bJump = true;
+						// falseの場合
+						if (m_bJumpValue == false)
+						{
+							// 移動
+							m_move.y += JUMP_VALUE;
+
+							m_bJumpValue = true;
+						}
+						// trueの場合
+						if (m_bJumpValue == true)
+						{
+							// 移動
+							m_move.y += JUMP_VALUE_2;
+						}
 					}
 				}
 			}
-			// NULLの場合
-			if (m_pBlock == NULL)
+			// trueの場合
+			if (m_bMagic == true)
 			{
-				// Rトリガーが押されている場合
-				if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
-				{
-					// 左向きの状態
-					m_Rot_State = ROT_STATE_RIGHT;
-
-					// 生成時でない場合
-					if (m_Blcok_Active != BLOCK_ACTIVE_CREATE)
-					{
-						// 移動モーション
-						m_pMotion->SetMotion(CMotion::MOTION_RUN);
-					}
-
-					// 後ろ
-					m_move.x = MOVE_VALUE.x;
-				}
-			}
-			// RTが押されていない場合
-			if (!pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
-			{
-				// 右向きの状態
-				m_Rot_State = ROT_STATE_RIGHT;
-
-				// 生成時の場合
-				if (m_Blcok_Active == BLOCK_ACTIVE_CREATE)
-				{
-					// ブロック移動モーション
-					m_pMotion->SetMotion(CMotion::MOTION_BLOCK_RUN);
-				}
-				// 生成時でない場合
-				if (m_Blcok_Active != BLOCK_ACTIVE_CREATE)
-				{
-					// 移動モーション
-					m_pMotion->SetMotion(CMotion::MOTION_RUN);
-				}
-
-				// 前に進む
-				m_move.x = MOVE_VALUE.x;
-			}
-		}
-		// スティックの範囲外の場合
-		if (js.lX > -STICK_REACTION && js.lX < STICK_REACTION)
-		{
-			// trueに
-			m_bBlock_Move = false;
-
-			// 移動量0
-			m_move.x = MIN_MOVE_VALUE;
-
-			// NULLでない場合
-			if (m_pBlock != NULL)
-			{
-				// Rトリガーが押されている場合
-				if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
-				{
-
-					// ブロックのニュートラルモーション
-					m_pMotion->SetMotion(CMotion::MOTION_BLOCK_IDLE);
-				}
-			}
-			// NULLの場合
-			if (m_pBlock == NULL)
-			{
-				// Rトリガーが押されている場合
-				if (pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
-				{
-
-					// ブロックのニュートラルモーション
-					m_pMotion->SetMotion(CMotion::MOTION_IDLE);
-				}
-			}
-			// RTが押されていない場合
-			if (!pInputJoystick->GetJoystickPress(CInputJoystick::JS_RT))
-			{
-				// 生成時の場合
-				if (m_Blcok_Active == BLOCK_ACTIVE_CREATE)
-				{
-					// ブロック移動モーション
-					m_pMotion->SetMotion(CMotion::MOTION_BLOCK_IDLE);
-				}
-				// 生成時でない場合
-				if (m_Blcok_Active != BLOCK_ACTIVE_CREATE)
-				{
-					// ニュートラルモーション
-					m_pMotion->SetMotion(CMotion::MOTION_IDLE);
-				}
-			}
-		}
-		// ジャンプ
-		if (m_bJump == false)
-		{
-			// Aボタンを押した場合
-			if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_A))
-			{
-				// trueに
-				m_bJump = true;
-				// falseの場合
-				if (m_bJumpValue == false)
-				{
-					// 移動
-					m_move.y += JUMP_VALUE;
-
-					m_bJumpValue = true;
-				}
-				// trueの場合
-				if (m_bJumpValue == true)
-				{
-					// 移動
-					m_move.y += JUMP_VALUE_2;
-				}
+				// 移動量を0.0fに
+				m_move.x = MIN_MOVE_VALUE;
 			}
 		}
 	}

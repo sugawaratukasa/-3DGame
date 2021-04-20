@@ -26,6 +26,7 @@
 //******************************************************************************
 CFloor_Block::CFloor_Block(int nPriority) : C3D_Obj(nPriority)
 {
+	m_Type = TYPE_NORMAL;
 }
 //******************************************************************************
 // デストラクタ
@@ -37,20 +38,30 @@ CFloor_Block::~CFloor_Block()
 //******************************************************************************
 // 生成関数
 //******************************************************************************
-CFloor_Block * CFloor_Block::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size)
+CFloor_Block * CFloor_Block::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size, TYPE type)
 {
 	// CObj_Floorのポインタ
-	CFloor_Block *pFloor;
+	CFloor_Block *pFloor = NULL;
 
-	// メモリ確保
-	pFloor = new CFloor_Block;
+	// NULLの場合
+	if (pFloor == NULL)
+	{
+		// メモリ確保
+		pFloor = new CFloor_Block;
 
-	// 情報設定
-	pFloor->SetModel(pos, rot, size, C3D_Obj::TYPE_FLOOR_01);
+		// NULLでない場合
+		if (pFloor != NULL)
+		{
+			// 情報設定
+			pFloor->SetModel(pos, rot, size, C3D_Obj::TYPE_FLOOR_01);
 
-	// 初期化
-	pFloor->Init();
+			// 種類代入
+			pFloor->m_Type = type;
 
+			// 初期化
+			pFloor->Init();
+		}
+	}
 	// ポインタを返す
 	return pFloor;
 }

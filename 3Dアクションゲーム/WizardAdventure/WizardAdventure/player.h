@@ -148,6 +148,7 @@ private:
 	static char* m_apTextureFileName[PARTS_MAX];					// テクスチャのファイルの名前
 	D3DXVECTOR3 m_pos;												// 位置
 	D3DXVECTOR3 m_posOld;											// 古い位置
+	D3DXVECTOR3 m_RespawnPos;										// リスポーン位置
 	D3DXVECTOR3 m_rot;												// 角度
 	D3DXVECTOR3 m_size;												// 大きさ
 	D3DXVECTOR3 m_move;												// 移動量

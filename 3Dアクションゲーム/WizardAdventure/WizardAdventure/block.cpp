@@ -397,7 +397,7 @@ void CBlock::Collision(D3DXVECTOR3 posOld, D3DXVECTOR3 size)
 					m_move.y = MIN_MOVE_VALUE;
 
 					// 位置
-					pos.y = (size.y / DEVIDE_VALUE) - (BlockPos.y + BlockSize.y / DEVIDE_VALUE);
+					pos.y = (size.y / DEVIDE_VALUE) - (BlockPos.y - BlockSize.y / DEVIDE_VALUE);
 				}
 				// 上
 				else if (CCollision::RectangleCollisionMove(pos, posOld, size, BlockPos, BlockSize) == CCollision::SURFACE_UP)
@@ -406,7 +406,7 @@ void CBlock::Collision(D3DXVECTOR3 posOld, D3DXVECTOR3 size)
 					m_move.y = MIN_MOVE_VALUE;
 
 					// 位置
-					pos.y = (-size.y / DEVIDE_VALUE) + (BlockPos.y + BlockSize.y / DEVIDE_VALUE);
+					pos.y = (size.y / DEVIDE_VALUE) + (BlockPos.y + BlockSize.y / DEVIDE_VALUE);
 				}
 				// 右
 				else if (CCollision::RectangleCollisionMove(pos, posOld, size, BlockPos, BlockSize) == CCollision::SURFACE_RIGHT)
@@ -519,6 +519,24 @@ void CBlock::Collision(D3DXVECTOR3 posOld, D3DXVECTOR3 size)
 
 					// 位置
 					pos.y = (-size.y / DEVIDE_VALUE) + (PlayerPos.y + PlayerSize.y / DEVIDE_VALUE);
+				}
+				// 下
+				else if (CCollision::RectangleCollisionMove(pos, posOld, size, PlayerPos, PlayerSize) == CCollision::SURFACE_DOWN)
+				{
+					// 移動量0
+					m_move.y = MIN_MOVE_VALUE;
+				}
+				// 右
+				else if (CCollision::RectangleCollisionMove(pos, posOld, size, PlayerPos, PlayerSize) == CCollision::SURFACE_RIGHT)
+				{
+					// 移動量0
+					m_move.x = MIN_MOVE_VALUE;
+				}
+				// 左
+				else if (CCollision::RectangleCollisionMove(pos, posOld, size, PlayerPos, PlayerSize) == CCollision::SURFACE_LEFT)
+				{
+					// 移動量0
+					m_move.x = MIN_MOVE_VALUE;
 				}
 			}
 		}
