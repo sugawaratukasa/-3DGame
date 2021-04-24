@@ -1,6 +1,6 @@
 //******************************************************************************
-// ツール [game.cpp]
-// Author : 管原　
+// タイトル [title.cpp]
+// Author : 管原司
 //******************************************************************************
 
 //*****************************************************************************
@@ -12,6 +12,7 @@
 #include "joystick.h"
 #include "2d_polygon.h"
 #include "fade.h"
+#include "2d_particle_emitter.h"
 #include "title.h"
 //*****************************************************************************
 // マクロ定義
@@ -22,6 +23,7 @@
 #define TITLE_SIZE			(D3DXVECTOR3(1500.0f, 750.0f, 0.0f))						// サイズ
 #define PRESS_START_POS		(D3DXVECTOR3(SCREEN_WIDTH / 2, 700.0f, 0.0f))				// 位置
 #define PRESS_START_SIZE	(D3DXVECTOR3(750.0f, 300.0f, 0.0f))							// サイズ
+#define EFFECT_POS			(D3DXVECTOR3(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f))	// 位置
 //*****************************************************************************
 // 静的メンバ変数
 //*****************************************************************************
@@ -51,6 +53,9 @@ HRESULT CTitle::Init(void)
 
 	// PRESS_START
 	C2D_Polygon::Create(PRESS_START_POS, PRESS_START_SIZE, C2D_Polygon::TYPE_PRESS_START);
+
+	// エフェクト生成
+	C2D_Particle_Emitter::Create(EFFECT_POS, C2D_Particle_Emitter::TYPE_GREEN);
 	return S_OK;
 }
 
@@ -84,10 +89,10 @@ void CTitle::Update(void)
 	if (g_lpDIDevice != NULL)
 	{
 		// STARTボタンを押した場合
-		if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_START))
+		if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_START) || pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_A))
 		{
 			// ゲームに遷移
-			CFade::Create(CManager::MODE_GAME);
+			CFade::Create(CManager::MODE_TUTORIAL);
 		}
 	}
 }

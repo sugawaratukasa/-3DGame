@@ -32,7 +32,6 @@ public:
 	void Update(void);
 	void Draw(void);
 private:
-	void Collision(void);
 	void UnderMove(void);
 	void UpMove(void);
 	bool GetPush(void);

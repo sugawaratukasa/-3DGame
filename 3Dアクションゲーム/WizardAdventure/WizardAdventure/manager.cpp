@@ -30,6 +30,8 @@
 #include "billboard_ui.h"
 #include "enemy.h"
 #include "ui_texture.h"
+#include "result.h"
+#include "tutorial.h"
 //******************************************************************************
 // 静的メンバ変数
 //******************************************************************************
@@ -396,6 +398,25 @@ void CManager::SetMode(MODE mode)
 			// ツールの初期化処理
 			m_pMode->Init();
 			break;
+		case MODE_TUTORIAL:
+			// NULLでない場合
+			if (m_pCamera != NULL)
+			{
+				// 終了
+				m_pCamera->Uninit();
+
+				// 破棄
+				delete m_pCamera;
+
+				// NULLに
+				m_pCamera = NULL;
+			}
+			// ツールの生成
+			m_pMode = new CTutorial;
+
+			// ツールの初期化処理
+			m_pMode->Init();
+			break;
 			// ゲーム
 		case MODE_GAME:
 
@@ -417,7 +438,15 @@ void CManager::SetMode(MODE mode)
 			// ツールの初期化処理
 			m_pMode->Init();
 			break;
+			// タイトル
+		case MODE_RESULT:
 
+			// ツールの生成
+			m_pMode = new CResult;
+
+			// ツールの初期化処理
+			m_pMode->Init();
+			break;
 		default:
 			return;
 			break;

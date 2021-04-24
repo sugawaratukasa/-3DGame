@@ -1,30 +1,33 @@
 //******************************************************************************
-// ファイアーボールUI[fireball_ui.h]
+// 魔法のUI [magic_ui.h]
 // Author : 管原司
 //******************************************************************************
-#ifndef _FIREBALL_UI_H_
-#define _FIREBALL_UI_H_
+#ifndef _MAGIC_UI_H_
+#define _MAGIC_UI_H_
 //******************************************************************************
 // インクルードファイル
 //******************************************************************************
-#include "billboard_ui.h"
+#include "scene.h"
 //******************************************************************************
 // 前方宣言
 //******************************************************************************
-
+class C2D_Particle_Emitter;
 //******************************************************************************
 // クラス
 //******************************************************************************
-class CFireBall_UI : public CBillboard_UI
+class CMagic_UI :public CScene
 {
 public:
-	CFireBall_UI(int nPriority = OBJTYPE_BILLBOARD_UI);
-	~CFireBall_UI();
-	static CFireBall_UI *Create(D3DXVECTOR3 pos);
+	CMagic_UI(int nPriority = OBJTYPE_UI);
+	~CMagic_UI();
+	static CMagic_UI *Create(void);
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
 private:
+	C2D_Particle_Emitter *m_p2D_Particle_Emitter;	// C2D_Particle_Emitterのポインタ
+	int m_nMagicType;								// 魔法の種類
 };
+
 #endif

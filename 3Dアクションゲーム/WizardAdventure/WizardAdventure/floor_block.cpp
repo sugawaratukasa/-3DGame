@@ -12,11 +12,13 @@
 #include "scene3d.h"
 #include "model.h"
 #include "3d_obj.h"
+#include "enemy_map.h"
+#include "particle_effect.h"
 #include "floor_block.h"
 //******************************************************************************
 // マクロ定義
 //******************************************************************************
-
+#define POS	(D3DXVECTOR3(pos.x,pos.y,pos.z - 15.0f))
 //******************************************************************************
 //静的メンバ変数
 //******************************************************************************
@@ -73,6 +75,15 @@ HRESULT CFloor_Block::Init(void)
 	// 初期化
 	C3D_Obj::Init();
 
+	// 位置
+	D3DXVECTOR3 pos = GetPos();
+
+	// ENEMYの場合
+	if (m_Type == TYPE_ENEMY)
+	{
+		// エフェクト生成
+		CParticle_Effect::Create(POS, CParticle_Effect::TYPE_BLOCK_EFFECT);
+	}
 	return S_OK;
 }
 //******************************************************************************
@@ -90,6 +101,48 @@ void CFloor_Block::Update(void)
 {
 	// 更新
 	C3D_Obj::Update();
+
+	// 位置
+	D3DXVECTOR3 pos = GetPos();
+
+	// ENEMYの場合
+	if (m_Type == TYPE_ENEMY)
+	{
+		// CSceneのポインタ
+		CScene *pScene = NULL;
+		do 
+		{
+			// シーン取得
+			pScene = GetScene(OBJTYPE_ENEMY_MAP);
+
+			// NULLでない場合
+			if (pScene != NULL)
+			{
+				// オブジェクトタイプ取得
+				OBJTYPE objtype = pScene->GetObjType();
+
+				// ENEMY_MAPの場合
+				if (objtype == OBJTYPE_ENEMY_MAP)
+				{
+					// 判定取得
+					bool bEnd = ((CEnemy_Map*)pScene)->GetbEnd();
+
+					// trueの場合
+					if (bEnd == true)
+					{
+						// エフェクト生成
+						CParticle_Effect::Create(POS, CParticle_Effect::TYPE_BLOCK_EFFECT);
+
+						// 終了
+						Uninit();
+						return;
+					}
+				}
+
+			}
+			// NULLになるまで繰り返す
+		} while (pScene != NULL);
+	}
 }
 
 //******************************************************************************

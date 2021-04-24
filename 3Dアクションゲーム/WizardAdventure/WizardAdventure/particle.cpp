@@ -66,20 +66,27 @@ CParticle::~CParticle()
 CParticle *CParticle::Create(D3DXVECTOR3 pos, const char *cText)
 {
 	// CParticleのポインタ
-	CParticle *pParticle;
+	CParticle *pParticle = NULL;
 
-	// メモリ確保
-	pParticle = new CParticle;
+	// NULLの場合
+	if (pParticle == NULL)
+	{
+		// メモリ確保
+		pParticle = new CParticle;
 
-	//位置設定
-	pParticle->SetPosition(pos);
+		// NULLでない場合
+		if (pParticle != NULL)
+		{
+			//位置設定
+			pParticle->SetPosition(pos);
 
-	// テキスト読み込み
-	pParticle->LoadParticle(cText);
+			// テキスト読み込み
+			pParticle->LoadParticle(cText);
 
-	// 初期化
-	pParticle->Init();
-
+			// 初期化
+			pParticle->Init();
+		}
+	}
 	// ポインタを返す
 	return pParticle;
 }

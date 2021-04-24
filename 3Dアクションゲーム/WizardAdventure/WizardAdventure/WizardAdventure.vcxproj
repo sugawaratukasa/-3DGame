@@ -146,6 +146,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="2d_particle.cpp" />
+    <ClCompile Include="2d_particle_effect.cpp" />
+    <ClCompile Include="2d_particle_emitter.cpp" />
     <ClCompile Include="2d_polygon.cpp" />
     <ClCompile Include="3d_gage.cpp" />
     <ClCompile Include="3d_gage_back.cpp" />
@@ -162,9 +165,9 @@
     <ClCompile Include="collision.cpp" />
     <ClCompile Include="debug_proc.cpp" />
     <ClCompile Include="enemy.cpp" />
+    <ClCompile Include="enemy_map.cpp" />
     <ClCompile Include="enemy_life_gage.cpp" />
     <ClCompile Include="fade.cpp" />
-    <ClCompile Include="fireball_ui.cpp" />
     <ClCompile Include="floor.cpp" />
     <ClCompile Include="frame.cpp" />
     <ClCompile Include="gage.cpp" />
@@ -173,13 +176,13 @@
     <ClCompile Include="gate.cpp" />
     <ClCompile Include="gate_roof.cpp" />
     <ClCompile Include="ghost.cpp" />
-    <ClCompile Include="iceball_ui.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="joystick.cpp" />
     <ClCompile Include="keyboard.cpp" />
     <ClCompile Include="life_gage.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="magic.cpp" />
+    <ClCompile Include="magic_ui.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="manager.cpp" />
     <ClCompile Include="map.cpp" />
@@ -196,6 +199,7 @@
     <ClCompile Include="pause.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="renderer.cpp" />
+    <ClCompile Include="result.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="scene2d.cpp" />
     <ClCompile Include="scene3d.cpp" />
@@ -204,11 +208,16 @@
     <ClCompile Include="particle_texture.cpp" />
     <ClCompile Include="title.cpp" />
     <ClCompile Include="tree.cpp" />
+    <ClCompile Include="tutorial.cpp" />
+    <ClCompile Include="tutorial_pause.cpp" />
     <ClCompile Include="ui_texture.cpp" />
     <ClCompile Include="wood.cpp" />
     <ClCompile Include="wood_block.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="2d_particle_emitter.h" />
+    <ClInclude Include="2d_particle.h" />
+    <ClInclude Include="2d_particle_effect.h" />
     <ClInclude Include="2d_polygon.h" />
     <ClInclude Include="3d_gage.h" />
     <ClInclude Include="3d_gage_back.h" />
@@ -225,9 +234,9 @@
     <ClInclude Include="collision.h" />
     <ClInclude Include="debug_proc.h" />
     <ClInclude Include="enemy.h" />
+    <ClInclude Include="enemy_map.h" />
     <ClInclude Include="enemy_life_gage.h" />
     <ClInclude Include="fade.h" />
-    <ClInclude Include="fireball_ui.h" />
     <ClInclude Include="floor.h" />
     <ClInclude Include="frame.h" />
     <ClInclude Include="gage.h" />
@@ -236,13 +245,13 @@
     <ClInclude Include="gate.h" />
     <ClInclude Include="gate_roof.h" />
     <ClInclude Include="ghost.h" />
-    <ClInclude Include="iceball_ui.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="joystick.h" />
     <ClInclude Include="keyboard.h" />
     <ClInclude Include="life_gage.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="magic.h" />
+    <ClInclude Include="magic_ui.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="manager.h" />
     <ClInclude Include="map.h" />
@@ -259,6 +268,7 @@
     <ClInclude Include="pause.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="renderer.h" />
+    <ClInclude Include="result.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="scene2d.h" />
     <ClInclude Include="scene3d.h" />
@@ -267,6 +277,8 @@
     <ClInclude Include="particle_texture.h" />
     <ClInclude Include="title.h" />
     <ClInclude Include="tree.h" />
+    <ClInclude Include="tutorial.h" />
+    <ClInclude Include="tutorial_pause.h" />
     <ClInclude Include="ui_texture.h" />
     <ClInclude Include="wood.h" />
     <ClInclude Include="wood_block.h" />

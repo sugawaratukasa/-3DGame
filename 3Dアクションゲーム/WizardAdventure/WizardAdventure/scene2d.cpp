@@ -15,6 +15,7 @@
 // マクロ定義
 //******************************************************************************
 #define DEFAULLT_COL	(D3DXCOLOR(1.0f,1.0f,1.0f,1.0f))	// 標準の色
+#define DEFAULT_SCALE	(1.0f)								// 標準の拡大率
 //******************************************************************************
 //コンストラクタ
 //******************************************************************************
@@ -28,6 +29,7 @@ CScene2D::CScene2D(int nPriority) :CScene(nPriority)
 	m_color		= INIT_COLOR;
 	m_fAngle	= INIT_FLOAT;
 	m_fLength	= INIT_FLOAT;
+	m_fScale	= INIT_FLOAT;
 }
 
 //******************************************************************************
@@ -43,6 +45,9 @@ CScene2D::~CScene2D()
 //******************************************************************************
 HRESULT CScene2D::Init(void)
 {
+	// 拡大率を1.0fに
+	m_fScale = DEFAULT_SCALE;
+
 	LPDIRECT3DDEVICE9 pDevice;
 	pDevice = CManager::GetRenderer()->GetDevice();
 
@@ -64,20 +69,20 @@ HRESULT CScene2D::Init(void)
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	//頂点座標の設定
-	pVtx[0].pos.x = m_pos.x - cosf(m_fAngle - m_rot.z) * m_fLength;
-	pVtx[0].pos.y = m_pos.y - sinf(m_fAngle - m_rot.z) * m_fLength;
+	pVtx[0].pos.x = m_pos.x - cosf(m_fAngle - m_rot.z) * m_fLength *m_fScale;
+	pVtx[0].pos.y = m_pos.y - sinf(m_fAngle - m_rot.z) * m_fLength *m_fScale;
 	pVtx[0].pos.z = 0.0f;
 
-	pVtx[1].pos.x = m_pos.x + cosf(m_fAngle + m_rot.z) * m_fLength;
-	pVtx[1].pos.y = m_pos.y - sinf(m_fAngle + m_rot.z) * m_fLength;
+	pVtx[1].pos.x = m_pos.x + cosf(m_fAngle + m_rot.z) * m_fLength *m_fScale;
+	pVtx[1].pos.y = m_pos.y - sinf(m_fAngle + m_rot.z) * m_fLength *m_fScale;
 	pVtx[1].pos.z = 0.0f;
 
-	pVtx[2].pos.x = m_pos.x - cosf(m_fAngle + m_rot.z) * m_fLength;
-	pVtx[2].pos.y = m_pos.y + sinf(m_fAngle + m_rot.z) * m_fLength;
+	pVtx[2].pos.x = m_pos.x - cosf(m_fAngle + m_rot.z) * m_fLength *m_fScale;
+	pVtx[2].pos.y = m_pos.y + sinf(m_fAngle + m_rot.z) * m_fLength *m_fScale;
 	pVtx[2].pos.z = 0.0f;
 
-	pVtx[3].pos.x = m_pos.x + cosf(m_fAngle - m_rot.z) * m_fLength;
-	pVtx[3].pos.y = m_pos.y + sinf(m_fAngle - m_rot.z) * m_fLength;
+	pVtx[3].pos.x = m_pos.x + cosf(m_fAngle - m_rot.z) * m_fLength *m_fScale;
+	pVtx[3].pos.y = m_pos.y + sinf(m_fAngle - m_rot.z) * m_fLength *m_fScale;
 	pVtx[3].pos.z = 0.0f;
 
 	//rhw
@@ -136,20 +141,20 @@ void CScene2D::Update(void)
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	//頂点座標の設定
-	pVtx[0].pos.x = m_pos.x - cosf(m_fAngle - m_rot.z) * m_fLength;
-	pVtx[0].pos.y = m_pos.y - sinf(m_fAngle - m_rot.z) * m_fLength;
+	pVtx[0].pos.x = m_pos.x - cosf(m_fAngle - m_rot.z) * m_fLength *m_fScale;
+	pVtx[0].pos.y = m_pos.y - sinf(m_fAngle - m_rot.z) * m_fLength *m_fScale;
 	pVtx[0].pos.z = 0.0f;
 
-	pVtx[1].pos.x = m_pos.x + cosf(m_fAngle + m_rot.z) * m_fLength;
-	pVtx[1].pos.y = m_pos.y - sinf(m_fAngle + m_rot.z) * m_fLength;
+	pVtx[1].pos.x = m_pos.x + cosf(m_fAngle + m_rot.z) * m_fLength *m_fScale;
+	pVtx[1].pos.y = m_pos.y - sinf(m_fAngle + m_rot.z) * m_fLength *m_fScale;
 	pVtx[1].pos.z = 0.0f;
 
-	pVtx[2].pos.x = m_pos.x - cosf(m_fAngle + m_rot.z) * m_fLength;
-	pVtx[2].pos.y = m_pos.y + sinf(m_fAngle + m_rot.z) * m_fLength;
+	pVtx[2].pos.x = m_pos.x - cosf(m_fAngle + m_rot.z) * m_fLength *m_fScale;
+	pVtx[2].pos.y = m_pos.y + sinf(m_fAngle + m_rot.z) * m_fLength *m_fScale;
 	pVtx[2].pos.z = 0.0f;
 
-	pVtx[3].pos.x = m_pos.x + cosf(m_fAngle - m_rot.z) * m_fLength;
-	pVtx[3].pos.y = m_pos.y + sinf(m_fAngle - m_rot.z) * m_fLength;
+	pVtx[3].pos.x = m_pos.x + cosf(m_fAngle - m_rot.z) * m_fLength *m_fScale;
+	pVtx[3].pos.y = m_pos.y + sinf(m_fAngle - m_rot.z) * m_fLength *m_fScale;
 	pVtx[3].pos.z = 0.0f;
 
 	//rhw
@@ -220,6 +225,12 @@ void CScene2D::SetColor(D3DXCOLOR color)
 void CScene2D::SetRotation(D3DXVECTOR3 rot)
 {
 	m_rot = rot;
+}//******************************************************************************
+// 拡大率設定
+//******************************************************************************
+void CScene2D::SetScale(float fScale)
+{
+	m_fScale = fScale;
 }
 //******************************************************************************
 // 情報設定

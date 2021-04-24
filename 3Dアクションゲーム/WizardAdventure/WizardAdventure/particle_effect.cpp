@@ -19,6 +19,9 @@
 #define ENEMY_FIRE_EXPLOSION_2	("data/Effect/Enemy_Fire_Explosion2_Data.txt")	// 敵火の爆発パス
 #define WOOD_EFFECT				("data/Effect/wood_effect_Data.txt")			// 木のエフェクト
 #define WOOD_EFFECT_2			("data/Effect/wood_effect_2_Data.txt")			// 木のエフェクト
+#define BLOCK_EFFECT			("data/Effect/Block_effect_Data.txt")			// ブロックエフェクト
+#define STAR_EFFECT				("data/Effect/StarEffect_Data.txt")				// 星エフェクト
+#define STAR_EFFECT2			("data/Effect/StarEffect2_Data.txt")			// 星エフェクト
 #define REMAINDER				(0)												// 余り0
 //******************************************************************************
 // コンストラクタ
@@ -104,6 +107,18 @@ HRESULT CParticle_Effect::Init(void)
 	case TYPE_WOOD_EFFECT_2:
 		// テキスト読み込み
 		sprintf(m_cText, WOOD_EFFECT_2);
+		break;
+	case TYPE_BLOCK_EFFECT:
+		// テキスト読み込み
+		sprintf(m_cText, BLOCK_EFFECT);
+		break;
+	case TYPE_STAR_EFFECT:
+		// テキスト読み込み
+		sprintf(m_cText, STAR_EFFECT);
+		break;
+	case TYPE_STAR_EFFECT2:
+		// テキスト読み込み
+		sprintf(m_cText, STAR_EFFECT2);
 		break;
 		// 例外
 	default:

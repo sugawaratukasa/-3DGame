@@ -9,16 +9,24 @@
 #include "player.h"
 #include "scene.h"
 #include "particle.h"
+#include "ghost.h"
 #include "particle_emitter.h"
 //******************************************************************************
 // マクロ定義
 //******************************************************************************
-#define STAR_EMITTER_TEXT	("data/Effect/StarEmitter01_Data.txt")		// テキストのパス
-#define FIRE_EMITTER_TEXT	("data/Effect/FireEmitter_Data.txt")		// テキストのパス
-#define ICE_EMITTER_TEXT	("data/Effect/IceEmitter_Data.txt")			// テキストのパス
-#define FIREGHOST_TEXT		("data/Effect/FireGhostEmitter_Data.txt")	// テキストのパス
-#define ICEGHOST_TEXT		("data/Effect/IceGhostEmitter_Data.txt")	// テキストのパス
-#define REMAINDER			(0)											// 余り0
+#define STAR_EMITTER_TEXT	("data/Effect/StarEmitter01_Data.txt")								// テキストのパス
+#define FIRE_EMITTER_TEXT	("data/Effect/FireEmitter_Data.txt")								// テキストのパス
+#define ICE_EMITTER_TEXT	("data/Effect/IceEmitter_Data.txt")									// テキストのパス
+#define FIREGHOST_TEXT		("data/Effect/FireGhostEmitter_Data.txt")							// テキストのパス
+#define ICEGHOST_TEXT		("data/Effect/IceGhostEmitter_Data.txt")							// テキストのパス
+#define FIRE_ENEMY_CREATE	("data/Effect/Fire_Create_Data.txt")								// テキストのパス
+#define ICE_ENEMY_CREATE	("data/Effect/Ice_Create_Data.txt")									// テキストのパス
+#define MAP_EMITTER			("data/Effect/MapEffect_Data.txt")									// テキストのパス
+#define STAR_EMITTER2_TEXT	("data/Effect/StarEmitter02_Data.txt")								// テキストのパス
+#define MAP_POS				(D3DXVECTOR3(PlayerPos.x - 300.0f, 0.0f, -150.0f))					// 位置
+#define MAP_POS2			(D3DXVECTOR3(PlayerPos.x + 300.0f, 0.0f, -150.0f))					// 位置
+#define REMAINDER			(0)																	// 余り0
+#define RELEASE_COUNT		(60)																// 破棄カウント
 //******************************************************************************
 // コンストラクタ
 //******************************************************************************
@@ -41,20 +49,27 @@ CParticle_Emitter::~CParticle_Emitter()
 CParticle_Emitter * CParticle_Emitter::Create(D3DXVECTOR3 pos, TYPE type)
 {
 	// CParticle_Emitterのポインタ
-	CParticle_Emitter *pParticle_Emitter;
+	CParticle_Emitter *pParticle_Emitter = NULL;
 
-	// メモリ確保
-	pParticle_Emitter = new CParticle_Emitter;
+	// NULLの場合
+	if (pParticle_Emitter == NULL)
+	{
+		// メモリ確保
+		pParticle_Emitter = new CParticle_Emitter;
 
-	// 位置代入
-	pParticle_Emitter->m_pos = pos;
+		// NULLでない場合
+		if (pParticle_Emitter != NULL)
+		{
+			// 位置代入
+			pParticle_Emitter->m_pos = pos;
 
-	// 位置代入
-	pParticle_Emitter->m_Type = type;
+			// 位置代入
+			pParticle_Emitter->m_Type = type;
 
-	// 初期化
-	pParticle_Emitter->Init();
-
+			// 初期化
+			pParticle_Emitter->Init();
+		}
+	}
 	// ポインタを返す
 	return pParticle_Emitter;
 }
@@ -98,6 +113,22 @@ HRESULT CParticle_Emitter::Init(void)
 		// テキストファイル読み込み
 		sprintf(m_cText, ICEGHOST_TEXT);
 		break;
+	case TYPE_FIRE_CREATE:
+		// ファイル読み込み
+		sprintf(m_cText, FIRE_ENEMY_CREATE);
+		break;
+	case TYPE_ICE_CREATE:
+		// ファイル読み込み
+		sprintf(m_cText, ICE_ENEMY_CREATE);
+		break;
+	case TYPE_MAP:
+		// ファイル読み込み
+		sprintf(m_cText, MAP_EMITTER);
+		break;
+	case TYPE_STAR:
+		// ファイル読み込み
+		sprintf(m_cText, STAR_EMITTER2_TEXT);
+		break;
 	}
 
 	// 読み込み
@@ -131,6 +162,49 @@ void CParticle_Emitter::Update(void)
 	{
 		// 星の処理
 		Left_Arm();
+	}
+	// タイプがMAPの場合
+	if (m_Type == TYPE_MAP)
+	{
+		// CSceneのポインタ
+		CScene *pScene = NULL;
+
+		do
+		{
+			// CScene取得
+			pScene = GetScene(OBJTYPE_PLAYER);
+
+			// NULLでない場合
+			if (pScene != NULL)
+			{
+				// オブジェクトタイプ取得
+				OBJTYPE objtype = pScene->GetObjType();
+
+				// OBJTYPE_PLAYERの場合
+				if (objtype == OBJTYPE_PLAYER)
+				{
+					// 向き取得
+					int nRot = ((CPlayer*)pScene)->GetRotState();
+
+					// プレイヤーの位置取得
+					D3DXVECTOR3 PlayerPos = ((CPlayer*)pScene)->GetPos();
+
+					// RIGHTの場合
+					if (nRot == CPlayer::ROT_STATE_RIGHT)
+					{
+						// 位置設定
+						m_pos = MAP_POS;
+					}
+					// LEFTの場合
+					if (nRot == CPlayer::ROT_STATE_LEFT)
+					{
+						// 位置設定
+						m_pos = MAP_POS2;
+					}
+				}
+			}
+			// NULLになるまで繰り返す
+		} while (pScene != NULL);
 	}
 }
 //******************************************************************************
@@ -168,6 +242,18 @@ void CParticle_Emitter::CreateParticle(void)
 	if (m_nCount % m_nCreateCount == REMAINDER)
 	{
 		CParticle::Create(m_pos, m_cText);
+	}
+
+	// TYPE_FIRE_CREATEまたはTYPE_ICE_CREATEの場合
+	if (m_Type == TYPE_FIRE_CREATE || m_Type == TYPE_ICE_CREATE)
+	{
+		// 100になったら
+		if (m_nCount == RELEASE_COUNT)
+		{
+			// 終了
+			Uninit();
+			return;
+		}
 	}
 }
 //******************************************************************************

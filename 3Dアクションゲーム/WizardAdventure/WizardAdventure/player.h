@@ -124,6 +124,8 @@ public:
 	BLOCK_ACTIVE GetBlockActive(void) { return m_Blcok_Active; }
 	D3DXMATRIX GetMtxWorld(PLAYER_PARTS Parts);
 	int GetLife(void) { return m_nLife; }
+	ROT_STATE GetRotState(void) { return m_Rot_State; }
+	MAGIC_TYPE GetMagicType(void) { return m_MagicType; }
 private:
 	void RightSelectBlock(void);
 	void RightBlock(void);
@@ -176,5 +178,6 @@ private:
 	bool m_bParticle_Emitter;										// エミッターの使用判定
 	bool m_bCollision;												// オブジェタイプに当たっているか
 	bool m_bChange_MagicType;										// 魔法のタイプ変更判定
+	bool m_bEnemyCreate;											// 敵生成判定
 };
 #endif

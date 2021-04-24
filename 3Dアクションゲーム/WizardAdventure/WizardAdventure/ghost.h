@@ -31,6 +31,11 @@ public:
 		TYPE_ICE,
 		TYPE_MAX
 	};
+	enum ROT
+	{
+		ROT_RIGHT = 0,
+		ROT_LEFT
+	};
 	CGhost(int nPriority = OBJTYPE_ENEMY);
 	~CGhost();
 	static CGhost *Create(D3DXVECTOR3 pos, D3DXVECTOR3 size, TYPE type);
@@ -41,8 +46,11 @@ public:
 	TYPE GetType(void) { return m_Type; }
 private:
 	void Attack(void);
+	void Rot(void);
+
 	CParticle_Emitter *m_pParticleEmitter;	// CParticle_Emitter1のポインタ
 	TYPE m_Type;							// 種類
 	int m_nAttackCount;						// 攻撃カウント
+	ROT m_Rot;								// 向きの列挙
 };
 #endif

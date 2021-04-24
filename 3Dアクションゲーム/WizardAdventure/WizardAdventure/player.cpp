@@ -20,55 +20,63 @@
 #include "camera.h"
 #include "magic.h"
 #include "particle_emitter.h"
-#include "fireball_ui.h"
-#include "iceball_ui.h"
 #include "life_gage.h"
 #include "floor_block.h"
+#include "enemy_map.h"
+#include "map.h"
+#include "particle_effect.h"
+#include "magic_ui.h"
 #include "player.h"
 //******************************************************************************
 // マクロ定義
 //******************************************************************************
-#define UNDER_BODY				("data/MODEL/PLAYER/00_UnderBody.x")				// 下半身
-#define BODY					("data/MODEL/PLAYER/01_Body.x")						// 上半身
-#define HEAD					("data/MODEL/PLAYER/02_Head.x")						// 頭
-#define SHOULDER_R				("data/MODEL/PLAYER/03_shoulder_R.x")				// 右肩
-#define UP_ARM_R				("data/MODEL/PLAYER/04_up_arm_R.x")					// 右上腕
-#define DOWN_ARM_R				("data/MODEL/PLAYER/05_down_arm_R.x")				// 右前腕	
-#define SHOULDER_L				("data/MODEL/PLAYER/06_shoulder_L.x")				// 左肩
-#define UP_ARM_L				("data/MODEL/PLAYER/07_up_arm_L.x")					// 左上腕
-#define DOWN_ARM_L				("data/MODEL/PLAYER/08_down_arm_L.x")				// 左前腕
-#define THIGTS_R				("data/MODEL/PLAYER/09_Thigts_R.x")					// 右太もも
-#define KNEE_R					("data/MODEL/PLAYER/10_Knee_R.x")					// 右膝
-#define FOOT_R					("data/MODEL/PLAYER/11_foot_R.x")					// 右足
-#define THIGTS_L				("data/MODEL/PLAYER/12_Thigts_L.x")					// 左太もも
-#define KNEE_L					("data/MODEL/PLAYER/13_Knee_L.x")					// 左膝
-#define FOOT_L					("data/MODEL/PLAYER/14_foot_L.x")					// 左足
-#define MOTION_PLAYER_TEXT		("data/MODEL/PLAYER/Motion/motion.txt")				// モーションのテキスト
-#define LOAD_PLAYER_TEXT		("data/MODEL/PLAYER/Motion/player.txt")				// 各モデルパーツの初期値
-#define BLOCK_CREATE_RIGHTPOS	(D3DXVECTOR3(m_pos.x + 20.0f,m_pos.y + 80,m_pos.z))	// 箱生成位置
-#define BLOCK_CREATE_LEFTPOS	(D3DXVECTOR3(m_pos.x - 20.0f,m_pos.y + 80,m_pos.z))	// 箱生成位置
-#define BLOCK_ROT				(D3DXVECTOR3(0.0f,0.0f,0.0f))						// 箱の向き
-#define BLOCK_SIZE				(D3DXVECTOR3(30.0f,30.0f,30.0f))					// 箱のサイズ
-#define MOVE_VALUE				(D3DXVECTOR3(2.0f,2.0f,2.0f))						// 移動量
-#define RIGHT_ROT				(D3DXVECTOR3(0.0f,D3DXToRadian(270.0f),0.0f))		// 向き
-#define LEFT_ROT				(D3DXVECTOR3(0.0f,D3DXToRadian(90.0f),0.0f))		// 向き
-#define GAGE_POS				(D3DXVECTOR3(300.0f,50.0f,0.0f))					// ゲージの位置
-#define MIN_BLOCK_NUM			(0)													// ブロックの最小数
-#define ARRAY_FIRST_NUM			(0)													// 配列の先頭
-#define ARRAY_MOVE_NUMBER		(1)													// 配列の移動
-#define ARRAY_SUB_VALUE			(1)													// 配列に合わせるための値
-#define DEVIDE_VALUE			(2.0f)												// 割る数
-#define MOVE_DEVIDE				(1.5f)												// 移動の割る数
-#define PARENT_NUMBER			(-1)												// 親の数値
-#define ROT_MOVE				(0.2f)												// 向きの移動
-#define POW_VALUE				(2.0f)												// 二乗
-#define MIN_MOVE_VALUE			(0.0f)												// 移動量の最小値
-#define GRAVITY_VALUE			(-1.3f)												// 重力
-#define JUMP_VALUE				(17.0f)												// ジャンプ量
-#define JUMP_VALUE_2			(0.01f)												// ジャンプ量
-#define DEAD_ZONE_MIN			(0)													// スティックのデッドゾーン最小値
-#define MAGIC_MOTION_COUNT		(30)												// 魔法のモーションカウント
-#define MAX_LIFE				(100)												// ライフの最大値
+#define UNDER_BODY				("data/MODEL/PLAYER/00_UnderBody.x")						// 下半身
+#define BODY					("data/MODEL/PLAYER/01_Body.x")								// 上半身
+#define HEAD					("data/MODEL/PLAYER/02_Head.x")								// 頭
+#define SHOULDER_R				("data/MODEL/PLAYER/03_shoulder_R.x")						// 右肩
+#define UP_ARM_R				("data/MODEL/PLAYER/04_up_arm_R.x")							// 右上腕
+#define DOWN_ARM_R				("data/MODEL/PLAYER/05_down_arm_R.x")						// 右前腕	
+#define SHOULDER_L				("data/MODEL/PLAYER/06_shoulder_L.x")						// 左肩
+#define UP_ARM_L				("data/MODEL/PLAYER/07_up_arm_L.x")							// 左上腕
+#define DOWN_ARM_L				("data/MODEL/PLAYER/08_down_arm_L.x")						// 左前腕
+#define THIGTS_R				("data/MODEL/PLAYER/09_Thigts_R.x")							// 右太もも
+#define KNEE_R					("data/MODEL/PLAYER/10_Knee_R.x")							// 右膝
+#define FOOT_R					("data/MODEL/PLAYER/11_foot_R.x")							// 右足
+#define THIGTS_L				("data/MODEL/PLAYER/12_Thigts_L.x")							// 左太もも
+#define KNEE_L					("data/MODEL/PLAYER/13_Knee_L.x")							// 左膝
+#define FOOT_L					("data/MODEL/PLAYER/14_foot_L.x")							// 左足
+#define MOTION_PLAYER_TEXT		("data/MODEL/PLAYER/Motion/motion.txt")						// モーションのテキスト
+#define LOAD_PLAYER_TEXT		("data/MODEL/PLAYER/Motion/player.txt")						// 各モデルパーツの初期値
+#define BLOCK_CREATE_RIGHTPOS	(D3DXVECTOR3(m_pos.x + 20.0f,m_pos.y + 80,m_pos.z))			// 箱生成位置
+#define BLOCK_CREATE_LEFTPOS	(D3DXVECTOR3(m_pos.x - 20.0f,m_pos.y + 80,m_pos.z))			// 箱生成位置
+#define EFFECT_RIGHTPOS			(D3DXVECTOR3(m_pos.x + 20.0f,m_pos.y + 80,m_pos.z - 15.0f))	// 箱生成位置
+#define EFFECT_LEFTPOS			(D3DXVECTOR3(m_pos.x - 20.0f,m_pos.y + 80,m_pos.z - 15.0f))	// 箱生成位置
+#define RELAESE_POS				(D3DXVECTOR3(BlockPos.x,BlockPos.y,BlockPos.z - 15.0f))		// 破棄するブロックの位置
+#define DEAD_POS				(D3DXVECTOR3(ObjPos.x,ObjPos.y + 15.0f,ObjPos.z - 15.0f))	// エフェクト位置
+#define RESPOWN_POS				(D3DXVECTOR3(m_pos.x,m_pos.y + 30.0f,m_pos.z - 15.0f))		// エフェクト位置
+#define BLOCK_ROT				(D3DXVECTOR3(0.0f,0.0f,0.0f))								// 箱の向き
+#define BLOCK_SIZE				(D3DXVECTOR3(30.0f,30.0f,30.0f))							// 箱のサイズ
+#define MOVE_VALUE				(D3DXVECTOR3(2.0f,2.0f,2.0f))								// 移動量
+#define RIGHT_ROT				(D3DXVECTOR3(0.0f,D3DXToRadian(270.0f),0.0f))				// 向き
+#define LEFT_ROT				(D3DXVECTOR3(0.0f,D3DXToRadian(90.0f),0.0f))				// 向き
+#define GAGE_POS				(D3DXVECTOR3(400.0f,50.0f,0.0f))							// ゲージの位置
+#define MIN_BLOCK_NUM			(0)															// ブロックの最小数
+#define ARRAY_FIRST_NUM			(0)															// 配列の先頭
+#define ARRAY_MOVE_NUMBER		(1)															// 配列の移動
+#define ARRAY_SUB_VALUE			(1)															// 配列に合わせるための値
+#define DEVIDE_VALUE			(2.0f)														// 割る数
+#define MOVE_DEVIDE				(1.5f)														// 移動の割る数
+#define PARENT_NUMBER			(-1)														// 親の数値
+#define ROT_MOVE				(0.2f)														// 向きの移動
+#define POW_VALUE				(2.0f)														// 二乗
+#define MIN_MOVE_VALUE			(0.0f)														// 移動量の最小値
+#define GRAVITY_VALUE			(-1.3f)														// 重力
+#define JUMP_VALUE				(17.0f)														// ジャンプ量
+#define JUMP_VALUE_2			(0.01f)														// ジャンプ量
+#define DEAD_ZONE_MIN			(0)															// スティックのデッドゾーン最小値
+#define MAGIC_MOTION_COUNT		(30)														// 魔法のモーションカウント
+#define MAX_LIFE				(100)														// ライフの最大値
+#define MIN_LIFE				(100)														// ライフの最小値
 // 魔法の位置
 #define MAGIC_POS				(D3DXVECTOR3(m_pModel[PARTS_DOWN_ARM_L]->GetMtxWorld()._41,m_pModel[PARTS_DOWN_ARM_L]->GetMtxWorld()._42,m_pModel[PARTS_DOWN_ARM_L]->GetMtxWorld()._43))
 #define MAGIC_MOVE_RIGHT		(D3DXVECTOR3(2.5f,0.0f,0.0f))						// 魔法の移動量
@@ -135,6 +143,7 @@ CPlayer::CPlayer(int nPriority) : CScene(nPriority)
 	m_bParticle_Emitter		= false;
 	m_bCollision			= false;
 	m_bChange_MagicType		= false;
+	m_bEnemyCreate			= false;
 	memset(m_pModel, NULL, sizeof(m_pModel));
 	memset(m_apParticle_Emitter, NULL, sizeof(m_apParticle_Emitter));
 }
@@ -236,6 +245,9 @@ void CPlayer::Unload(void)
 //******************************************************************************
 HRESULT CPlayer::Init(void)
 {
+	// Magic_UI生成
+	CMagic_UI::Create();
+
 	// ライフ代入
 	m_nLife = MAX_LIFE;
 
@@ -456,6 +468,12 @@ void CPlayer::Hit(int nLife)
 {
 	// ライフ減算
 	m_nLife -= nLife;
+
+	// 0以下になった場合
+	if (m_nLife <= MIN_LIFE)
+	{
+		m_nLife = MIN_LIFE;
+	}
 }
 //******************************************************************************
 // 情報設定
@@ -754,6 +772,9 @@ void CPlayer::RightBlock(void)
 			else
 			{
 				// 移動の判定設定
+				m_pBlock->SetbEmitter(false);
+
+				// 移動の判定設定
 				m_pBlock->SetbMove(false);
 
 				// プレイヤーが右を向いていて箱の位置が後ろにある場合
@@ -770,6 +791,12 @@ void CPlayer::RightBlock(void)
 		// 範囲外の場合
 		if (BlockPos.x > CameraPos.x + SCREEN_WIDTH / CAMERA_POS_DEVIDE3 || BlockPos.x < CameraPos.x - SCREEN_WIDTH / CAMERA_POS_DEVIDE3)
 		{
+			// 放射体の判定設定
+			m_pBlock->SetbEmitter(false);
+
+			// 移動の判定設定
+			m_pBlock->SetbMove(false);
+
 			// 選択外に
 			m_pBlock->UnSelected();
 
@@ -1354,6 +1381,9 @@ void CPlayer::LeftBlock(void)
 			}
 			else
 			{
+				// 放射体の判定設定
+				m_pBlock->SetbEmitter(false);
+
 				// 移動の判定設定
 				m_pBlock->SetbMove(false);
 
@@ -1371,6 +1401,9 @@ void CPlayer::LeftBlock(void)
 		// 範囲外の場合
 		if (BlockPos.x > CameraPos.x + SCREEN_WIDTH / CAMERA_POS_DEVIDE3 || BlockPos.x < CameraPos.x - SCREEN_WIDTH / CAMERA_POS_DEVIDE3)
 		{
+			// 放射体の判定設定
+			m_pBlock->SetbEmitter(false);
+
 			// 移動の判定設定
 			m_pBlock->SetbMove(false);
 
@@ -1693,12 +1726,18 @@ void CPlayer::Block_Create(void)
 		// 右向きの場合
 		if (m_Rot_State == ROT_STATE_RIGHT)
 		{
+			// エフェクト生
+			CParticle_Effect::Create(EFFECT_RIGHTPOS, CParticle_Effect::TYPE_STAR_EFFECT);
+
 			// 生成
 			m_pStoneBlock = CStone_Block::Create(BLOCK_CREATE_RIGHTPOS, BLOCK_ROT, BLOCK_SIZE);
 		}
 		// 左向きの場合
 		if (m_Rot_State == ROT_STATE_LEFT)
 		{
+			// エフェクト生
+			CParticle_Effect::Create(EFFECT_LEFTPOS, CParticle_Effect::TYPE_STAR_EFFECT);
+
 			// 生成
 			m_pStoneBlock = CStone_Block::Create(BLOCK_CREATE_LEFTPOS, BLOCK_ROT, BLOCK_SIZE);
 		}
@@ -1708,18 +1747,30 @@ void CPlayer::Block_Create(void)
 	// NULLでない場合
 	if (m_pStoneBlock != NULL)
 	{
+		// 位置取得
+		D3DXVECTOR3 BlockPos = m_pStoneBlock->GetPos();
+
+		// エフェクト生
+		CParticle_Effect::Create(RELAESE_POS, CParticle_Effect::TYPE_STAR_EFFECT);
+
 		// 破棄
 		m_pStoneBlock->ReleaseBlock();
 
 		// 右向きの場合
 		if (m_Rot_State == ROT_STATE_RIGHT)
 		{
+			// エフェクト生
+			CParticle_Effect::Create(EFFECT_RIGHTPOS, CParticle_Effect::TYPE_STAR_EFFECT);
+
 			// 生成
 			m_pStoneBlock = CStone_Block::Create(BLOCK_CREATE_RIGHTPOS, BLOCK_ROT, BLOCK_SIZE);
 		}
 		// 左向きの場合
 		if (m_Rot_State == ROT_STATE_LEFT)
 		{
+			// エフェクト生
+			CParticle_Effect::Create(EFFECT_LEFTPOS, CParticle_Effect::TYPE_STAR_EFFECT);
+
 			// 生成
 			m_pStoneBlock = CStone_Block::Create(BLOCK_CREATE_LEFTPOS, BLOCK_ROT, BLOCK_SIZE);
 		}
@@ -1886,13 +1937,29 @@ void CPlayer::Collision(void)
 						{
 							// 位置保存
 							m_RespawnPos.x = ((CFloor_Block*)pScene)->GetPos().x;
+
+							// falseの場合
+							if (m_bEnemyCreate == false)
+							{
+								// 敵生成
+								CEnemy_Map::Create(ObjPos);
+
+								// trueに
+								m_bEnemyCreate = true;
+							}
 						}
 					}
 					// タイプが針の場合
 					if (n3D_ObjType == C3D_Obj::TYPE_NEEDLE)
 					{
+						// エフェクト生成
+						CParticle_Effect::Create(DEAD_POS, CParticle_Effect::TYPE_STAR_EFFECT2);
+
 						// リスポーン位置に移動
 						m_pos = m_RespawnPos;
+
+						// エフェクト生成
+						CParticle_Effect::Create(RESPOWN_POS, CParticle_Effect::TYPE_STAR_EFFECT2);
 					}
 					// 移動量0
 					m_move.y = MIN_MOVE_VALUE;
@@ -2312,9 +2379,6 @@ void CPlayer::Magic(void)
 
 					// 放射体生成
 					Emitter_Create(EMITTER_TYPE_ICE);
-
-					// UI生成
-					CIceBall_UI::Create(MAGIC_UI_POS);
 				}
 			}
 			// trueの場合
@@ -2345,9 +2409,6 @@ void CPlayer::Magic(void)
 
 					// 放射体生成
 					Emitter_Create(EMITTER_TYPE_FIRE);
-
-					// UI生成
-					CFireBall_UI::Create(MAGIC_UI_POS);
 				}
 			}
 			// trueの場合

@@ -29,6 +29,7 @@ public:
 		TYPE_NORMAL,
 		TYPE_CHECK_POINT,
 		TYPE_ENEMY_CREATE,
+		TYPE_ENEMY,
 		TYPE_END
 	};
 	CFloor_Block(int nPriority = OBJTYPE_MAP_OBJ);

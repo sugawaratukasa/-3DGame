@@ -14,6 +14,7 @@
 #include "3d_obj.h"
 #include "player.h"
 #include "collision.h"
+#include "block.h"
 #include "button.h"
 //******************************************************************************
 // マクロ定義
@@ -44,24 +45,31 @@ CButton::~CButton()
 //******************************************************************************
 CButton * CButton::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size)
 {
-	// CNeedle_Blockのポインタ
-	CButton *pButton;
+	// CButtonのポインタ
+	CButton *pButton = NULL;
 
-	// メモリ確保
-	pButton = new CButton;
+	// NULLの場合
+	if (pButton == NULL)
+	{
+		// メモリ確保
+		pButton = new CButton;
 
-	// 情報設定
-	pButton->SetModel(pos, rot, size, C3D_Obj::TYPE_BUTTON);
+		// NULLでない場合
+		if (pButton != NULL)
+		{
+			// 情報設定
+			pButton->SetModel(pos, rot, size, C3D_Obj::TYPE_BUTTON);
 
-	// 位置保存
-	pButton->m_SavePos = pos;
+			// 位置保存
+			pButton->m_SavePos = pos;
 
-	// オブジェクトタイプ設定
-	pButton->SetObjType(OBJTYPE_BUTTON);
+			// オブジェクトタイプ設定
+			pButton->SetObjType(OBJTYPE_BUTTON);
 
-	// 初期化
-	pButton->Init();
-
+			// 初期化
+			pButton->Init();
+		}
+	}
 	// ポインタを返す
 	return pButton;
 }
@@ -121,20 +129,20 @@ void CButton::Draw(void)
 //******************************************************************************
 void CButton::Collision(void)
 {
-	// シーンのポインタ
-	CScene *pScene = NULL;
-
 	// 位置取得
 	D3DXVECTOR3 pos = GetPos();
 
 	// サイズ取得
 	D3DXVECTOR3 size = GetSize();
 
-	// プレイヤーとの当たり判定
-	do 
+	// シーンのポインタ
+	CScene *pScene = NULL;
+
+	// ブロックとの当たり判定
+	do
 	{
 		// リスト構造の先頭取得
-		pScene = GetScene(OBJTYPE_PLAYER);
+		pScene = GetScene(OBJTYPE_BLOCK);
 
 		// NULLでない場合
 		if (pScene != NULL)
@@ -142,17 +150,17 @@ void CButton::Collision(void)
 			// オブジェクトタイプ取得
 			OBJTYPE Objtype = pScene->GetObjType();
 
-			// オブジェクトタイプがプレイヤーの場合
-			if (Objtype == OBJTYPE_PLAYER)
+			// オブジェクトタイプがブロックの場合
+			if (Objtype == OBJTYPE_BLOCK)
 			{
 				// 位置取得
-				D3DXVECTOR3 PlayerPos = ((CPlayer*)pScene)->GetPos();
+				D3DXVECTOR3 BlockPos = ((CBlock*)pScene)->GetPos();
 
 				// サイズ取得
-				D3DXVECTOR3 PlayerSize = ((CPlayer*)pScene)->GetSize();
+				D3DXVECTOR3 BlockSize = ((CBlock*)pScene)->GetSize();
 
 				// 当たり判定
-				if (CCollision::RectangleCollision(pos, size, PlayerPos, PlayerSize) == true)
+				if (CCollision::RectangleCollision(pos, size, BlockPos, BlockSize) == true)
 				{
 					// trueに
 					m_bPush = true;

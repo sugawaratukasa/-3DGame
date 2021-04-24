@@ -18,6 +18,11 @@
 class CMap : public CScene
 {
 public:
+	enum TYPE
+	{
+		TYPE_TUTORIAL = 0,
+		TYPE_GAME
+	};
 	//読み込む種類
 	typedef enum
 	{
@@ -60,16 +65,15 @@ public:
 		BACK_OBJ_STONE_2,	// 石小
 		BACK_OBJ_MAX		// 最大
 	};
-	CMap(int nPriority = OBJTYPE_FLOOR);
+	CMap();
 	~CMap();
-	static CMap *Create(void);
+	static CMap *Create(TYPE type);
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
-		
-	void MapCreate(void);
 private:
+	void MapCreate(void);
 	void FloorCreate(void);
 	void FloorLoad(void);
 	void BlockCreate(void);
@@ -79,9 +83,10 @@ private:
 	void SetRowCol(LOAD_TYPE load_type);
 
 	FLOOR_TYPE **m_apFloorIndex;		// 行列
-	OBJ_TYPE **m_apBlockIndex;			// 行列
+	OBJ_TYPE **m_apObjIndex;			// 行列
 	BACK_OBJ_TYPE **m_apBackObjIndex;	// 行列
 	int m_nRow;							// 行
 	int m_nCol;							// 列
+	TYPE m_Type;						// 種類
 };
 #endif

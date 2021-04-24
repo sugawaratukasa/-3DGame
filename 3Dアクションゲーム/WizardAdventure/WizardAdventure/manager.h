@@ -28,7 +28,9 @@ public:
 	{
 		MODE_NONE = 0,
 		MODE_TITLE,
+		MODE_TUTORIAL,
 		MODE_GAME,
+		MODE_RESULT,
 		MODE_MAX
 	}MODE;
 	CManager();

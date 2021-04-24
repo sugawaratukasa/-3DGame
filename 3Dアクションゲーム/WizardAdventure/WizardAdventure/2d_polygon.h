@@ -25,6 +25,8 @@ public:
 		TYPE_TITLE_BG,
 		TYPE_PRESS_START,
 		TYPE_RESULT,
+		TYPE_MAGIC_UI,
+		TYPE_CONTROLS_BG,
 		TYPE_MAX
 	};
 	C2D_Polygon(int nPriority = OBJTYPE_NOSTOP_UI);

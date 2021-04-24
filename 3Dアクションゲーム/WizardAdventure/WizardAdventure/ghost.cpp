@@ -1,5 +1,5 @@
 //******************************************************************************
-// 幽霊[ghost.cpp]
+// 敵幽霊[ghost.cpp]
 // Author : 管原 司
 //******************************************************************************
 
@@ -22,10 +22,13 @@
 #define POS			(D3DXVECTOR3(pos.x,pos.y + 15.0f,pos.z - 8.0f))						// 位置
 #define ATTACK_POS	(D3DXVECTOR3(pos.x,pos.y + 15.0f,pos.z))							// 位置
 #define ROT			(D3DXVECTOR3(0.0f,0.0f,0.0f))										// 向き
+#define RIGHT_ROT	(D3DXVECTOR3(0.0f,D3DXToRadian(0.0f),0.0f))							// 右向き
+#define LEFT_ROT	(D3DXVECTOR3(0.0f,D3DXToRadian(180.0f),0.0f))						// 左向き
 #define MAGIC_MOVE	(D3DXVECTOR3(cosf(fAngle) * 2.0f, sinf(fAngle) * 2.0f, 0.0f))		// 魔法の移動
-#define ATTACKCOUNT	(200)																// 攻撃カウント
+#define ATTACKCOUNT	(300)																// 攻撃カウント
 #define REMAINDER	(0)																	// 余り
 #define MAX_LIFE	(100)																// ライフの最大数
+#define ADD_ROT		(0.2f)																// 向き
 //******************************************************************************
 //静的メンバ変数
 //******************************************************************************
@@ -38,6 +41,7 @@ CGhost::CGhost(int nPriority) : CEnemy(nPriority)
 	m_pParticleEmitter	= NULL;
 	m_Type				= TYPE_NONE;
 	m_nAttackCount		= INIT_INT;
+	m_Rot				= ROT_RIGHT;
 }
 //******************************************************************************
 // デストラクタ
@@ -87,6 +91,7 @@ CGhost * CGhost::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size, TYPE type)
 //******************************************************************************
 HRESULT CGhost::Init(void)
 {
+
 	// 初期化
 	CEnemy::Init();
 
@@ -97,11 +102,17 @@ HRESULT CGhost::Init(void)
 	if (m_Type == TYPE_FIRE)
 	{
 		// 放射体生成
+		CParticle_Emitter::Create(POS, CParticle_Emitter::TYPE_FIRE_CREATE);
+
+		// 放射体生成
 		m_pParticleEmitter = CParticle_Emitter::Create(POS, CParticle_Emitter::TYPE_FIRE_GHOST);
 	}
 	// ICEの場合
 	if (m_Type == TYPE_ICE)
 	{
+		// 放射体生成
+		CParticle_Emitter::Create(POS, CParticle_Emitter::TYPE_ICE_CREATE);
+
 		// 放射体生成
 		m_pParticleEmitter = CParticle_Emitter::Create(POS, CParticle_Emitter::TYPE_ICE_GHOST);
 	}
@@ -143,6 +154,10 @@ void CGhost::Update(void)
 		// 攻撃
 		Attack();
 	}
+
+	// 向き
+	Rot();
+
 	// 位置種痘
 	D3DXVECTOR3 pos = GetPos();
 
@@ -213,4 +228,75 @@ void CGhost::Attack(void)
 		// 攻撃生成
 		CMagic::Create(ATTACK_POS, MAGIC_MOVE, CMagic::TYPE_ENEMY_ICE_BALL);
 	}
+}
+//******************************************************************************
+// 向き
+//******************************************************************************
+void CGhost::Rot(void)
+{
+	// 位置取得
+	D3DXVECTOR3 pos = GetPos();
+
+	// 向き取得
+	D3DXVECTOR3 rot = GetRot();
+
+	// 目的の向き
+	D3DXVECTOR3 RotDest = rot;
+
+	// CSceneのポインタ
+	CScene *pScene = NULL;
+
+	do
+	{
+		// シーン取得
+		pScene = GetScene(OBJTYPE_PLAYER);
+
+		// NULLでない場合
+		if (pScene != NULL)
+		{
+			// オブジェクトタイプ取得
+			OBJTYPE objtype = pScene->GetObjType();
+
+			// OBJECT_TYPEがOBJTYPE_PLAYERの場合
+			if (objtype == OBJTYPE_PLAYER)
+			{
+				// 位置取得
+				D3DXVECTOR3 PlayerPos = ((CPlayer*)pScene)->GetPos();
+
+				// プレイヤーより左にいる場合
+				if (pos.x < PlayerPos.x)
+				{
+					// RIGHTに
+					m_Rot = ROT_RIGHT;
+				}
+				// プレイヤーより右にいる場合
+				if (pos.x > PlayerPos.x)
+				{
+					// LEFTに
+					m_Rot = ROT_LEFT;
+				}
+
+			}
+		}
+		// NULLになるまで繰り返す
+	} while (pScene != NULL);
+
+	// 右を向いてる場合
+	if (m_Rot == ROT_RIGHT)
+	{
+		// 向き
+		RotDest.y = RIGHT_ROT.y;
+	}
+	// 左を向いてる場合
+	if (m_Rot == ROT_LEFT)
+	{
+		// 向き
+		RotDest.y = LEFT_ROT.y;
+	}
+
+	// 向き
+	rot += (RotDest - rot) * ADD_ROT;
+
+	// 向き設定
+	SetRot(rot);
 }

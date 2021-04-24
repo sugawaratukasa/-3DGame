@@ -45,23 +45,30 @@ CGate::~CGate()
 //******************************************************************************
 CGate * CGate::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size)
 {
-	// CNeedle_Blockのポインタ
-	CGate *pButton;
+	// CGateのポインタ
+	CGate *pGate = NULL;
 
-	// メモリ確保
-	pButton = new CGate;
+	// NULLの場合
+	if (pGate == NULL)
+	{
+		// メモリ確保
+		pGate = new CGate;
 
-	// 情報設定
-	pButton->SetModel(pos, rot, size, C3D_Obj::TYPE_GATE);
+		// NULLでない場合
+		if (pGate != NULL)
+		{
+			// 情報設定
+			pGate->SetModel(pos, rot, size, C3D_Obj::TYPE_GATE);
 
-	// 位置保存
-	pButton->m_SavePos = pos;
+			// 位置保存
+			pGate->m_SavePos = pos;
 
-	// 初期化
-	pButton->Init();
-
+			// 初期化
+			pGate->Init();
+		}
+	}
 	// ポインタを返す
-	return pButton;
+	return pGate;
 }
 //******************************************************************************
 // 初期化処理
@@ -104,9 +111,6 @@ void CGate::Update(void)
 		// 移動処理
 		UnderMove();
 	}
-
-	// 当たり判定
-	//Collision();
 }
 
 //******************************************************************************
@@ -116,57 +120,6 @@ void CGate::Draw(void)
 {
 	// 描画
 	C3D_Obj::Draw();
-}
-//******************************************************************************
-// 当たり判定
-//******************************************************************************
-void CGate::Collision(void)
-{
-	//// シーンのポインタ
-	//CScene *pScene = NULL;
-
-	//// 位置取得
-	//D3DXVECTOR3 pos = GetPos();
-
-	//// サイズ取得
-	//D3DXVECTOR3 size = GetSize();
-
-	//// プレイヤーとの当たり判定
-	//do
-	//{
-	//	// リスト構造の先頭取得
-	//	pScene = GetScene(OBJTYPE_PLAYER);
-
-	//	// NULLでない場合
-	//	if (pScene != NULL)
-	//	{
-	//		// オブジェクトタイプ取得
-	//		OBJTYPE Objtype = pScene->GetObjType();
-
-	//		// オブジェクトタイプがプレイヤーの場合
-	//		if (Objtype == OBJTYPE_PLAYER)
-	//		{
-	//			// 位置取得
-	//			D3DXVECTOR3 PlayerPos = ((CPlayer*)pScene)->GetPos();
-
-	//			// サイズ取得
-	//			D3DXVECTOR3 PlayerSize = ((CPlayer*)pScene)->GetSize();
-
-	//			// 当たり判定
-	//			if (CCollision::RectangleCollision(pos, size, PlayerPos, PlayerSize) == true)
-	//			{
-	//				// trueに
-	//				m_bPush = true;
-	//			}
-	//			else
-	//			{
-	//				// falseに
-	//				m_bPush = false;
-	//			}
-	//		}
-	//	}
-	//	// NULLになるまで
-	//} while (pScene != NULL);
 }
 //******************************************************************************
 // 上移動処理
@@ -198,7 +151,7 @@ bool CGate::GetPush(void)
 	CScene *pScene = NULL;
 
 	// 押されたか
-	bool bPush;
+	bool bPush = false;
 
 	// プレイヤーとの当たり判定
 	do
@@ -215,6 +168,7 @@ bool CGate::GetPush(void)
 			// オブジェクトタイプがプレイヤーの場合
 			if (Objtype == OBJTYPE_BUTTON)
 			{
+				// 取得
 				bPush = ((CButton*)pScene)->GetbPush();
 			}
 		}

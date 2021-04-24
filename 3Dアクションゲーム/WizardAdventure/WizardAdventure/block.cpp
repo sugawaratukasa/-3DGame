@@ -17,11 +17,13 @@
 #include "collision.h"
 #include "3d_obj.h"
 #include "player.h"
+#include "particle_emitter.h"
 #include "block.h"
 //******************************************************************************
 // マクロ定義
 //******************************************************************************
-#define MOVE_VALUE		(D3DXVECTOR3(2.0f,2.0f,0.0f))						// 移動量7
+#define POS				(D3DXVECTOR3(pos.x,pos.y,pos.z - 15.0f))			// 位置
+#define MOVE_VALUE		(D3DXVECTOR3(2.0f,2.0f,0.0f))						// 移動量
 #define FRAME_POS		(D3DXVECTOR3(pos.x,pos.y,pos.z - 15.0f))			// 枠のサイズ
 #define FRAME_SIZE		(D3DXVECTOR3(GetSize().x,GetSize().y,0.0f))			// 枠のサイズ
 #define FRAME_COLOR1	(D3DXCOLOR(1.0f,1.0f,1.0f,0.0f))					// 枠の色
@@ -37,11 +39,13 @@
 //******************************************************************************
 CBlock::CBlock(int nPriority) :C3D_Obj(nPriority)
 {
-	m_posOld	= INIT_D3DXVECTOR3;
-	m_move		= INIT_D3DXVECTOR3;
-	m_pBlock	= NULL;
-	m_pFrame	= NULL;
-	m_bMove		= false;
+	m_posOld			= INIT_D3DXVECTOR3;
+	m_move				= INIT_D3DXVECTOR3;
+	m_pBlock			= NULL;
+	m_pFrame			= NULL;
+	m_pParticleEmitter	= NULL;
+	m_bMove				= false;
+	m_bParticleEmitter	= false;
 }
 
 //******************************************************************************
@@ -98,6 +102,34 @@ void CBlock::Update(void)
 	// 状態の変数
 	int nPlayerState;
 
+	// trueの場合
+	if (m_bParticleEmitter == true)
+	{
+		// NULLの場合
+		if (m_pParticleEmitter == NULL)
+		{
+			m_pParticleEmitter = CParticle_Emitter::Create(POS, CParticle_Emitter::TYPE_STAR);
+		}
+		// NULLでない場合
+		if (m_pParticleEmitter != NULL)
+		{
+			// 位置
+			m_pParticleEmitter->SetPos(POS);
+		}
+	}
+	// falseの場合
+	if (m_bParticleEmitter == false)
+	{
+		// NULLでない場合
+		if (m_pParticleEmitter != NULL)
+		{
+			// 終了
+			m_pParticleEmitter->Uninit();
+
+			// NULLに
+			m_pParticleEmitter = NULL;
+		}
+	}
 	// プレイヤーの状態取得
 	do
 	{
@@ -156,6 +188,12 @@ void CBlock::Draw(void)
 //******************************************************************************
 void CBlock::Move(void)
 {
+	// falseの場合
+	if (m_bParticleEmitter == false)
+	{
+		// trueに
+		m_bParticleEmitter = true;
+	}
 	// コントローラー取得
 	DIJOYSTATE js;
 	js.lZ = NULL;
@@ -360,6 +398,13 @@ void CBlock::SetbMove(bool bMove)
 	m_bMove = bMove;
 }
 //******************************************************************************
+// エフェクト判定設定
+//******************************************************************************
+void CBlock::SetbEmitter(bool bEmitter)
+{
+	m_bParticleEmitter = bEmitter;
+}
+//******************************************************************************
 // 当たり判定
 //******************************************************************************
 void CBlock::Collision(D3DXVECTOR3 posOld, D3DXVECTOR3 size)
@@ -457,7 +502,7 @@ void CBlock::Collision(D3DXVECTOR3 posOld, D3DXVECTOR3 size)
 					m_move.y = MIN_MOVE_VALUE;
 
 					// 位置
-					pos.y = (size.y / DEVIDE_VALUE) - (ObjPos.y - ObjSize.y / DEVIDE_VALUE);
+					pos.y = (-size.y / DEVIDE_VALUE) + (ObjPos.y - ObjSize.y / DEVIDE_VALUE);
 				}
 				// 上
 				else if (CCollision::RectangleCollisionMove(pos, posOld, size, ObjPos, ObjSize) == CCollision::SURFACE_UP)

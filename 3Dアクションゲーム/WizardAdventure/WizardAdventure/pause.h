@@ -37,8 +37,9 @@ private:
 	void Select(void);
 	void Release(void);
 	C2D_Polygon *m_apPolygon[TYPE_MAX];	// C2D_Polygonのポインタ
-	int m_nCount;						// カウント7
+	int m_nCount;						// カウント
 	bool m_bStick;						// スティックの判定
+	bool m_bControls;					// 説明の判定
 };
 
 #endif

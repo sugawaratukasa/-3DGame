@@ -6,6 +6,7 @@
 // インクルードファイル
 //******************************************************************************
 #include "manager.h"
+#include "joystick.h"
 #include "ui_texture.h"
 #include "2d_polygon.h"
 //******************************************************************************
@@ -56,58 +57,90 @@ C2D_Polygon * C2D_Polygon::Create(D3DXVECTOR3 pos, D3DXVECTOR3 size, TYPE type)
 
 			switch (p2D_Polygon->m_Type)
 			{
+				// テクスチャなし
 			case C2D_Polygon::TYPE_NONE:
 				// 色設定
 				p2D_Polygon->SetColor(BLACK_COL);
 				break;
+
+				// RESUME
 			case C2D_Polygon::TYPE_RESUME:
 				// テクスチャ受け渡し
 				p2D_Polygon->BindTexture(CManager::GetUI_Texture()->GetTexture(CUI_Texture::TEX_TYPE_RESUME));
 				// 色設定
 				p2D_Polygon->SetColor(COL);
 				break;
+
+				// コントローラー説明
 			case C2D_Polygon::TYPE_CONTROLS:
 				// テクスチャ受け渡し
 				p2D_Polygon->BindTexture(CManager::GetUI_Texture()->GetTexture(CUI_Texture::TEX_TYPE_CONTROLS));
 				// 色設定
 				p2D_Polygon->SetColor(COL);
 				break;
+
+				// EXIT
 			case C2D_Polygon::TYPE_EXIT:
 				// テクスチャ受け渡し
 				p2D_Polygon->BindTexture(CManager::GetUI_Texture()->GetTexture(CUI_Texture::TEX_TYPE_EXIT));
 				// 色設定
 				p2D_Polygon->SetColor(COL);
 				break;
+
+				// GAMESTART
 			case C2D_Polygon::TYPE_GAMESTART:
 				// テクスチャ受け渡し
 				p2D_Polygon->BindTexture(CManager::GetUI_Texture()->GetTexture(CUI_Texture::TEX_TYPE_GAMESTART));
 				// 色設定
 				p2D_Polygon->SetColor(COL);
 				break;
+
+				// TITLE
 			case C2D_Polygon::TYPE_TITLE:
 				// テクスチャ受け渡し
 				p2D_Polygon->BindTexture(CManager::GetUI_Texture()->GetTexture(CUI_Texture::TEX_TYPE_TITLE));
 				// 色設定
 				p2D_Polygon->SetColor(COL);
 				break;
+
+				// タイトル背景
 			case C2D_Polygon::TYPE_TITLE_BG:
 				// テクスチャ受け渡し
 				p2D_Polygon->BindTexture(CManager::GetUI_Texture()->GetTexture(CUI_Texture::TEX_TYPE_TITLE_BG));
 				// 色設定
 				p2D_Polygon->SetColor(COL);
 				break;
+
+				// PRESS_START
 			case C2D_Polygon::TYPE_PRESS_START:
 				// テクスチャ受け渡し
 				p2D_Polygon->BindTexture(CManager::GetUI_Texture()->GetTexture(CUI_Texture::TEX_TYPE_PRESS_START));
 				// 色設定
 				p2D_Polygon->SetColor(COL);
 				break;
+
+				// RESULT
 			case C2D_Polygon::TYPE_RESULT:
 				// テクスチャ受け渡し
 				p2D_Polygon->BindTexture(CManager::GetUI_Texture()->GetTexture(CUI_Texture::TEX_TYPE_RESULT));
 				// 色設定
 				p2D_Polygon->SetColor(COL);
 				break;
+
+				// MAGICUI
+			case C2D_Polygon::TYPE_MAGIC_UI:
+				// テクスチャ受け渡し
+				p2D_Polygon->BindTexture(CManager::GetUI_Texture()->GetTexture(CUI_Texture::TEX_TYPE_MAGIC_UI));
+				// 色設定
+				p2D_Polygon->SetColor(COL);
+				break;
+			case C2D_Polygon::TYPE_CONTROLS_BG:
+				// テクスチャ受け渡し
+				p2D_Polygon->BindTexture(CManager::GetUI_Texture()->GetTexture(CUI_Texture::TEX_TYPE_CONTROLS_BG));
+				// 色設定
+				p2D_Polygon->SetColor(COL);
+				break;
+				// 例外
 			default:
 				break;
 			}
@@ -147,6 +180,28 @@ void C2D_Polygon::Update(void)
 	// 更新
 	CScene2D::Update();
 
+	// コントローラー取得
+	DIJOYSTATE js;
+	js.lY = INIT_INT;
+	js.lX = INIT_INT;
+	CInputJoystick * pInputJoystick = CManager::GetInputJoystick();
+	LPDIRECTINPUTDEVICE8 g_lpDIDevice = CInputJoystick::GetDevice();
+
+	// CONTROLS_BGの場合
+	if (m_Type == TYPE_CONTROLS_BG)
+	{
+		// NULLでない場合	
+		if (g_lpDIDevice != NULL)
+		{
+			// Bボタンを押した場合
+			if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_B))
+			{
+				// 終了
+				Uninit();
+				return;
+			}
+		}
+	}
 	// PRESS_STARTの場合
 	if (m_Type == TYPE_PRESS_START)
 	{

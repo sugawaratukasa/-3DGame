@@ -40,20 +40,27 @@ CGate_Roof::~CGate_Roof()
 CGate_Roof * CGate_Roof::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 size)
 {
 	// CGate_Roofのポインタ
-	CGate_Roof *pGate_Roof;
+	CGate_Roof *pGate_Roof = NULL;
 
-	// メモリ確保
-	pGate_Roof = new CGate_Roof;
+	// NULLの場合
+	if (pGate_Roof == NULL)
+	{
+		// メモリ確保
+		pGate_Roof = new CGate_Roof;
 
-	// 情報設定
-	pGate_Roof->SetModel(pos, rot, size, C3D_Obj::TYPE_GATE_ROOF);
+		// NULLでない場合
+		if (pGate_Roof != NULL)
+		{
+			// 情報設定
+			pGate_Roof->SetModel(pos, rot, size, C3D_Obj::TYPE_GATE_ROOF);
 
-	// オブジェクトタイプ設定
-	pGate_Roof->SetObjType(OBJTYPE_GATE_ROOF);
+			// オブジェクトタイプ設定
+			pGate_Roof->SetObjType(OBJTYPE_GATE_ROOF);
 
-	// 初期化
-	pGate_Roof->Init();
-
+			// 初期化
+			pGate_Roof->Init();
+		}
+	}
 	// ポインタを返す
 	return pGate_Roof;
 }

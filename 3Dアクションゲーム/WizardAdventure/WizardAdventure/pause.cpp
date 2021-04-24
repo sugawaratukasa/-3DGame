@@ -32,8 +32,9 @@
 CPause::CPause(int nPriority) : CScene(nPriority)
 {
 	memset(m_apPolygon, NULL, sizeof(m_apPolygon));
-	m_nCount = INIT_INT;
-	m_bStick = false;
+	m_nCount	= INIT_INT;
+	m_bStick	= false;
+	m_bControls = false;
 }
 //******************************************************************************
 // デストラクタ
@@ -135,105 +136,126 @@ void CPause::Select(void)
 	if (g_lpDIDevice != NULL)
 	{
 		// falseの場合
-		if (m_bStick == false)
+		if (m_bControls == false)
 		{
-			// 左スティックを上に倒す場合
-			if (js.lY >= STICK_REACTION)
+			// falseの場合
+			if (m_bStick == false)
 			{
-				// trueに
-				m_bStick = true;
+				// 左スティックを上に倒す場合
+				if (js.lY >= STICK_REACTION)
+				{
+					// trueに
+					m_bStick = true;
 
-				// EXITの場合
-				if (m_nCount == TYPE_EXIT)
-				{
-					// EXITに
-					m_nCount = TYPE_EXIT;
+					// EXITの場合
+					if (m_nCount == TYPE_EXIT)
+					{
+						// EXITに
+						m_nCount = TYPE_EXIT;
+					}
+					// EXITでない場合
+					if (m_nCount != TYPE_EXIT)
+					{
+						// デクリメント
+						m_nCount++;
+					}
 				}
-				// EXITでない場合
-				if (m_nCount != TYPE_EXIT)
+				// 左スティックを下に倒す場合
+				if (js.lY <= -STICK_REACTION)
 				{
-					// デクリメント
-					m_nCount++;
+					// RESUMEの場合
+					if (m_nCount == TYPE_RESUME)
+					{
+						// EXITに
+						m_nCount = TYPE_RESUME;
+					}
+					// RESUMEでない場合
+					if (m_nCount != TYPE_RESUME)
+					{
+						// インクリメント
+						m_nCount--;
+					}
+					// trueに
+					m_bStick = true;
 				}
 			}
-			// 左スティックを下に倒す場合
-			if (js.lY <= -STICK_REACTION)
+			// trueの場合
+			if (m_bStick == true)
 			{
-				// RESUMEの場合
-				if (m_nCount == TYPE_RESUME)
+				// -500より大きく0より小さい場合
+				if (js.lY > -STICK_REACTION && js.lY <= DEAD_ZONE_MIN)
 				{
-					// EXITに
-					m_nCount = TYPE_RESUME;
+					m_bStick = false;
 				}
-				// RESUMEでない場合
-				if (m_nCount != TYPE_RESUME)
+				// 500より小さく0より大きい場合
+				if (js.lY < STICK_REACTION && js.lY >= DEAD_ZONE_MIN)
 				{
-					// インクリメント
-					m_nCount--;
+					m_bStick = false;
 				}
-				// trueに
-				m_bStick = true;
+			}
+			// RESUMEの場合
+			if (m_nCount == TYPE_RESUME)
+			{
+				// 色設定
+				m_apPolygon[m_nCount]->SetColor(COL);
+				m_apPolygon[TYPE_CONTROLS]->SetColor(BLACK_COL);
+				m_apPolygon[TYPE_EXIT]->SetColor(BLACK_COL);
+
+				// Aボタンを押した場合
+				if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_A))
+				{
+					// 更新開始
+					SetUpdateStop(false);
+
+					// 破棄
+					CPause::Release();
+				}
+			}
+			// RESUMEの場合
+			if (m_nCount == TYPE_CONTROLS)
+			{
+				// 色設定
+				m_apPolygon[m_nCount]->SetColor(COL);
+				m_apPolygon[TYPE_RESUME]->SetColor(BLACK_COL);
+				m_apPolygon[TYPE_EXIT]->SetColor(BLACK_COL);
+
+				// Aボタンを押した場合
+				if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_A))
+				{
+					// trueに
+					m_bControls = true;
+
+					// 生成
+					C2D_Polygon::Create(BLACK_POLYGON_POS, BLACK_POLYGON_SIZE, C2D_Polygon::TYPE_CONTROLS_BG);
+				}
+			}
+			// RESUMEの場合
+			if (m_nCount == TYPE_EXIT)
+			{
+				// 色設定
+				m_apPolygon[m_nCount]->SetColor(COL);
+				m_apPolygon[TYPE_RESUME]->SetColor(BLACK_COL);
+				m_apPolygon[TYPE_CONTROLS]->SetColor(BLACK_COL);
+
+				// Aボタンを押した場合
+				if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_A))
+				{
+					// 更新開始
+					SetUpdateStop(false);
+
+					// フェード生成
+					CFade::Create(CManager::MODE_TITLE);
+				}
 			}
 		}
 		// trueの場合
-		if (m_bStick == true)
+		if (m_bControls == true)
 		{
-			// -500より大きく0より小さい場合
-			if (js.lY > -STICK_REACTION && js.lY <= DEAD_ZONE_MIN)
+			// Bボタンを押した場合
+			if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_B))
 			{
-				m_bStick = false;
-			}
-			// 500より小さく0より大きい場合
-			if (js.lY < STICK_REACTION && js.lY >= DEAD_ZONE_MIN)
-			{
-				m_bStick = false;
-			}
-		}
-		// RESUMEの場合
-		if (m_nCount == TYPE_RESUME)
-		{
-			// 色設定
-			m_apPolygon[m_nCount]->SetColor(COL);
-			m_apPolygon[TYPE_CONTROLS]->SetColor(BLACK_COL);
-			m_apPolygon[TYPE_EXIT]->SetColor(BLACK_COL);
-
-			// Aボタンを押した場合
-			if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_A))
-			{
-				// 更新開始
-				SetUpdateStop(false);
-
-				// 破棄
-				CPause::Release();
-			}
-		}
-		// RESUMEの場合
-		if (m_nCount == TYPE_CONTROLS)
-		{
-			// 色設定
-			m_apPolygon[m_nCount]->SetColor(COL);
-			m_apPolygon[TYPE_RESUME]->SetColor(BLACK_COL);
-			m_apPolygon[TYPE_EXIT]->SetColor(BLACK_COL);
-		}
-		// RESUMEの場合
-		if (m_nCount == TYPE_EXIT)
-		{
-			// 色設定
-			m_apPolygon[m_nCount]->SetColor(COL);
-			m_apPolygon[TYPE_RESUME]->SetColor(BLACK_COL);
-			m_apPolygon[TYPE_CONTROLS]->SetColor(BLACK_COL);
-
-			// Aボタンを押した場合
-			if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_A))
-			{
-				// 更新開始
-				SetUpdateStop(false);
-
-				// フェード生成
-				CFade::Create(CManager::MODE_TITLE);
-
-				// 破棄
-				CPause::Release();
+				// falseに
+				m_bControls = false;
 			}
 		}
 	}

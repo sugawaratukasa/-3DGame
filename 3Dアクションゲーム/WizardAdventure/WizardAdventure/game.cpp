@@ -33,7 +33,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define PLAYER_POS		(D3DXVECTOR3(100.0f, -50.0f, -200.0f))
+#define PLAYER_POS		(D3DXVECTOR3(200.0f, -50.0f, -200.0f))
 #define PLAYER_ROT		(D3DXVECTOR3(0.0f,D3DXToRadian(90.0f),0.0f))
 #define PLAYER_SIZE		(D3DXVECTOR3(30.0f,15.0f,30.0f))
 #define ENEMY_POS		(D3DXVECTOR3(-100.0f,-45.0f,-200.0f))
@@ -83,16 +83,13 @@ HRESULT CGame::Init(void)
 	CManager::CreateLight();
 
 	// マップ生成
-	CMap::Create();
+	CMap::Create(CMap::TYPE_GAME);
 
 	// プレイヤー生成
 	CPlayer::Create(PLAYER_POS, PLAYER_ROT, PLAYER_SIZE);
 
-	// プレイヤー生成
-	//CGhost::Create(ENEMY_POS, PLAYER_SIZE, CGhost::TYPE_FIRE);
-
-	// プレイヤー生成
-	//CGhost::Create(ENEMY_POS2, PLAYER_SIZE, CGhost::TYPE_ICE);
+	// エフェクト生成
+	CParticle_Emitter::Create(PLAYER_POS, CParticle_Emitter::TYPE_MAP);
 
 	// 背景生成
 	CBg::Create();
@@ -105,7 +102,8 @@ HRESULT CGame::Init(void)
 //*****************************************************************************
 void CGame::Uninit(void)
 {
-
+	// フェード以外破棄
+	CScene::DesignationReleaseAll(CScene::OBJTYPE_FADE);
 }
 
 //*****************************************************************************
