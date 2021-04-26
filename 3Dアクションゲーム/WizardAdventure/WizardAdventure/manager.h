@@ -18,6 +18,7 @@ class CDebugProc;
 class CMode;
 class CParticle_Texture;
 class CUI_Texture;
+class CSound;
 //******************************************************************************
 // クラス
 //******************************************************************************
@@ -54,6 +55,7 @@ public:
 	static CParticle_Texture *GetParticle_Texture(void) { return m_pParticle_Texture; }
 	static CUI_Texture *GetUI_Texture(void) { return m_pUI_Texture; }
 	static CMode *GetMode(void) { return m_pMode; }
+	static CSound *GetSound(void) { return m_pSound; }
 private:
 	static CRenderer *m_pRenderer;							//レンダラー
 	static CCamera *m_pCamera;								//カメラ
@@ -65,6 +67,7 @@ private:
 	static CParticle_Texture *m_pParticle_Texture;			// テクスチャ
 	static CUI_Texture *m_pUI_Texture;						// テクスチャ
 	static MODE m_Mode;										// モード
+	static CSound *m_pSound;								// CSoundのポインタ
 	int m_nCountFPS;										// FPSの値
 };
 #endif

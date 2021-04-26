@@ -13,6 +13,7 @@
 #include "fade.h"
 #include "mode.h"
 #include "game.h"
+#include "sound.h"
 #include "pause.h"
 //******************************************************************************
 // マクロ定義
@@ -120,6 +121,9 @@ void CPause::Draw(void)
 //******************************************************************************
 void CPause::Select(void)
 {
+	//サウンド取得
+	CSound * pSound = CManager::GetSound();
+
 	// コントローラー取得
 	DIJOYSTATE js;
 	js.lY = INIT_INT;
@@ -156,7 +160,10 @@ void CPause::Select(void)
 					// EXITでない場合
 					if (m_nCount != TYPE_EXIT)
 					{
-						// デクリメント
+						// 決定音再生
+						pSound->PlaySound(CSound::SOUND_LABEL_SE_SELECT);
+
+						// インクリメント
 						m_nCount++;
 					}
 				}
@@ -172,7 +179,10 @@ void CPause::Select(void)
 					// RESUMEでない場合
 					if (m_nCount != TYPE_RESUME)
 					{
-						// インクリメント
+						// 決定音再生
+						pSound->PlaySound(CSound::SOUND_LABEL_SE_SELECT);
+
+						// デクリメント
 						m_nCount--;
 					}
 					// trueに
@@ -204,6 +214,9 @@ void CPause::Select(void)
 				// Aボタンを押した場合
 				if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_A))
 				{
+					// 決定音再生
+					pSound->PlaySound(CSound::SOUND_LABEL_SE_DETERMINATION);
+
 					// 更新開始
 					SetUpdateStop(false);
 
@@ -222,6 +235,9 @@ void CPause::Select(void)
 				// Aボタンを押した場合
 				if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_A))
 				{
+					// 決定音再生
+					pSound->PlaySound(CSound::SOUND_LABEL_SE_DETERMINATION);
+
 					// trueに
 					m_bControls = true;
 
@@ -240,6 +256,9 @@ void CPause::Select(void)
 				// Aボタンを押した場合
 				if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_A))
 				{
+					// 決定音再生
+					pSound->PlaySound(CSound::SOUND_LABEL_SE_DETERMINATION);
+
 					// 更新開始
 					SetUpdateStop(false);
 
@@ -247,16 +266,55 @@ void CPause::Select(void)
 					CFade::Create(CManager::MODE_TITLE);
 				}
 			}
+			// Bが押された場合
+			if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_B))
+			{
+				// 決定音再生
+				pSound->PlaySound(CSound::SOUND_LABEL_SE_DETERMINATION);
+
+				// 更新開始
+				SetUpdateStop(false);
+
+				// 更新
+				pInputJoystick->Update();
+
+				// 破棄
+				CPause::Release();
+			}
 		}
 		// trueの場合
 		if (m_bControls == true)
 		{
-			// Bボタンを押した場合
+			// B,START,Aボタンを押した場合
 			if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_B))
+			{
+				// 決定音再生
+				pSound->PlaySound(CSound::SOUND_LABEL_SE_DETERMINATION);
+
+				// falseに
+				m_bControls = false;
+			}
+		}
+		// STARTが押された場合
+		if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_START))
+		{
+			// trueの場合
+			if (m_bControls == true)
 			{
 				// falseに
 				m_bControls = false;
 			}
+			// 決定音再生
+			pSound->PlaySound(CSound::SOUND_LABEL_SE_DETERMINATION);
+
+			// 更新開始
+			SetUpdateStop(false);
+
+			// 更新
+			pInputJoystick->Update();
+
+			// 破棄
+			CPause::Release();
 		}
 	}
 }
@@ -265,8 +323,10 @@ void CPause::Select(void)
 //******************************************************************************
 void CPause::Release(void)
 {
+	// ゲーム取得
 	CMode *pMode = CManager::GetMode();
 
+	// ゲームの使用判定設定
 	((CGame*)pMode)->SetPause(false);
 
 	// 破棄

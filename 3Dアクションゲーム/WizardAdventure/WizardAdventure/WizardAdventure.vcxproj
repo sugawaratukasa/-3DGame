@@ -203,6 +203,7 @@
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="scene2d.cpp" />
     <ClCompile Include="scene3d.cpp" />
+    <ClCompile Include="sound.cpp" />
     <ClCompile Include="stone.cpp" />
     <ClCompile Include="stone_block.cpp" />
     <ClCompile Include="particle_texture.cpp" />
@@ -272,6 +273,7 @@
     <ClInclude Include="scene.h" />
     <ClInclude Include="scene2d.h" />
     <ClInclude Include="scene3d.h" />
+    <ClInclude Include="sound.h" />
     <ClInclude Include="stone.h" />
     <ClInclude Include="stone_block.h" />
     <ClInclude Include="particle_texture.h" />

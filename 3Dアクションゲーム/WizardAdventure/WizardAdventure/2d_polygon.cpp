@@ -193,9 +193,13 @@ void C2D_Polygon::Update(void)
 		// NULLでない場合	
 		if (g_lpDIDevice != NULL)
 		{
-			// Bボタンを押した場合
-			if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_B))
+			// B,START,Aボタンを押した場合
+			if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_B) || 
+				pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_START))
 			{
+				// 更新
+				pInputJoystick->Update();
+
 				// 終了
 				Uninit();
 				return;

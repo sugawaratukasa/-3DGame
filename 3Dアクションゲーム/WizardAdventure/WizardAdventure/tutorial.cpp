@@ -18,14 +18,17 @@
 #include "map.h"
 #include "player.h"
 #include "bg.h"
+#include "sound.h"
 #include "tutorial_pause.h"
 #include "tutorial.h"
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define PLAYER_POS		(D3DXVECTOR3(200.0f, -50.0f, -200.0f))
-#define PLAYER_ROT		(D3DXVECTOR3(0.0f,D3DXToRadian(90.0f),0.0f))
-#define PLAYER_SIZE		(D3DXVECTOR3(30.0f,15.0f,30.0f))
+#define PLAYER_POS			(D3DXVECTOR3(200.0f, -50.0f, -200.0f))						// 位置
+#define PLAYER_ROT			(D3DXVECTOR3(0.0f,D3DXToRadian(90.0f),0.0f))				// 向き
+#define PLAYER_SIZE			(D3DXVECTOR3(30.0f,15.0f,30.0f))							// サイズ
+#define PRESS_START_POS		(D3DXVECTOR3(SCREEN_WIDTH / 2, 900.0f, 0.0f))				// 位置
+#define PRESS_START_SIZE	(D3DXVECTOR3(750.0f, 300.0f, 0.0f))							// サイズ
 //*****************************************************************************
 // 静的メンバ変数
 //*****************************************************************************
@@ -48,6 +51,12 @@ CTutorial::~CTutorial()
 //*****************************************************************************
 HRESULT CTutorial::Init(void)
 {
+	//サウンド取得
+	CSound * pSound = CManager::GetSound();
+
+	// タイトルBGM再生
+	pSound->PlaySound(CSound::SOUND_LABEL_BGM_TITLE);
+
 	// カメラ
 	CManager::CreateCamera();
 
@@ -63,6 +72,8 @@ HRESULT CTutorial::Init(void)
 	// 背景生成
 	CBg::Create();
 	
+	// PRESS_START
+	C2D_Polygon::Create(PRESS_START_POS, PRESS_START_SIZE, C2D_Polygon::TYPE_PRESS_START);
 	return S_OK;
 }
 
@@ -71,6 +82,9 @@ HRESULT CTutorial::Init(void)
 //*****************************************************************************
 void CTutorial::Uninit(void)
 {
+	//サウンドの停止
+	CManager::GetSound()->StopSound();
+
 	// フェード以外破棄
 	CScene::DesignationReleaseAll(CScene::OBJTYPE_FADE);
 }
@@ -80,6 +94,9 @@ void CTutorial::Uninit(void)
 //*****************************************************************************
 void CTutorial::Update(void)
 {
+	//サウンド取得
+	CSound * pSound = CManager::GetSound();
+
 	// コントローラー取得
 	DIJOYSTATE js;
 	js.lY = INIT_INT;
@@ -104,6 +121,9 @@ void CTutorial::Update(void)
 				// STARTボタンを押した場合
 				if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_START))
 				{
+					// 決定音再生
+					pSound->PlaySound(CSound::SOUND_LABEL_SE_DETERMINATION);
+
 					// ポーズ生成
 					CTutorial_Pause::Create();
 
@@ -121,4 +141,11 @@ void CTutorial::Update(void)
 void CTutorial::Draw(void)
 {
 
+}
+//*****************************************************************************
+// ポーズの使用設定
+//*****************************************************************************
+void CTutorial::SetPause(bool bPause)
+{
+	m_bPause = bPause;
 }

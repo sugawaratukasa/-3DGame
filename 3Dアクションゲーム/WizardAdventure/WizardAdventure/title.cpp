@@ -13,6 +13,7 @@
 #include "2d_polygon.h"
 #include "fade.h"
 #include "2d_particle_emitter.h"
+#include "sound.h"
 #include "title.h"
 //*****************************************************************************
 // マクロ定義
@@ -45,6 +46,12 @@ CTitle::~CTitle()
 //*****************************************************************************
 HRESULT CTitle::Init(void)
 {
+	//サウンド取得
+	CSound * pSound = CManager::GetSound();
+
+	// タイトルBGM再生
+	pSound->PlaySound(CSound::SOUND_LABEL_BGM_TITLE);
+
 	// タイトルの背景
 	C2D_Polygon::Create(BG_POS, BG_SIZE, C2D_Polygon::TYPE_TITLE_BG);
 
@@ -64,6 +71,9 @@ HRESULT CTitle::Init(void)
 //*****************************************************************************
 void CTitle::Uninit(void)
 {
+	//サウンドの停止
+	CManager::GetSound()->StopSound();
+
 	// フェード以外破棄
 	CScene::DesignationReleaseAll(CScene::OBJTYPE_FADE);
 }
@@ -73,6 +83,9 @@ void CTitle::Uninit(void)
 //*****************************************************************************
 void CTitle::Update(void)
 {
+	//サウンド取得
+	CSound * pSound = CManager::GetSound();
+
 	// コントローラー取得
 	DIJOYSTATE js;
 	js.lY = INIT_INT;
@@ -91,6 +104,9 @@ void CTitle::Update(void)
 		// STARTボタンを押した場合
 		if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_START) || pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_A))
 		{
+			// 決定音再生
+			pSound->PlaySound(CSound::SOUND_LABEL_SE_DETERMINATION);
+
 			// ゲームに遷移
 			CFade::Create(CManager::MODE_TUTORIAL);
 		}

@@ -179,5 +179,6 @@ private:
 	bool m_bCollision;												// オブジェタイプに当たっているか
 	bool m_bChange_MagicType;										// 魔法のタイプ変更判定
 	bool m_bEnemyCreate;											// 敵生成判定
+	bool m_bDash;													// ダッシュ
 };
 #endif

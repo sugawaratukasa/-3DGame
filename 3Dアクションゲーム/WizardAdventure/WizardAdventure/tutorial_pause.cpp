@@ -12,7 +12,8 @@
 #include "2d_polygon.h"
 #include "fade.h"
 #include "mode.h"
-#include "game.h"
+#include "sound.h"
+#include "tutorial.h"
 #include "tutorial_pause.h"
 //******************************************************************************
 // マクロ定義
@@ -125,6 +126,9 @@ void CTutorial_Pause::Draw(void)
 //******************************************************************************
 void CTutorial_Pause::Select(void)
 {
+	//サウンド取得
+	CSound * pSound = CManager::GetSound();
+
 	// コントローラー取得
 	DIJOYSTATE js;
 	js.lY = INIT_INT;
@@ -155,13 +159,19 @@ void CTutorial_Pause::Select(void)
 					// EXITの場合
 					if (m_nCount == TYPE_EXIT)
 					{
+						// 更新
+						pInputJoystick->Update();
+
 						// EXITに
 						m_nCount = TYPE_EXIT;
 					}
 					// EXITでない場合
 					if (m_nCount != TYPE_EXIT)
 					{
-						// デクリメント
+						// 選択音再生
+						pSound->PlaySound(CSound::SOUND_LABEL_SE_SELECT);
+
+						// インクリメント
 						m_nCount++;
 					}
 				}
@@ -177,7 +187,10 @@ void CTutorial_Pause::Select(void)
 					// RESUMEでない場合
 					if (m_nCount != TYPE_RESUME)
 					{
-						// インクリメント
+						// 選択音再生
+						pSound->PlaySound(CSound::SOUND_LABEL_SE_SELECT);
+
+						// デクリメント
 						m_nCount--;
 					}
 					// trueに
@@ -210,6 +223,9 @@ void CTutorial_Pause::Select(void)
 				// Aボタンを押した場合
 				if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_A))
 				{
+					// 決定音再生
+					pSound->PlaySound(CSound::SOUND_LABEL_SE_DETERMINATION);
+
 					// 更新開始
 					SetUpdateStop(false);
 
@@ -229,14 +245,14 @@ void CTutorial_Pause::Select(void)
 				// Aボタンを押した場合
 				if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_A))
 				{
-					// 更新開始
-					SetUpdateStop(false);
-
-					// trueに
-					m_bControls = true;
+					// 決定音再生
+					pSound->PlaySound(CSound::SOUND_LABEL_SE_DETERMINATION);
 
 					// 生成
 					C2D_Polygon::Create(BLACK_POLYGON_POS, BLACK_POLYGON_SIZE, C2D_Polygon::TYPE_CONTROLS_BG);
+
+					// trueに
+					m_bControls = true;
 				}
 			}
 			// RESUMEの場合
@@ -251,6 +267,9 @@ void CTutorial_Pause::Select(void)
 				// Aボタンを押した場合
 				if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_A))
 				{
+					// 決定音再生
+					pSound->PlaySound(CSound::SOUND_LABEL_SE_DETERMINATION);
+
 					// 更新開始
 					SetUpdateStop(false);
 
@@ -270,6 +289,9 @@ void CTutorial_Pause::Select(void)
 				// Aボタンを押した場合
 				if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_A))
 				{
+					// 決定音再生
+					pSound->PlaySound(CSound::SOUND_LABEL_SE_DETERMINATION);
+
 					// 更新開始
 					SetUpdateStop(false);
 
@@ -277,15 +299,52 @@ void CTutorial_Pause::Select(void)
 					CFade::Create(CManager::MODE_TITLE);
 				}
 			}
+			// Bが押された場合
+			if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_B))
+			{
+				// 決定音再生
+				pSound->PlaySound(CSound::SOUND_LABEL_SE_DETERMINATION);
+
+				// 更新開始
+				SetUpdateStop(false);
+
+				// 更新
+				pInputJoystick->Update();
+
+				// 破棄
+				CTutorial_Pause::Release();
+			}
 		}
 		// trueの場合
 		if (m_bControls == true)
 		{
+			// B,START,Aボタンを押した場合
 			if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_B))
+			{
+				// 決定音再生
+				pSound->PlaySound(CSound::SOUND_LABEL_SE_DETERMINATION);
+
+				// falseに
+				m_bControls = false;
+			}
+		}
+		// STARTが押された場合
+		if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_START))
+		{
+			// trueの場合
+			if (m_bControls == true)
 			{
 				// falseに
 				m_bControls = false;
 			}
+			// 決定音再生
+			pSound->PlaySound(CSound::SOUND_LABEL_SE_DETERMINATION);
+
+			// 更新開始
+			SetUpdateStop(false);
+
+			// 破棄
+			CTutorial_Pause::Release();
 		}
 	}
 }
@@ -294,9 +353,11 @@ void CTutorial_Pause::Select(void)
 //******************************************************************************
 void CTutorial_Pause::Release(void)
 {
+	// チュートリアル取得
 	CMode *pMode = CManager::GetMode();
 
-	((CGame*)pMode)->SetPause(false);
+	// ポーズの使用設定
+	((CTutorial*)pMode)->SetPause(false);
 
 	// 破棄
 	m_apPolygon[TYPE_BLACK]->Uninit();

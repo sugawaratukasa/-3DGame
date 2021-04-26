@@ -36,5 +36,6 @@ private:
 	void UpMove(void);
 	bool GetPush(void);
 	D3DXVECTOR3 m_SavePos;	// ˆÊ’u•Û‘¶—p
+	bool m_bOpen;				// ŠJ‚¢‚Ä‚¢‚é‚©
 };
 #endif

@@ -28,6 +28,7 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
+	void SetPause(bool bPause);
 private:
 	bool m_bPause;		// É|Å[ÉY
 };

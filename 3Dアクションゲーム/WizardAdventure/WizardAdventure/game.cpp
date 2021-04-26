@@ -29,6 +29,7 @@
 #include "bg.h"
 #include "ghost.h"
 #include "life_gage.h"
+#include "sound.h"
 #include "pause.h"
 //*****************************************************************************
 // マクロ定義
@@ -76,6 +77,12 @@ CGame::~CGame()
 //*****************************************************************************
 HRESULT CGame::Init(void)
 {
+	//サウンド取得
+	CSound * pSound = CManager::GetSound();
+
+	// ゲームBGM再生
+	pSound->PlaySound(CSound::SOUND_LABEL_BGM_GAME);
+
 	// カメラ
 	CManager::CreateCamera();
 
@@ -102,6 +109,9 @@ HRESULT CGame::Init(void)
 //*****************************************************************************
 void CGame::Uninit(void)
 {
+	//サウンドの停止
+	CManager::GetSound()->StopSound();
+
 	// フェード以外破棄
 	CScene::DesignationReleaseAll(CScene::OBJTYPE_FADE);
 }
@@ -111,6 +121,9 @@ void CGame::Uninit(void)
 //*****************************************************************************
 void CGame::Update(void)
 {
+	//サウンド取得
+	CSound * pSound = CManager::GetSound();
+
 	// コントローラー取得
 	DIJOYSTATE js;
 	js.lY = INIT_INT;
@@ -132,6 +145,9 @@ void CGame::Update(void)
 			// STARTボタンを押した場合
 			if (pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_START))
 			{
+				// タイトルBGM再生
+				pSound->PlaySound(CSound::SOUND_LABEL_SE_DETERMINATION);
+
 				// ポーズ生成
 				CPause::Create();
 

@@ -15,6 +15,7 @@
 #include "player.h"
 #include "collision.h"
 #include "block.h"
+#include "sound.h"
 #include "button.h"
 //******************************************************************************
 // マクロ定義
@@ -129,6 +130,9 @@ void CButton::Draw(void)
 //******************************************************************************
 void CButton::Collision(void)
 {
+	// サウンド取得
+	CSound *pSound = CManager::GetSound();
+
 	// 位置取得
 	D3DXVECTOR3 pos = GetPos();
 
@@ -162,13 +166,26 @@ void CButton::Collision(void)
 				// 当たり判定
 				if (CCollision::RectangleCollision(pos, size, BlockPos, BlockSize) == true)
 				{
-					// trueに
-					m_bPush = true;
+					// falseの場合
+					if (m_bPush == false)
+					{
+						// 押した音再生
+						pSound->PlaySoundA(CSound::SOUND_LABEL_SE_BUTTON_PUSH);
+
+						// trueに
+						m_bPush = true;
+					}
 				}
 				else
 				{
-					// falseに
-					m_bPush = false;
+					if (m_bPush == true)
+					{
+						// 押した音再生
+						pSound->PlaySoundA(CSound::SOUND_LABEL_SE_BUTTON_PUSH);
+
+						// falseに
+						m_bPush = false;
+					}
 				}
 			}
 		}

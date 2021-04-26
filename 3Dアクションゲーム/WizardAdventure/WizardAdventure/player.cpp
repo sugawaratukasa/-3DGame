@@ -26,6 +26,7 @@
 #include "map.h"
 #include "particle_effect.h"
 #include "magic_ui.h"
+#include "sound.h"
 #include "player.h"
 //******************************************************************************
 // マクロ定義
@@ -144,6 +145,7 @@ CPlayer::CPlayer(int nPriority) : CScene(nPriority)
 	m_bCollision			= false;
 	m_bChange_MagicType		= false;
 	m_bEnemyCreate			= false;
+	m_bDash					= false;
 	memset(m_pModel, NULL, sizeof(m_pModel));
 	memset(m_apParticle_Emitter, NULL, sizeof(m_apParticle_Emitter));
 }
@@ -315,6 +317,9 @@ void CPlayer::Uninit(void)
 //******************************************************************************
 void CPlayer::Update(void)
 {
+	//サウンド取得
+	CSound * pSound = CManager::GetSound();
+
 	// 位置代入
 	m_posOld = m_pModel[PARTS_UNDER_BODY]->GetPos();
 
@@ -405,6 +410,8 @@ void CPlayer::Update(void)
 	// Xボタンが押された場合
 	if (g_lpDIDevice != NULL && pInputJoystick->GetJoystickTrigger(CInputJoystick::JS_X))
 	{
+		// 生成音再生
+		pSound->PlaySoundA(CSound::SOUND_LABEL_SE_BLOCK_CREATE);
 		// ブロック生成
 		Block_Create();
 	}
@@ -414,8 +421,10 @@ void CPlayer::Update(void)
 		// 魔法
 		Magic();
 	}
+
 	// 移動処理
 	Move();
+
 	// パーツ数分回す
 	for (int nCount = INIT_INT; nCount < PARTS_MAX; nCount++)
 	{
@@ -472,7 +481,20 @@ void CPlayer::Hit(int nLife)
 	// 0以下になった場合
 	if (m_nLife <= MIN_LIFE)
 	{
+		//サウンド取得
+		CSound * pSound = CManager::GetSound();
+
+		// 体力を最小値に
 		m_nLife = MIN_LIFE;
+
+		// リスポーン音再生
+		pSound->PlaySoundA(CSound::SOUND_LABEL_SE_RESPAWN);
+
+		// リスポーン位置に
+		m_pos = m_RespawnPos;
+
+		// エフェクト生成
+		CParticle_Effect::Create(RESPOWN_POS, CParticle_Effect::TYPE_STAR_EFFECT2);
 	}
 }
 //******************************************************************************
@@ -813,6 +835,9 @@ void CPlayer::RightBlock(void)
 //******************************************************************************
 void CPlayer::RightSelectionBlock(void)
 {
+	//サウンド取得
+	CSound * pSound = CManager::GetSound();
+
 	// カメラの位置取得
 	D3DXVECTOR3 CameraPos = CManager::GetCamera()->GetPos();
 
@@ -1035,11 +1060,15 @@ void CPlayer::RightSelectionBlock(void)
 		if (m_bStick == false)
 		{
 			// 右スティックを左に倒す
-			if (js.lZ >= STICK_REACTION)
+			
+			if (js.lZ <= -STICK_REACTION)
 			{
 				// 0番目の場合
 				if (m_nBlock_Select_Num > MIN_BLOCK_NUM)
 				{
+					// 選択音再生
+					pSound->PlaySoundA(CSound::SOUND_LABEL_SE_SELECT);
+
 					// デクリメント
 					m_nBlock_Select_Num--;
 				}
@@ -1054,11 +1083,14 @@ void CPlayer::RightSelectionBlock(void)
 				m_bStick = true;
 			}
 			// 右スティックを右に倒す
-			if (js.lZ <= -STICK_REACTION)
+			if (js.lZ >= STICK_REACTION)
 			{
 				// 最大値の場合
 				if (m_nBlock_Select_Num < m_nSelect_Save_Num - ARRAY_SUB_VALUE)
 				{
+					// 選択音再生
+					pSound->PlaySoundA(CSound::SOUND_LABEL_SE_SELECT);
+
 					// インクリメント
 					m_nBlock_Select_Num++;
 				}
@@ -1423,6 +1455,9 @@ void CPlayer::LeftBlock(void)
 //******************************************************************************
 void CPlayer::LeftSelectionBlock(void)
 {
+	//サウンド取得
+	CSound * pSound = CManager::GetSound();
+
 	// コントローラー取得
 	DIJOYSTATE js;
 	// 初期化
@@ -1648,11 +1683,14 @@ void CPlayer::LeftSelectionBlock(void)
 		if (m_bStick == false)
 		{
 			// 右スティックを左に倒す
-			if (js.lZ >= STICK_REACTION)
+			if (js.lZ <= -STICK_REACTION)
 			{
 				// 最大値の場合
 				if (m_nBlock_Select_Num < m_nSelect_Save_Num - ARRAY_SUB_VALUE)
 				{
+					// 選択音再生
+					pSound->PlaySoundA(CSound::SOUND_LABEL_SE_SELECT);
+
 					// インクリメント
 					m_nBlock_Select_Num++;
 				}
@@ -1665,12 +1703,15 @@ void CPlayer::LeftSelectionBlock(void)
 				// trueに
 				m_bStick = true;
 			}
-			// 右スティックを右に倒す
-			if (js.lZ <= -STICK_REACTION)
-			{
+		// 右スティックを右に倒す
+		if (js.lZ >= STICK_REACTION)
+		{
 				// 0番目の場合
 				if (m_nBlock_Select_Num > MIN_BLOCK_NUM)
 				{
+					// 選択音再生
+					pSound->PlaySoundA(CSound::SOUND_LABEL_SE_SELECT);
+
 					// デクリメント
 					m_nBlock_Select_Num--;
 				}
@@ -1783,6 +1824,9 @@ void CPlayer::Block_Create(void)
 //******************************************************************************
 void CPlayer::Collision(void)
 {
+	//サウンド取得
+	CSound * pSound = CManager::GetSound();
+
 	// 位置
 	D3DXVECTOR3 pos = m_pModel[PARTS_UNDER_BODY]->GetPos();
 
@@ -1955,6 +1999,9 @@ void CPlayer::Collision(void)
 						// エフェクト生成
 						CParticle_Effect::Create(DEAD_POS, CParticle_Effect::TYPE_STAR_EFFECT2);
 
+						// リスポーン音再生
+						pSound->PlaySoundA(CSound::SOUND_LABEL_SE_RESPAWN);
+
 						// リスポーン位置に移動
 						m_pos = m_RespawnPos;
 
@@ -2030,6 +2077,9 @@ void CPlayer::Collision(void)
 //******************************************************************************
 void CPlayer::Move(void)
 {
+	//サウンド取得
+	CSound * pSound = CManager::GetSound();
+
 	// コントローラー取得
 	DIJOYSTATE js;
 	js.lY = INIT_INT;
@@ -2063,6 +2113,16 @@ void CPlayer::Move(void)
 				// 左
 				if (js.lX <= -STICK_REACTION)
 				{
+					// falseの場合
+					if (m_bDash == false)
+					{
+						// 歩行音再生
+						pSound->PlaySoundA(CSound::SOUND_LABEL_SE_WALK);
+
+						// trueに
+						m_bDash = true;
+					}
+
 					// trueに
 					m_bBlock_Move = true;
 
@@ -2147,6 +2207,16 @@ void CPlayer::Move(void)
 				// 右
 				if (js.lX >= STICK_REACTION)
 				{
+					// falseの場合
+					if (m_bDash == false)
+					{
+						// 歩行音再生
+						pSound->PlaySoundA(CSound::SOUND_LABEL_SE_WALK);
+
+						// trueに
+						m_bDash = true;
+					}
+
 					// trueに
 					m_bBlock_Move = true;
 
@@ -2231,6 +2301,16 @@ void CPlayer::Move(void)
 				// スティックの範囲外の場合
 				if (js.lX > -STICK_REACTION && js.lX < STICK_REACTION)
 				{
+					// falseの場合
+					if (m_bDash == true)
+					{
+						// 歩行音再生
+						pSound->StopSound(CSound::SOUND_LABEL_SE_WALK);
+
+						// falseに
+						m_bDash = false;
+					}
+
 					// trueに
 					m_bBlock_Move = false;
 
@@ -2337,6 +2417,9 @@ void CPlayer::Move(void)
 //******************************************************************************
 void CPlayer::Magic(void)
 {
+	//サウンド取得
+	CSound * pSound = CManager::GetSound();
+
 	// コントローラー取得
 	DIJOYSTATE js;
 	js.lY = INIT_INT;
@@ -2441,12 +2524,18 @@ void CPlayer::Magic(void)
 				// ファイアボールの場合
 				if (m_MagicType == MAGIC_TYPE_FIREBALL)
 				{
+					// 火の球音再生
+					pSound->PlaySoundA(CSound::SOUND_LABEL_SE_FIRE_BALL);
+
 					// ファイアーボール生成
 					CMagic::Create(MAGIC_POS, MAGIC_MOVE_RIGHT, CMagic::TYPE_FIRE_BALL);
 				}
 				// アイスボールの場合
 				if (m_MagicType == MAGIC_TYPE_ICEBALL)
 				{
+					// 火の球音再生
+					pSound->PlaySoundA(CSound::SOUND_LABEL_SE_FIRE_BALL);
+
 					// アイスボールの生成
 					CMagic::Create(MAGIC_POS, MAGIC_MOVE_RIGHT, CMagic::TYPE_ICE_BALL);
 				}
@@ -2457,12 +2546,18 @@ void CPlayer::Magic(void)
 				// ファイアボールの場合
 				if (m_MagicType == MAGIC_TYPE_FIREBALL)
 				{
+					// 火の球音再生
+					pSound->PlaySoundA(CSound::SOUND_LABEL_SE_FIRE_BALL);
+
 					// ファイアーボール生成
 					CMagic::Create(MAGIC_POS, MAGIC_MOVE_LEFT, CMagic::TYPE_FIRE_BALL);
 				}
 				// アイスボールの場合
 				if (m_MagicType == MAGIC_TYPE_ICEBALL)
 				{
+					// 火の球音再生
+					pSound->PlaySoundA(CSound::SOUND_LABEL_SE_FIRE_BALL);
+
 					// アイスボールの生成
 					CMagic::Create(MAGIC_POS, MAGIC_MOVE_LEFT, CMagic::TYPE_ICE_BALL);
 				}

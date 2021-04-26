@@ -7,6 +7,7 @@
 // インクルードファイル
 //******************************************************************************
 #include "particle.h"
+#include "manager.h"
 #include "enemy.h"
 #include "ghost.h"
 #include "player.h"
@@ -15,6 +16,7 @@
 #include "collision.h"
 #include "particle_effect.h"
 #include "wood.h"
+#include "sound.h"
 #include "magic.h"
 
 //******************************************************************************
@@ -169,6 +171,9 @@ void CMagic::Draw(void)
 //******************************************************************************
 void CMagic::Collision(void)
 {
+	// サウンド取得
+	CSound *pSound = CManager::GetSound();
+
 	// CSceneのポインタ
 	CScene *pScene = NULL;
 
@@ -198,6 +203,13 @@ void CMagic::Collision(void)
 						// 火球で敵が火の場合
 						if (m_Type == TYPE_FIRE_BALL && nType == CGhost::TYPE_FIRE)
 						{
+							// 爆発音再生
+							pSound->PlaySoundA(CSound::SOUND_LABEL_SE_FIRE_EXPLOSION);
+
+							// エフェクト生成
+							CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_FIRE_EXPLOSION);
+							CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_FIRE_EXPLOSION_2);
+
 							// ダメージ
 							((CEnemy*)pScene)->Hit(DAMAGE);
 							Uninit();
@@ -206,6 +218,12 @@ void CMagic::Collision(void)
 						// 火球で敵が氷の場合
 						if (m_Type == TYPE_FIRE_BALL && nType == CGhost::TYPE_ICE)
 						{
+							// 爆発音再生
+							pSound->PlaySoundA(CSound::SOUND_LABEL_SE_FIRE_EXPLOSION);
+							// エフェクト生成
+							CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_FIRE_EXPLOSION);
+							CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_FIRE_EXPLOSION_2);
+
 							// ダメージ
 							((CEnemy*)pScene)->Hit(WEAK_DAMAGE);
 							Uninit();
@@ -214,6 +232,12 @@ void CMagic::Collision(void)
 						// 氷球で敵が氷の場合
 						if (m_Type == TYPE_ICE_BALL && nType == CGhost::TYPE_ICE)
 						{
+							// 爆発音再生
+							pSound->PlaySoundA(CSound::SOUND_LABEL_SE_ICE_EXPLOSION);
+							// エフェクト生成
+							CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_ICE_EXPLOSION);
+							CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_ICE_EXPLOSION_2);
+
 							// ダメージ
 							((CEnemy*)pScene)->Hit(DAMAGE);
 							Uninit();
@@ -222,6 +246,12 @@ void CMagic::Collision(void)
 						// 氷球で敵が火の場合
 						if (m_Type == TYPE_ICE_BALL && nType == CGhost::TYPE_FIRE)
 						{
+							// 爆発音再生
+							pSound->PlaySoundA(CSound::SOUND_LABEL_SE_ICE_EXPLOSION);
+							// エフェクト生成
+							CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_ICE_EXPLOSION);
+							CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_ICE_EXPLOSION_2);
+
 							// ダメージ
 							((CEnemy*)pScene)->Hit(WEAK_DAMAGE);
 							Uninit();
@@ -314,6 +344,9 @@ void CMagic::Collision(void)
 					// 火の場合
 					if (m_Type == TYPE_FIRE_BALL)
 					{
+						// 爆発音再生
+						pSound->PlaySoundA(CSound::SOUND_LABEL_SE_FIRE_EXPLOSION);
+
 						// エフェクト生成
 						CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_FIRE_EXPLOSION);
 						CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_FIRE_EXPLOSION_2);
@@ -334,6 +367,9 @@ void CMagic::Collision(void)
 					// 氷の場合
 					if (m_Type == TYPE_ICE_BALL)
 					{
+						// 爆発音再生
+						pSound->PlaySoundA(CSound::SOUND_LABEL_SE_ICE_EXPLOSION);
+
 						// エフェクト生成
 						CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_ICE_EXPLOSION);
 						CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_ICE_EXPLOSION_2);
@@ -382,6 +418,40 @@ void CMagic::Collision(void)
 				// 円形の当たり判定
 				if (CCollision::RectangleCollision(m_pos, SIZE_XYZ, BlockPos, BlockSize) == true)
 				{
+					// 火の場合
+					if (m_Type == TYPE_FIRE_BALL)
+					{
+						// 爆発音再生
+						pSound->PlaySoundA(CSound::SOUND_LABEL_SE_FIRE_EXPLOSION);
+
+						// エフェクト生成
+						CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_FIRE_EXPLOSION);
+						CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_FIRE_EXPLOSION_2);
+					}
+					// 氷の場合
+					if (m_Type == TYPE_ICE_BALL)
+					{
+						// 爆発音再生
+						pSound->PlaySoundA(CSound::SOUND_LABEL_SE_ICE_EXPLOSION);
+
+						// エフェクト生成
+						CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_ICE_EXPLOSION);
+						CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_ICE_EXPLOSION_2);
+					}
+					// 火の場合
+					if (m_Type == TYPE_ENEMY_FIRE_BALL)
+					{
+						// エフェクト生成
+						CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_ENEMY_FIRE_EXPLOSION);
+						CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_ENEMY_FIRE_EXPLOSION_2);
+					}
+					// 氷の場合
+					if (m_Type == TYPE_ENEMY_ICE_BALL)
+					{
+						// エフェクト生成
+						CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_ICE_EXPLOSION);
+						CParticle_Effect::Create(m_pos, CParticle_Effect::TYPE_ICE_EXPLOSION_2);
+					}
 					// 終了
 					Uninit();
 					return;

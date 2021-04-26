@@ -15,6 +15,7 @@
 #include "player.h"
 #include "collision.h"
 #include "button.h"
+#include "sound.h"
 #include "gate.h"
 //******************************************************************************
 // マクロ定義
@@ -31,7 +32,8 @@
 //******************************************************************************
 CGate::CGate(int nPriority) : C3D_Obj(nPriority)
 {
-	m_SavePos = INIT_D3DXVECTOR3;
+	m_SavePos	= INIT_D3DXVECTOR3;
+	m_bOpen		= false;
 }
 //******************************************************************************
 // デストラクタ
@@ -93,6 +95,9 @@ void CGate::Uninit(void)
 //******************************************************************************
 void CGate::Update(void)
 {
+	// サウンド取得
+	CSound *pSound = CManager::GetSound();
+
 	// 更新
 	C3D_Obj::Update();
 
@@ -102,12 +107,30 @@ void CGate::Update(void)
 	// trueの場合
 	if (bPush == true)
 	{
+		// falseの場合
+		if (m_bOpen == false)
+		{
+			// 開く音再生
+			pSound->PlaySoundA(CSound::SOUND_LABEL_SE_GATE_OPEN);
+
+			// trueに
+			m_bOpen = true;
+		}
 		// 移動処理
 		UpMove();
 	}
 	// falseの場合
 	if (bPush == false)
 	{
+		// falseの場合
+		if (m_bOpen == true)
+		{
+			// 開く音再生
+			pSound->PlaySoundA(CSound::SOUND_LABEL_SE_GATE_OPEN);
+
+			// trueに
+			m_bOpen = false;
+		}
 		// 移動処理
 		UnderMove();
 	}

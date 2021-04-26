@@ -32,6 +32,7 @@
 #include "ui_texture.h"
 #include "result.h"
 #include "tutorial.h"
+#include "sound.h"
 //******************************************************************************
 // 静的メンバ変数
 //******************************************************************************
@@ -45,6 +46,7 @@ CMode *CManager::m_pMode = NULL;
 CParticle_Texture *CManager::m_pParticle_Texture = NULL;
 CUI_Texture *CManager::m_pUI_Texture = NULL;
 CManager::MODE CManager::m_Mode = MODE_NONE;
+CSound *CManager::m_pSound = NULL;
 //******************************************************************************
 //コンストラクタ
 //******************************************************************************
@@ -136,6 +138,19 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindouw)
 			m_pUI_Texture->Init();
 		}
 	}
+	//サウンド生成
+	if (m_pSound == NULL)
+	{
+		// メモり確保
+		m_pSound = new CSound;
+
+		// NULLでないとき
+		if (m_pSound != NULL)
+		{
+			// サウンド初期化処理
+			m_pSound->Init(hWnd);
+		}
+	}
 	
 	//テクスチャの読み込み
 	LoadAll();
@@ -155,6 +170,9 @@ void CManager::Uninit(void)
 
 	//テクスチャの破棄
 	UnloadAll();
+
+	//サウンド全停止
+	m_pSound->StopSound();
 
 	// テクスチャの終了
 	if (m_pUI_Texture != NULL)
@@ -228,6 +246,18 @@ void CManager::Uninit(void)
 		delete m_pRenderer;
 		m_pRenderer = NULL;
 	}
+	// NULLでない場合
+	if (m_pSound != NULL)
+	{
+		// サウンドの終了処理
+		m_pSound->Uninit();
+
+		// メモリ開放
+		delete m_pSound;
+
+		// NULLに
+		m_pSound = NULL;
+	}
 }
 
 //******************************************************************************
@@ -235,29 +265,34 @@ void CManager::Uninit(void)
 //******************************************************************************
 void CManager::Update(void)
 {
+	// NULLでない場合
 	if (m_pRenderer != NULL)
 	{
 		//レンダラーの更新処理
 		m_pRenderer->Update();
 	}
+	// NULLでない場合
 	if (m_pCamera != NULL)
 	{
 		//カメラのの更新処理
 		m_pCamera->Update();
 	}
+	// NULLでない場合
 	if (m_pMode != NULL)
 	{
 		// その時のモードの描画処理
 		m_pMode->Update();
 	}
-	//キーボードの更新
+	// NULLでない場合
 	if (m_pKeyboard != NULL)
 	{
+		//キーボードの更新
 		m_pKeyboard->Update();
 	}
-	//キーボードの更新
+	// NULLでない場合
 	if (m_pJoystick != NULL)
 	{
+		// コントローラーの更新
 		m_pJoystick->Update();
 	}
 }
@@ -267,12 +302,13 @@ void CManager::Update(void)
 //******************************************************************************
 void CManager::Draw(void)
 {
+	// NULLでない場合
 	if (m_pRenderer != NULL)
 	{
 		//描画処理
 		m_pRenderer->Draw();
 	}
-
+	// NULLでない場合
 	if (m_pMode != NULL)
 	{
 		// その時のモードの描画処理
